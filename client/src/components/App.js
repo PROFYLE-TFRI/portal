@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
+import { Card, CardImg, CardText, CardBlock, CardLink, CardTitle, CardSubtitle } from 'reactstrap';
 
 import './App.css';
 import DonorTable from './DonorTable';
@@ -21,9 +22,10 @@ class App extends Component {
 
     return (
       <div className="App">
-        <h1>Donors</h1>
-
-        <DonorTable />
+        <div className='panel'>
+          <div className='panel__caption'>Donors</div>
+          <DonorTable />
+        </div>
 
         {
           donors.map(donor =>

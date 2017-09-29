@@ -2,9 +2,14 @@
  * models.js
  */
 
+const { values } = Object
+
 
 export function createDefaultUI() {
   return {
+    selection: {
+      donors: new Set()
+    }
   }
 }
 export function createDefaultData() {
@@ -12,4 +17,11 @@ export function createDefaultData() {
       isLoading: false
     , donors: {}
   }
+}
+
+
+export function normalizeDonors(donors) {
+  values(donors).forEach(donor => {
+    donor.selected = false
+  })
 }

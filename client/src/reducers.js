@@ -3,14 +3,27 @@ import { combineReducers } from 'redux';
 import {
     REQUEST_DONORS
   , RECEIVE_DONORS
+  , SELECT_DONOR
+  , DESELECT_DONOR
 } from './actions';
 import {
     createDefaultUI
   , createDefaultData
 } from './models';
 
+
 function uiReducer(state = createDefaultUI(), action) {
   switch (action.type) {
+    case SELECT_DONOR: {
+      return { ...state,
+        selection: { ...state.selection,
+          donors: new Set(state.selection.donors).add(action.id) } }
+    }
+    case DESELECT_DONOR: {
+      return { ...state,
+        selection: { ...state.selection,
+          donors: new Set(state.selection.donors).delete(action.id) } }
+    }
     default:
       return state;
   }

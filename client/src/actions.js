@@ -9,6 +9,9 @@ import {
 export const REQUEST_DONORS = 'REQUEST_DONORS'
 export const RECEIVE_DONORS = 'RECEIVE_DONORS'
 
+export const SELECT_DONOR = 'SELECT_DONOR'
+export const DESELECT_DONOR = 'DESELECT_DONOR'
+
 export function requestDonors() {
   return {
     type: REQUEST_DONORS
@@ -19,6 +22,20 @@ export function receiveDonors(donors) {
   return {
     type: RECEIVE_DONORS,
     donors
+  }
+}
+
+export function selectDonor(id) {
+  return {
+    type: SELECT_DONOR,
+    id
+  }
+}
+
+export function deselectDonor(id) {
+  return {
+    type: DESELECT_DONOR,
+    id
   }
 }
 
