@@ -12,7 +12,12 @@ cd portal
 npm install
 cd client
 npm install
+cd ..
+cp config.example.js config.js
 ```
+
+Then, edit `config.js` to match your paths/options.
+
 
 ## Running
 
