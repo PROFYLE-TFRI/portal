@@ -19,15 +19,18 @@ const columns = DONOR_COLUMNS.map(c => c.field)
 
 
 
-function filterDonors(donors, selection, search) {
+function filterSelectedDonors(donors, selection) {
+  // Filter only selected donors, but show all if none are selected
+  if (selection.donors.size === 0)
+    return donors
+
+  return donors.filter(d => selection.donors.has(d['id']))
+}
+
+function filterVisibleDonors(donors, selection, search) {
   const terms = search.split(' ').filter(v => v !== '')
 
   return donors.filter(d => {
-
-    // Filter only selected donors, but show all if none are selected
-    if (selection.donors.size > 0 &&
-        !selection.donors.has(d['id']))
-      return false
 
     if (selection.provinces.size > 0 &&
         !selection.provinces.has(d['recruitement_team.province']))
@@ -84,7 +87,9 @@ class App extends Component {
 
     const { donors, selection, search } = this.props
 
-    const selectedDonors = filterDonors(donors, selection, search)
+    const visibleDonors = filterVisibleDonors(donors, selection, search)
+
+    const selectedDonors = filterSelectedDonors(donors, selection, search)
 
     const selectedSamples = selectedDonors.map(d => values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
 
@@ -101,7 +106,7 @@ class App extends Component {
           </Col>
         </Row>
 
-        <DonorTable donors={selectedDonors} />
+        <DonorTable donors={visibleDonors} />
 
         <SampleTable samples={selectedSamples} />
 

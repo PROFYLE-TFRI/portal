@@ -18,11 +18,11 @@ export function renderColumn({ field, title, type, uri }, i) {
     dataField={field}
     dataFormat={
       type === 'link' ? formatLink :
-      uri !== undefined ? (_, data) => formatLink(data[uri]) :
+      uri !== undefined ? (_, data, ...args) => formatLink(data[uri], data[field]) :
       /* otherwise */ undefined}
     >{title}</Header>
 }
 
-export function formatLink(link, data) {
-  return <a href={link}>{ link }</a>
+export function formatLink(link, text = link) {
+  return <a href={link}>{text}</a>
 }
