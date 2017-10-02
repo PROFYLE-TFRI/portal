@@ -48,16 +48,29 @@ function attachExperiments(donor) {
 
 function normalizeDonor(id, data) {
   data.id = id
+
+  // Flattern data
+  Object.keys(data.recruitement_team)
+  .forEach(key => {
+    data[`recruitement_team.${key}`] = data.recruitement_team[key]
+  })
+  delete data.recruitement_team
+
+  // data.sample => data.samples
   data.samples = data.sample
   delete data.sample
+
+  // Normalize samples
   Object.keys(data.samples)
     .forEach(sampleID =>
-      normalizeSample(sampleID, data.samples[sampleID]))
+      normalizeSample(sampleID, id, data.samples[sampleID]))
+
   return data
 }
 
-function normalizeSample(id, data) {
+function normalizeSample(id, donorID, data) {
   data.id = id
+  data.donorID = donorID
   return data
 }
 

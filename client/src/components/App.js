@@ -4,11 +4,13 @@ import { Card, CardImg, CardText, CardBlock, CardLink, CardTitle, CardSubtitle }
 
 import './App.css';
 import DonorTable from './DonorTable';
+import SampleTable from './SampleTable';
 
-const { values } = Object
+const { keys, values } = Object
 
 const mapStateToProps = state => ({
     isLoading: state.data.isLoading
+  , selection: state.ui.selection
   , donors: values(state.data.donors)
 })
 const mapDispatchToProps = dispatch => ({
@@ -18,28 +20,20 @@ class App extends Component {
 
   render() {
 
-    const { donors } = this.props
+    const { donors, selection } = this.props
+
+    // Filter only selected donors, but show all if none are selected
+    const selectedDonors = selection.donors.size > 0 ? donors.filter(d => selection.donors.has(d.id)) : donors
+
+    const selectedSamples = selectedDonors.map(d => values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
 
     return (
       <div className="App">
-        <div className='panel'>
-          <div className='panel__caption'>Donors</div>
-          <DonorTable />
-        </div>
 
-        {
-          donors.map(donor =>
-            <div key={donor.id} className='panel'>
-              <h3>{donor.id}</h3>
+        <DonorTable />
 
-              <pre>{ JSON.stringify(donor, null, 2) }</pre>
+        <SampleTable samples={selectedSamples} />
 
-              {
-                Object.keys(donor.samples).join(', ')
-              }
-            </div>
-          )
-        }
       </div>
     );
   }

@@ -1,5 +1,5 @@
 /*
- * DonorTable.js
+ * SampleTable.js
  */
 
 import React, { Component } from 'react';
@@ -10,11 +10,10 @@ import {
 } from 'react-bootstrap-table';
 import { compose } from 'ramda';
 
-
 import { renderColumn } from '../helpers/table';
 import { selectDonor, deselectDonor } from '../actions';
 import { selectAllDonors, deselectAllDonors } from '../actions';
-import { selectionColor, DONOR_COLUMNS } from '../constants';
+import { selectionColor, SAMPLE_COLUMNS } from '../constants';
 
 const { values } = Object
 
@@ -32,11 +31,11 @@ const mapDispatchToProps = dispatch => ({
   , selectAllDonors:   compose(dispatch, selectAllDonors)
   , deselectAllDonors: compose(dispatch, deselectAllDonors)
 })
-class DonorTable extends Component {
+class SampleTable extends Component {
 
   render() {
 
-    const { donors, selected } = this.props
+    const { samples } = this.props
     const { selectDonor, deselectDonor, selectAllDonors, deselectAllDonors } = this.props
 
     const options = {
@@ -44,23 +43,23 @@ class DonorTable extends Component {
       hideSizePerPage: true
     }
     const selectRowProp = {
-      mode: 'checkbox',
-      clickToSelect: true,
-      bgColor: selectionColor,
-      onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
-      onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
-      selected: selected
+      //mode: 'checkbox',
+      //clickToSelect: true,
+      //bgColor: selectionColor,
+      //onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
+      //onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
+      //selected: selected
+            //selectRow={selectRowProp}
     }
 
     return (
-      <div className='DonorTable table-sm'>
-        <Table data={donors} version='4'
-            selectRow={selectRowProp}
+      <div className='SampleTable table-sm'>
+        <Table data={samples} version='4'
             options={options}
             pagination={true}
-            search>
+        >
           {
-            DONOR_COLUMNS.map(renderColumn)
+            SAMPLE_COLUMNS.map(renderColumn)
           }
         </Table>
       </div>
@@ -71,4 +70,4 @@ class DonorTable extends Component {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(DonorTable);
+)(SampleTable);
