@@ -20,7 +20,8 @@ const columns = DONOR_COLUMNS.map(c => c.field)
 
 
 function filterDonors(donors, selection, search) {
-  const lowerCaseSearch = search.toLowerCase()
+  const terms = search.split(' ').filter(v => v !== '')
+
   return donors.filter(d => {
 
     // Filter only selected donors, but show all if none are selected
@@ -36,14 +37,27 @@ function filterDonors(donors, selection, search) {
         !selection.diseases.has(d['disease']))
       return false
 
-    if (search && !columns.some(field =>
-        typeof d[field] === 'string' && d[field].toLowerCase().includes(lowerCaseSearch)))
+    if (search && !terms.every(term => columns.some(columnContains(d, term))))
       return false
 
     return true
   })
 }
 
+function columnContains(d, term) {
+  return field => {
+    if (d[field] === null)
+      return false
+
+    const hasUpperCase = /[A-Z]/.test(term)
+    const value = hasUpperCase ? (d[field] + '') : (d[field] + '').toLowerCase()
+    const hasValue = value.includes(term)
+
+    console.log(field, value, term, hasValue)
+
+    return hasValue
+  }
+}
 
 
 const mapStateToProps = state => ({
