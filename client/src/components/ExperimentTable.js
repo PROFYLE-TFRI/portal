@@ -14,7 +14,7 @@ import { compose } from 'ramda';
 import { renderColumn } from '../helpers/table';
 import { selectDonor, deselectDonor } from '../actions';
 import { selectAllDonors, deselectAllDonors } from '../actions';
-import { selectionColor, EXPERIMENT_COLUMNS } from '../constants';
+import { SELECTION_COLOR, EXPERIMENT_COLUMNS } from '../constants';
 
 const { values } = Object
 
@@ -46,7 +46,7 @@ class ExperimentTable extends Component {
     const selectRowProp = {
       //mode: 'checkbox',
       //clickToSelect: true,
-      //bgColor: selectionColor,
+      //bgColor: SELECTION_COLOR,
       //onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
       //onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
       //selected: selected

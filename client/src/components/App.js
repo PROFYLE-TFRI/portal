@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Card, CardImg, CardText, CardBlock, CardLink, CardTitle, CardSubtitle } from 'reactstrap';
+import { Pie, PieChart, Cell } from 'recharts';
+import { Container, Row, Col } from 'reactstrap';
+import { compose } from 'ramda';
 
+import { OPAQUE_SELECTION_COLOR, COLORS } from '../constants';
+import { select, deselect } from '../actions';
 import './App.css';
+import Charts from './Charts';
 import DonorTable from './DonorTable';
 import SampleTable from './SampleTable';
 import ExperimentTable from './ExperimentTable';
 
-const { keys, values } = Object
+const { keys, values, entries } = Object
+
+
+
 
 const mapStateToProps = state => ({
     isLoading: state.data.isLoading
@@ -15,9 +23,19 @@ const mapStateToProps = state => ({
   , donors: values(state.data.donors)
 })
 const mapDispatchToProps = dispatch => ({
+    select: compose(dispatch, select)
+  , deselect: compose(dispatch, deselect)
 })
 
 class App extends Component {
+
+  handleClick(which, ev) {
+    const value = ev.payload.name
+    if (this.props.selection[which].has(value))
+      this.props.deselect(which, value)
+    else
+      this.props.select(which, value)
+  }
 
   render() {
 
@@ -33,16 +51,19 @@ class App extends Component {
     return (
       <div className="App">
 
-        <DonorTable />
+        <Charts />
+
+        <DonorTable donors={selectedDonors} />
 
         <SampleTable samples={selectedSamples} />
 
         <ExperimentTable experiments={selectedExperiments} />
 
       </div>
-    );
+    )
   }
 }
+
 
 export default connect(
   mapStateToProps,

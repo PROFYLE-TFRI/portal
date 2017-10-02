@@ -3,13 +3,16 @@
  */
 
 
-export const selectionColor = 'rgba(89, 158, 255, 0.14)'
+export const SELECTION_COLOR = 'rgba(89, 158, 255, 0.14)'
+export const OPAQUE_SELECTION_COLOR = 'rgba(89, 158, 255, 1)'
 
+export const COLORS = [ '#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360' ]
 
 export const DONOR_COLUMNS = [
     { field: 'id',                         title: 'Donor' }
   , { field: 'age',                        title: 'Age' }
   , { field: 'sex',                        title: 'Sex' }
+  , { field: 'disease',                    title: 'Disease' }
   , { field: 'recruitement_team.hospital', title: 'Hospital' }
   , { field: 'recruitement_team.province', title: 'Province' }
 ]
