@@ -54,7 +54,8 @@ class Charts extends Component {
         {
           charts.map(({ which, field }) => {
 
-            const data = generateChartData(donors, field)
+            const data = generateChartData(donors, field, selection[which])
+
             return <Col>
               <PieChart width={500} height={250}>
                 <Pie data={data}
@@ -95,19 +96,26 @@ function renderNameLabel(props) {
   const y = cy + radius * Math.sin(-midAngle * RADIAN)
 
   return (
-    <text x={x} y={y} fill={payload.fill} textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+    <text x={x} y={y} fill={payload.fill} textAnchor={x > cx ? 'start' : 'end'}
+      style={{ fontWeight: payload.selected ? 'bold' : 'normal' }}
+      dominantBaseline="central">
       { payload.name }
     </text>
   )
 }
 
-function generateChartData(records, property) {
+function generateChartData(records, property, selection) {
   const map = {}
   records.forEach(r => {
     const value = r[property]
     map[value] = map[value] !== undefined ? map[value] + 1 : 1
   })
-  const data = entries(map).reduce((acc, [name, value]) => acc.concat({ name, value }), [])
+  const data = entries(map).reduce((acc, [name, value]) => {
+    const entry = { name, value }
+    entry.selected = selection.has(name)
+    acc.push(entry)
+    return acc
+  }, [])
   return data
 }
 
