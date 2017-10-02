@@ -11,6 +11,7 @@ import {
   , DESELECT
   , SELECT_ALL
   , DESELECT_ALL
+  , SEARCH
 } from './actions';
 import {
     createDefaultUI
@@ -45,6 +46,9 @@ function uiReducer(state = createDefaultUI(), action, data) {
           [action.which]: new Set() } }
     }
 
+    case SEARCH: {
+      return { ...state, search: action.value }
+    }
 
     case SELECT_DONOR: {
       return { ...state,

@@ -4,9 +4,10 @@ import { Pie, PieChart, Cell } from 'recharts';
 import { Container, Row, Col } from 'reactstrap';
 import { compose } from 'ramda';
 
-import { OPAQUE_SELECTION_COLOR, COLORS } from '../constants';
+import { OPAQUE_SELECTION_COLOR, COLORS, DONOR_COLUMNS } from '../constants';
 import { select, deselect } from '../actions';
 import './App.css';
+import SearchInput from './SearchInput';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
 import SampleTable from './SampleTable';
@@ -14,19 +15,47 @@ import ExperimentTable from './ExperimentTable';
 
 const { keys, values, entries } = Object
 
+const columns = DONOR_COLUMNS.map(c => c.field)
+
+
+
+function filterDonors(donors, selection, search) {
+  const lowerCaseSearch = search.toLowerCase()
+  return donors.filter(d => {
+
+    // Filter only selected donors, but show all if none are selected
+    if (selection.donors.size > 0 &&
+        !selection.donors.has(d['id']))
+      return false
+
+    if (selection.provinces.size > 0 &&
+        !selection.provinces.has(d['recruitement_team.province']))
+      return false
+
+    if (selection.diseases.size > 0 &&
+        !selection.diseases.has(d['disease']))
+      return false
+
+    if (search && !columns.some(field =>
+        typeof d[field] === 'string' && d[field].toLowerCase().includes(lowerCaseSearch)))
+      return false
+
+    return true
+  })
+}
 
 
 
 const mapStateToProps = state => ({
     isLoading: state.data.isLoading
   , selection: state.ui.selection
+  , search: state.ui.search
   , donors: values(state.data.donors)
 })
 const mapDispatchToProps = dispatch => ({
     select: compose(dispatch, select)
   , deselect: compose(dispatch, deselect)
 })
-
 class App extends Component {
 
   handleClick(which, ev) {
@@ -39,10 +68,9 @@ class App extends Component {
 
   render() {
 
-    const { donors, selection } = this.props
+    const { donors, selection, search } = this.props
 
-    // Filter only selected donors, but show all if none are selected
-    const selectedDonors = selection.donors.size > 0 ? donors.filter(d => selection.donors.has(d.id)) : donors
+    const selectedDonors = filterDonors(donors, selection, search)
 
     const selectedSamples = selectedDonors.map(d => values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
 
@@ -52,6 +80,12 @@ class App extends Component {
       <div className="App">
 
         <Charts />
+
+        <Row>
+          <Col sm={{ size: 4, offset: 8 }}>
+            <SearchInput />
+          </Col>
+        </Row>
 
         <DonorTable donors={selectedDonors} />
 

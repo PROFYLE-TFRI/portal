@@ -8,6 +8,7 @@ const { keys, values } = Object
 
 export function createDefaultUI() {
   return {
+    search: '',
     selection: {
       donors: new Set()
     }

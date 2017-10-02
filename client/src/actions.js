@@ -19,6 +19,8 @@ export const DESELECT = 'DESELECT'
 export const SELECT_ALL = 'SELECT_ALL'
 export const DESELECT_ALL = 'DESELECT_ALL'
 
+export const SEARCH = 'SEARCH'
+
 export function requestDonors() {
   return {
     type: REQUEST_DONORS
@@ -85,6 +87,13 @@ export function deselectAll(which) {
   return {
     type: DESELECT_ALL,
     which
+  }
+}
+
+export function search(value) {
+  return {
+    type: SEARCH,
+    value
   }
 }
 

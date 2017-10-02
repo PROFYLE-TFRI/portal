@@ -30,7 +30,7 @@ const mapDispatchToProps = dispatch => ({
 class Charts extends Component {
 
   handleClick(which, ev) {
-    const value = ev.payload.name
+    const value = ev.payload.name === 'null' ? null : ev.payload.name
 
     if (this.props.selection[which].has(value))
       this.props.deselect(which, value)
@@ -49,42 +49,39 @@ class Charts extends Component {
     ]
 
     return (
-      <div className="Charts">
+      <Row>
 
-        <Row>
+        {
+          charts.map(({ which, field }) => {
 
-          {
-            charts.map(({ which, field }) => {
+            const data = generateChartData(donors, field)
+            return <Col>
+              <PieChart width={500} height={250}>
+                <Pie data={data}
+                  onClick={this.handleClick.bind(this, which)}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label={renderNameLabel}
+                >
+                  {
+                    data.map((entry, index) =>
+                      <Cell fill={getColor(entry, index, selection[which])}/>)
+                  }
+                </Pie>
+              </PieChart>
+            </Col>
+          })
+        }
 
-              const data = generateChartData(donors, field)
-              return <Col>
-                <PieChart width={500} height={250}>
-                  <Pie data={data}
-                    onClick={this.handleClick.bind(this, which)}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label={renderNameLabel}
-                  >
-                    {
-                      data.map((entry, index) =>
-                        <Cell fill={getColor(entry, index, selection[which])}/>)
-                    }
-                  </Pie>
-                </PieChart>
-              </Col>
-            })
-          }
-
-        </Row>
-
-      </div>
-    );
+      </Row>
+    )
   }
 }
 
 function getColor(entry, index, selection = new Set([])) {
-  if (selection.has(entry.name))
+  const name = entry.name === 'null' ? null : entry.name
+  if (selection.has(name))
     return OPAQUE_SELECTION_COLOR
   return COLORS[index % COLORS.length]
 }

@@ -56,7 +56,7 @@ class DonorTable extends Component {
             selectRow={selectRowProp}
             options={options}
             pagination={true}
-            search>
+        >
           {
             DONOR_COLUMNS.map(renderColumn)
           }
