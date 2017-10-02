@@ -23,3 +23,12 @@ export const SAMPLE_COLUMNS = [
   , { field: 'storage_location',         title: 'Storage Location' }
   , { field: 'remarks',                  title: 'Remarks' }
 ]
+
+export const EXPERIMENT_COLUMNS = [
+    { field: 'id',                title: 'Experiment' }
+  , { field: 'assay_type',        title: 'Assay Type' }
+  , { field: 'experiment_type',   title: 'Experiment Type' }
+  , { field: 'protocol_type',     title: 'Protocol Type' }
+  , { field: 'sample_id',         title: 'Sample ID' }
+  , { field: 'sequencing_center', title: 'Sequencing Center' }
+]

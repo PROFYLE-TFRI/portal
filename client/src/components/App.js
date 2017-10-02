@@ -5,6 +5,7 @@ import { Card, CardImg, CardText, CardBlock, CardLink, CardTitle, CardSubtitle }
 import './App.css';
 import DonorTable from './DonorTable';
 import SampleTable from './SampleTable';
+import ExperimentTable from './ExperimentTable';
 
 const { keys, values } = Object
 
@@ -27,12 +28,16 @@ class App extends Component {
 
     const selectedSamples = selectedDonors.map(d => values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
 
+    const selectedExperiments = selectedSamples.map(s => values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+
     return (
       <div className="App">
 
         <DonorTable />
 
         <SampleTable samples={selectedSamples} />
+
+        <ExperimentTable experiments={selectedExperiments} />
 
       </div>
     );

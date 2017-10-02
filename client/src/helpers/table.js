@@ -12,6 +12,7 @@ import {
 
 export function renderColumn({ field, title, type }, i) {
   return <Header
+    key={field}
     isKey={i === 0}
     dataSort={true}
     dataField={field}

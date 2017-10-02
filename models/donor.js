@@ -35,7 +35,7 @@ function attachExperiments(donor) {
         readJSON(
           getExperimentJSONPath(donor.id, sampleID, experimentID)
         )
-        .then(experiment => normalizeExperiment(experimentID, experiment))
+        .then(experiment => normalizeExperiment(experimentID, sampleID, experiment))
 
       ))
       .then(indexBy(prop('id')))
@@ -74,8 +74,9 @@ function normalizeSample(id, donorID, data) {
   return data
 }
 
-function normalizeExperiment(id, data) {
-  data.id = id
+function normalizeExperiment(id, sampleID, data) {
+  data.id = `${sampleID}.${id}`
+  data.name = id
   return data
 }
 
