@@ -5,14 +5,17 @@ import {
   , RECEIVE_DONORS
   , SELECT_DONOR
   , DESELECT_DONOR
+  , SELECT_ALL_DONORS
+  , DESELECT_ALL_DONORS
 } from './actions';
 import {
     createDefaultUI
   , createDefaultData
 } from './models';
 
+const { keys } = Object
 
-function uiReducer(state = createDefaultUI(), action) {
+function uiReducer(state = createDefaultUI(), action, data) {
   switch (action.type) {
     case SELECT_DONOR: {
       return { ...state,
@@ -20,9 +23,21 @@ function uiReducer(state = createDefaultUI(), action) {
           donors: new Set(state.selection.donors).add(action.id) } }
     }
     case DESELECT_DONOR: {
+      const donors = new Set(state.selection.donors)
+      donors.delete(action.id)
       return { ...state,
         selection: { ...state.selection,
-          donors: new Set(state.selection.donors).delete(action.id) } }
+          donors: donors } }
+    }
+    case SELECT_ALL_DONORS: {
+      return { ...state,
+        selection: { ...state.selection,
+          donors: new Set(keys(data.donors)) } }
+    }
+    case DESELECT_ALL_DONORS: {
+      return { ...state,
+        selection: { ...state.selection,
+          donors: new Set() } }
     }
     default:
       return state;
@@ -42,7 +57,8 @@ function dataReducer(state = createDefaultData(), action, ui) {
   }
 }
 
-export const rootReducer = combineReducers({
-    ui: uiReducer
-  , data: dataReducer
-})
+export const rootReducer = (state = {}, action) => {
+  const data = dataReducer(state.data, action)
+  const ui = uiReducer(state.ui, action, data)
+  return { ui, data }
+}

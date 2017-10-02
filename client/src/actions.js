@@ -11,6 +11,8 @@ export const RECEIVE_DONORS = 'RECEIVE_DONORS'
 
 export const SELECT_DONOR = 'SELECT_DONOR'
 export const DESELECT_DONOR = 'DESELECT_DONOR'
+export const SELECT_ALL_DONORS = 'SELECT_ALL_DONORS'
+export const DESELECT_ALL_DONORS = 'DESELECT_ALL_DONORS'
 
 export function requestDonors() {
   return {
@@ -36,6 +38,18 @@ export function deselectDonor(id) {
   return {
     type: DESELECT_DONOR,
     id
+  }
+}
+
+export function selectAllDonors() {
+  return {
+    type: SELECT_ALL_DONORS
+  }
+}
+
+export function deselectAllDonors() {
+  return {
+    type: DESELECT_ALL_DONORS
   }
 }
 

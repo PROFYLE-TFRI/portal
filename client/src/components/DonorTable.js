@@ -11,6 +11,7 @@ import {
 import { compose } from 'ramda';
 
 import { selectDonor, deselectDonor } from '../actions';
+import { selectAllDonors, deselectAllDonors } from '../actions';
 import { selectionColor } from '../constants';
 
 const { values } = Object
@@ -24,14 +25,17 @@ const mapStateToProps = state => ({
   , selected: [...state.ui.selection.donors]
 })
 const mapDispatchToProps = dispatch => ({
-    selectDonor:   compose(dispatch, selectDonor)
-  , deselectDonor: compose(dispatch, deselectDonor)
+    selectDonor:       compose(dispatch, selectDonor)
+  , deselectDonor:     compose(dispatch, deselectDonor)
+  , selectAllDonors:   compose(dispatch, selectAllDonors)
+  , deselectAllDonors: compose(dispatch, deselectAllDonors)
 })
 class DonorTable extends Component {
 
   render() {
 
     const { donors, selected } = this.props
+    const { selectDonor, deselectDonor, selectAllDonors, deselectAllDonors } = this.props
 
     const options = {
       sizePerPage: 15,
@@ -41,8 +45,8 @@ class DonorTable extends Component {
       mode: 'checkbox',
       clickToSelect: true,
       bgColor: selectionColor,
-      onSelect: (row, isSelected, e) => {},
-      onSelectAll: (isSelected, rows) => {},
+      onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
+      onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
       selected: selected
     }
 
