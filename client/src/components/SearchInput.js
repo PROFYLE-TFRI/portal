@@ -4,7 +4,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Input } from 'reactstrap';
+import { Input, InputGroup, InputGroupButton, Button } from 'reactstrap';
 import { compose } from 'ramda';
 
 import { search } from '../actions';
@@ -26,10 +26,15 @@ class App extends Component {
     super()
 
     this.onChange = this.onChange.bind(this)
+    this.onClickClear = this.onClickClear.bind(this)
   }
 
   onChange(ev) {
     this.props.search(ev.target.value)
+  }
+
+  onClickClear(ev) {
+    this.props.search('')
   }
 
   render() {
@@ -37,7 +42,12 @@ class App extends Component {
     const { value } = this.props
 
     return (
-      <Input value={value} placeholder='Search...' onChange={this.onChange}/>
+      <InputGroup>
+        <Input value={value} placeholder='Search...' onChange={this.onChange}/>
+        <InputGroupButton>
+          <Button onClick={this.onClickClear}>Clear</Button>
+        </InputGroupButton>
+      </InputGroup>
     )
   }
 }
