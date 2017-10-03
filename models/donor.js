@@ -36,7 +36,7 @@ function attachExperiments(donor) {
           [
             readJSON(getExperimentJSONPath(donor.id, sampleID, experimentID)),
             readJSON(getExperimentAnalysisJSONPath(donor.id, sampleID, experimentID))
-              .catch(err => Promise.resolve({}))
+              .catch(err => Promise.resolve(null))
           ]
         )
         .then(([experiment, analysis]) => normalizeExperiment(experimentID, sampleID, experiment, analysis))
