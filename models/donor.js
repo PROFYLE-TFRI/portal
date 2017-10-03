@@ -32,10 +32,14 @@ function attachExperiments(donor) {
     .then(experimentsID =>
       Promise.all(experimentsID.map(experimentID =>
 
-        readJSON(
-          getExperimentJSONPath(donor.id, sampleID, experimentID)
+        Promise.all(
+          [
+            readJSON(getExperimentJSONPath(donor.id, sampleID, experimentID)),
+            readJSON(getExperimentAnalysisJSONPath(donor.id, sampleID, experimentID))
+              .catch(err => Promise.resolve({}))
+          ]
         )
-        .then(experiment => normalizeExperiment(experimentID, sampleID, experiment))
+        .then(([experiment, analysis]) => normalizeExperiment(experimentID, sampleID, experiment, analysis))
 
       ))
       .then(indexBy(prop('id')))
@@ -74,9 +78,10 @@ function normalizeSample(id, donorID, data) {
   return data
 }
 
-function normalizeExperiment(id, sampleID, data) {
+function normalizeExperiment(id, sampleID, data, analysis) {
   data.id = `${sampleID}.${id}`
   data.name = id
+  data.analysis = analysis
   return data
 }
 
@@ -90,4 +95,8 @@ function getSamplePath(id, sampleID) {
 
 function getExperimentJSONPath(id, sampleID, experimentID) {
   return `${id}/${sampleID}/${experimentID}/${sampleID}.${experimentID}.json`
+}
+
+function getExperimentAnalysisJSONPath(id, sampleID, experimentID) {
+  return `${id}/${sampleID}/${experimentID}/analysis.json`
 }
