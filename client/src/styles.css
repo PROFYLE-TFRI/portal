@@ -120,6 +120,8 @@ body {
   height: 60px;
   padding-top: 20px;
   align-items: center;
+  cursor: pointer;
+  border-radius: 4px;
 }
 .step:not(:first-child)::after {
   position: absolute;
@@ -132,6 +134,9 @@ body {
   border-width: 1px 0 1px 0;
   width:  calc(100% - 12px);
   height: 5px;
+}
+.step:hover {
+  background-color: rgba(0, 0, 0, 0.03);
 }
 .step--not-started {
   opacity:  0.5;
@@ -149,9 +154,8 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
 }
-.step__dot:hover::after {
+.step:hover .step__dot::after {
   position: absolute;
   content: '\A';
   border-radius: 50%;
@@ -199,5 +203,7 @@ body {
 .job__command {
   max-width: 600px;
   max-height: 200px;
-  overflow: auto
+  overflow: auto;
+  font-family: monospace;
+  font-size: 12px;
 }
