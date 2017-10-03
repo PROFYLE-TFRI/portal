@@ -22,16 +22,21 @@ the property `paths.data` of `config.js` to the `/root_folder_example` of the
 PROFYLE-TFRI/metadata repo (branch: `portal-testing`).
 
 
-## Running
+## Running (development)
 
 ```sh
-npm start
-# or `npm start:watch` to restart the server on every file change
+npm start:watch
 ```
 
 And on a separate terminal:
 
 ```sh
-cd client
-npm start
+cd client && npm start
+```
+
+## Running (production)
+
+```sh
+npm run build
+PORT=80 npm start
 ```
