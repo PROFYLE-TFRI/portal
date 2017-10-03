@@ -23,6 +23,7 @@ const { values } = Object
 
 
 const mapStateToProps = state => ({
+  selected: [...state.ui.selection.donors]
 })
 const mapDispatchToProps = dispatch => ({
     selectDonor:       compose(dispatch, selectDonor)

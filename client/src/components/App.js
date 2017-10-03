@@ -107,7 +107,11 @@ class App extends Component {
 
         <Row>
           <Col sm={{ size: 8 }}>
-            <h4>{ donors.length } donors ({ selectedDonorsCount } selected, { visibleDonors.length } visible)</h4>
+            <h4>
+              { donors.length } donors <span className='text-message'>
+                ({ selectedDonorsCount } selected, { visibleDonors.length } visible)
+              </span>
+            </h4>
           </Col>
           <Col sm={{ size: 4 }}>
             <SearchInput />

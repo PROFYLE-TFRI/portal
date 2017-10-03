@@ -57,7 +57,9 @@ class Charts extends Component {
             const data = generateChartData(donors, field, selection[which])
 
             return <Col>
-              <h4 className='text-center'>{ title }</h4>
+
+              <h4 className='text-center text-bold'>{ title }</h4>
+
               <PieChart width={540} height={300}>
                 <Pie data={data}
                   onClick={this.handleClick.bind(this, which)}

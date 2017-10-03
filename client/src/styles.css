@@ -9,6 +9,15 @@ body {
   text-align: center;
 }
 
+.text-message {
+  color: #999;
+  fill: #999;
+}
+
+.text-bold {
+  font-weight: 700;
+}
+
 .panel {
   position: relative;
   padding: 3em 1em 1em;
@@ -24,7 +33,6 @@ body {
   font-size: smaller;
   font-weight: 500;
   text-transform: uppercase;
-  /*content: 'EXAMPLE';*/
 }
 
 .recharts-sector {
