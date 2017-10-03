@@ -35,6 +35,16 @@ body {
   text-transform: uppercase;
 }
 
+
+.Charts__title {
+  position: relative;
+}
+.Charts__clear {
+  position: absolute;
+  left: calc(100% + 0.5em);
+}
+
 .recharts-sector {
   cursor: pointer;
 }
+

@@ -6,11 +6,11 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Pie, PieChart, Cell, Sector } from 'recharts';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Button } from 'reactstrap';
 import { compose } from 'ramda';
 
 import { COLORS } from '../constants';
-import { select, deselect } from '../actions';
+import { select, deselect, deselectAll } from '../actions';
 
 const { keys, values, entries } = Object
 
@@ -25,6 +25,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     select:   compose(dispatch, select)
   , deselect: compose(dispatch, deselect)
+  , deselectAll: compose(dispatch, deselectAll)
 })
 
 class Charts extends Component {
@@ -36,6 +37,10 @@ class Charts extends Component {
       this.props.deselect(which, value)
     else
       this.props.select(which, value)
+  }
+
+  clearAll(which) {
+    this.props.deselectAll(which)
   }
 
   render() {
@@ -58,7 +63,20 @@ class Charts extends Component {
 
             return <Col>
 
-              <h4 className='text-center text-bold'>{ title }</h4>
+              <h4 className='text-center'>
+                <span className='Charts__title'>
+                  <span className='text-bold'>
+                  { title }
+                  </span>
+                  <span className='Charts__clear'>
+                    <Button size='sm'
+                      disabled={selection[which].size === 0}
+                      onClick={this.clearAll.bind(this, which)}>
+                      Clear selection
+                    </Button>
+                  </span>
+                </span>
+              </h4>
 
               <PieChart width={540} height={300}>
                 <Pie data={data}
