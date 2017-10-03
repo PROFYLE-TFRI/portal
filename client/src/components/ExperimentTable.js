@@ -41,11 +41,26 @@ class ExperimentTable extends Component {
     this.renderSteps = this.renderSteps.bind(this)
     this.togglePopover = this.togglePopover.bind(this)
 
+    this.stepsToScrollIntoView = {}
+
     this.state = {
       popoverOpen: false,
       popoverTarget: document.body,
       popoverData: undefined
     }
+  }
+
+  componentDidUpdate() {
+    // We scroll into view the step-in-progress, but only once.
+    // When step === true, it means we have already scrolled it once
+    Object.entries(this.stepsToScrollIntoView).forEach(([ id, step ]) => {
+      if (step === true || step === null)
+        return
+      const scrollArea = step.parentElement.parentElement
+      scrollArea.scrollLeft =
+        step.offsetLeft - scrollArea.offsetLeft - scrollArea.getBoundingClientRect().width / 2
+      this.stepsToScrollIntoView[id] = true
+    })
   }
 
   openPopover(target, step) {
@@ -62,7 +77,7 @@ class ExperimentTable extends Component {
     })
   }
 
-    render() {
+  render() {
 
     const { experiments } = this.props
     const { selectDonor, deselectDonor, selectAllDonors, deselectAllDonors } = this.props
@@ -156,19 +171,27 @@ class ExperimentTable extends Component {
           const name = step.name
           const endDate = getLastEndDate(jobs)
 
+          const inProgress = jobs.some(isRunning)
+          const notStarted = !inProgress && jobs.every(job => job.job_end_date === undefined)
+
           const className = cx(
               'step',
             { 'step--success': jobs.every(job => job.status === 'success') },
             { 'step--warning': false },
             { 'step--error': false },
-            { 'step--in-progress': jobs.some(isRunning) },
-            { 'step--not-started': jobs.every(job => job.job_end_date === undefined) },
+            { 'step--in-progress': inProgress },
+            { 'step--not-started': notStarted },
           )
+
+          const onRef = !inProgress ? undefined : ref => {
+            if (this.stepsToScrollIntoView[experiment.id] !== true)
+              this.stepsToScrollIntoView[experiment.id] = ref
+          }
 
           const id = `step__${experiment.sample_id}__${experiment.name}__${i}`
           const openPopover = () => this.openPopover(id, { step, analysis: experiment.analysis })
 
-          return <div className={className} onClick={openPopover}>
+          return <div className={className} onClick={openPopover} ref={onRef}>
             <div id={id} className='step__dot' />
             <div className='step__name' title={name}>{name}</div>
             <div className='step__details text-message'>
