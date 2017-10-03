@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "PORT=3001 node ./bin/www",
-    "start:watch": "PORT=3001 nodemon --ignore client --ignore public ./bin/www"
+    "start": "node ./bin/www",
+    "start:watch": "PORT=3001 nodemon --ignore client --ignore public ./bin/www",
+    "build": "cd client && npm run build && cp -r build/* ../public"
   },
   "dependencies": {
     "body-parser": "~1.17.1",

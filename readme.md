@@ -8,6 +8,7 @@ Welcome to the profyle portal.
 
 ```sh
 git clone https://github.com/PROFYLE-TFRI/portal
+git clone https://github.com/PROFYLE-TFRI/metadata
 cd portal
 npm install
 cd client
@@ -16,7 +17,9 @@ cd ..
 cp config.example.js config.js
 ```
 
-Then, edit `config.js` to match your paths/options.
+Then, edit `config.js` to match your paths/options. You will need to point
+the property `paths.data` of `config.js` to the `/root_folder_example` of the
+PROFYLE-TFRI/metadata repo (branch: `portal-testing`).
 
 
 ## Running
