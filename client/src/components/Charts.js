@@ -127,6 +127,12 @@ function renderLabel(props) {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
+  const name = payload.name === 'null' ? '(Empty)' : payload.name
+
+  const textStyle = { fontWeight: payload.selected ? 'bold' : 'normal' }
+  if (payload.name === 'null')
+    textStyle.fontStyle = 'italic'
+
   return (
     <g>
 
@@ -147,9 +153,9 @@ function renderLabel(props) {
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
         textAnchor={textAnchor}
         fill='#333'
-        style={{ fontWeight: payload.selected ? 'bold' : 'normal' }}
+        style={textStyle}
       >
-        { payload.name }
+        { name }
       </text>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={14} textAnchor={textAnchor} fill='#999'>
         {`(${ payload.value } donor${ payload.value > 1 ? 's' : '' })`}
