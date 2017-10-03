@@ -96,7 +96,7 @@ class App extends Component {
     const selectedExperiments = selectedSamples.map(s => values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
     return (
-      <div className="App">
+      <Container className="App">
 
         <Charts />
 
@@ -112,7 +112,7 @@ class App extends Component {
 
         <ExperimentTable experiments={selectedExperiments} />
 
-      </div>
+      </Container>
     )
   }
 }

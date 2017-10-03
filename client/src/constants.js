@@ -6,7 +6,30 @@
 export const SELECTION_COLOR = 'rgba(89, 158, 255, 0.14)'
 export const OPAQUE_SELECTION_COLOR = 'rgba(89, 158, 255, 1)'
 
-export const COLORS = [ '#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360' ]
+// Thanks to Google Charts
+export const COLORS = [
+    '#3366CC'
+  , '#DC3912'
+  , '#FF9900'
+  , '#109618'
+  , '#990099'
+  , '#3B3EAC'
+  , '#0099C6'
+  , '#DD4477'
+  , '#66AA00'
+  , '#B82E2E'
+  , '#316395'
+  , '#994499'
+  , '#22AA99'
+  , '#AAAA11'
+  , '#6633CC'
+  , '#E67300'
+  , '#8B0707'
+  , '#329262'
+  , '#5574A6'
+  , '#3B3EAC'
+]
+
 
 export const DONOR_COLUMNS = [
     { field: 'id',                         title: 'Donor' }

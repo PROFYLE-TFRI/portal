@@ -5,11 +5,11 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Pie, PieChart, Cell } from 'recharts';
+import { Pie, PieChart, Cell, Sector } from 'recharts';
 import { Container, Row, Col } from 'reactstrap';
 import { compose } from 'ramda';
 
-import { OPAQUE_SELECTION_COLOR, COLORS } from '../constants';
+import { COLORS } from '../constants';
 import { select, deselect } from '../actions';
 
 const { keys, values, entries } = Object
@@ -57,13 +57,14 @@ class Charts extends Component {
             const data = generateChartData(donors, field, selection[which])
 
             return <Col>
-              <PieChart width={500} height={250}>
+              <PieChart width={540} height={300}>
                 <Pie data={data}
                   onClick={this.handleClick.bind(this, which)}
-                  cx="50%"
-                  cy="50%"
+                  cx='50%'
+                  cy='50%'
+                  innerRadius={40}
                   outerRadius={80}
-                  label={renderNameLabel}
+                  label={renderLabel}
                 >
                   {
                     data.map((entry, index) =>
@@ -80,29 +81,61 @@ class Charts extends Component {
   }
 }
 
-function getColor(entry, index, selection = new Set([])) {
-  const name = entry.name === 'null' ? null : entry.name
-  if (selection.has(name))
-    return OPAQUE_SELECTION_COLOR
-  return COLORS[index % COLORS.length]
-}
-
-function renderNameLabel(props) {
-  const RADIAN = Math.PI / 180
-
-  const { cx, cy, midAngle, innerRadius, outerRadius, percent, index, payload } = props
-  const radius = outerRadius + 30
-  const x = cx + radius * Math.cos(-midAngle * RADIAN)
-  const y = cy + radius * Math.sin(-midAngle * RADIAN)
+function renderLabel(props) {
+  const RADIAN = Math.PI / 180;
+  const {
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    startAngle,
+    endAngle,
+    fill,
+    payload,
+    percent,
+    value
+  } = props;
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 20) * cos;
+  const my = cy + (outerRadius + 20) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? 'start' : 'end';
 
   return (
-    <text x={x} y={y} fill={payload.fill} textAnchor={x > cx ? 'start' : 'end'}
-      style={{ fontWeight: payload.selected ? 'bold' : 'normal' }}
-      dominantBaseline="central">
-      { payload.name }
-    </text>
-  )
-}
+    <g>
+
+      { payload.selected &&
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 10}
+          fill={fill}
+        />
+      }
+
+      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none'/>
+      <circle cx={ex} cy={ey} r={2} fill={fill} stroke='none'/>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
+        textAnchor={textAnchor}
+        fill='#333'
+        style={{ fontWeight: payload.selected ? 'bold' : 'normal' }}
+      >
+        { payload.name }
+      </text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={14} textAnchor={textAnchor} fill='#999'>
+        {`(${ payload.value } donor${ payload.value > 1 ? 's' : '' })`}
+      </text>
+    </g>
+  );
+};
 
 function generateChartData(records, property, selection) {
   const map = {}
@@ -110,13 +143,21 @@ function generateChartData(records, property, selection) {
     const value = r[property]
     map[value] = map[value] !== undefined ? map[value] + 1 : 1
   })
-  const data = entries(map).reduce((acc, [name, value]) => {
-    const entry = { name, value }
-    entry.selected = selection.has(name)
-    acc.push(entry)
-    return acc
-  }, [])
+
+  const data = entries(map)
+    .reduce((acc, [name, value]) => acc.concat({ name, value }), [])
+    .map((entry, index) => {
+      const name = entry.name === 'null' ? null : entry.name
+      entry.selected = selection.has(name)
+      entry.fill = getColor(entry, index, selection)
+      return entry
+    })
+
   return data
+}
+
+function getColor(entry, index, selection = new Set([])) {
+  return COLORS[index % COLORS.length]
 }
 
 
