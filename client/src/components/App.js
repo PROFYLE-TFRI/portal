@@ -95,16 +95,26 @@ class App extends Component {
 
     const selectedExperiments = selectedSamples.map(s => values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
+    const selectedDonorsCount = selection.donors.size === 0 ? 0 : selectedDonors.length
+
     return (
       <Container className="App">
+        <br/>
 
         <Charts />
 
+        <br/>
+
         <Row>
-          <Col sm={{ size: 4, offset: 8 }}>
+          <Col sm={{ size: 8 }}>
+            <h4>{ donors.length } donors ({ selectedDonorsCount } selected, { visibleDonors.length } visible)</h4>
+          </Col>
+          <Col sm={{ size: 4 }}>
             <SearchInput />
           </Col>
         </Row>
+
+        <br/>
 
         <DonorTable donors={visibleDonors} />
 

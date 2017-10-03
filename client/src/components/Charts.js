@@ -43,20 +43,21 @@ class Charts extends Component {
     const { donors, selection } = this.props
 
     const charts = [
-        { which: 'diseases',  field: 'disease' }
-      , { which: 'provinces', field: 'recruitement_team.province' }
-    //, { which: 'hospitals', field: 'recruitement_team.hospital' }
+        { title: 'Diseases',  which: 'diseases',  field: 'disease' }
+      , { title: 'Provinces', which: 'provinces', field: 'recruitement_team.province' }
+    //, { title: 'Hospitals', which: 'hospitals', field: 'recruitement_team.hospital' }
     ]
 
     return (
       <Row>
 
         {
-          charts.map(({ which, field }) => {
+          charts.map(({ title, which, field }) => {
 
             const data = generateChartData(donors, field, selection[which])
 
             return <Col>
+              <h4 className='text-center'>{ title }</h4>
               <PieChart width={540} height={300}>
                 <Pie data={data}
                   onClick={this.handleClick.bind(this, which)}
