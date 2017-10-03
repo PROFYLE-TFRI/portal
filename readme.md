@@ -8,7 +8,7 @@ Welcome to the profyle portal.
 
 ```sh
 git clone https://github.com/PROFYLE-TFRI/portal
-git clone https://github.com/PROFYLE-TFRI/metadata
+git clone -b portal-testing https://github.com/PROFYLE-TFRI/metadata
 cd portal
 npm install
 cd client
