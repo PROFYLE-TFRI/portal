@@ -106,7 +106,7 @@ export function fetchDonors() {
 
     dispatch(requestDonors())
 
-    fetchJSON('/donor/list')
+    fetchJSON('./donor/list')
     .then(donors => dispatch(receiveDonors(donors)))
     .catch(err => {
       dispatch(receiveDonors({}))

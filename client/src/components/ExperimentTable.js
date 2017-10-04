@@ -9,14 +9,11 @@ import {
   , TableHeaderColumn as Header
 } from 'react-bootstrap-table';
 import { Popover, PopoverTitle, PopoverContent } from 'reactstrap';
-import { compose } from 'ramda';
 import cx from 'classname';
 
 
 import { renderColumn } from '../helpers/table';
-import { selectDonor, deselectDonor } from '../actions';
-import { selectAllDonors, deselectAllDonors } from '../actions';
-import { SELECTION_COLOR, EXPERIMENT_COLUMNS } from '../constants';
+import { EXPERIMENT_COLUMNS } from '../constants';
 
 const { values } = Object
 
@@ -29,10 +26,6 @@ const mapStateToProps = state => ({
   , selected: [...state.ui.selection.donors]
 })
 const mapDispatchToProps = dispatch => ({
-    selectDonor:       compose(dispatch, selectDonor)
-  , deselectDonor:     compose(dispatch, deselectDonor)
-  , selectAllDonors:   compose(dispatch, selectAllDonors)
-  , deselectAllDonors: compose(dispatch, deselectAllDonors)
 })
 class ExperimentTable extends Component {
   constructor() {
@@ -80,7 +73,6 @@ class ExperimentTable extends Component {
   render() {
 
     const { experiments } = this.props
-    const { selectDonor, deselectDonor, selectAllDonors, deselectAllDonors } = this.props
 
     const options = {
       sizePerPage: 15,
@@ -127,32 +119,34 @@ class ExperimentTable extends Component {
     >
       <PopoverTitle>Jobs for { name }</PopoverTitle>
       <PopoverContent>
-        <div class='list-group'>
-          <table className='table table-sm'>
-            <tbody>
-              <tr><th>Assembly Used</th><td>{ generalInformation.assembly_used }</td></tr>
-              <tr><th>Assembly Source</th><td>{ generalInformation.assembly_source }</td></tr>
-              <tr><th>Analysis Folder</th><td>{ generalInformation.analysis_folder }</td></tr>
-              <tr><th>HPC Center</th><td>{ generalInformation.hpc_center }</td></tr>
-              <tr><th>DBSNP Version</th><td>{ generalInformation.dbsnp_version }</td></tr>
-              <tr><th>Analysed Species</th><td>{ generalInformation.analysed_species }</td></tr>
-              <tr><th>Pipeline Version</th><td>{ generalInformation.pipeline_version }</td></tr>
-            </tbody>
-          </table>
-          {
-            jobs.map(job =>
-              <div key={job.id} class='list-group-item flex-column align-items-start'>
-                <div class='d-flex w-100 justify-content-between'>
-                  <h5 class='mb-1'>{ job.id }</h5>
-                  <small>{ job.job_start_date || '' } - { job.job_end_date || '' }</small>
+        <table className='table table-sm'>
+          <tbody>
+            <tr><th>Assembly Used</th><td>{ generalInformation.assembly_used }</td></tr>
+            <tr><th>Assembly Source</th><td>{ generalInformation.assembly_source }</td></tr>
+            <tr><th>Analysis Folder</th><td>{ generalInformation.analysis_folder }</td></tr>
+            <tr><th>HPC Center</th><td>{ generalInformation.hpc_center }</td></tr>
+            <tr><th>DBSNP Version</th><td>{ generalInformation.dbsnp_version }</td></tr>
+            <tr><th>Analysed Species</th><td>{ generalInformation.analysed_species }</td></tr>
+            <tr><th>Pipeline Version</th><td>{ generalInformation.pipeline_version }</td></tr>
+          </tbody>
+        </table>
+        <div className='Popover__scrollArea'>
+          <div class='list-group'>
+            {
+              jobs.map(job =>
+                <div key={job.id} class='list-group-item flex-column align-items-start'>
+                  <div class='d-flex w-100 justify-content-between'>
+                    <h5 class='mb-1'>{ job.id }</h5>
+                    <small>{ job.job_start_date || '' } - { job.job_end_date || '' }</small>
+                  </div>
+                  <p class='mb-1 job__command'>
+                    { job.command }
+                  </p>
+                  <small>Status: { job.status }</small>
                 </div>
-                <p class='mb-1 job__command'>
-                  { job.command }
-                </p>
-                <small>Status: { job.status }</small>
-              </div>
-            )
-          }
+              )
+            }
+          </div>
         </div>
       </PopoverContent>
     </Popover>
@@ -167,6 +161,8 @@ class ExperimentTable extends Component {
     return <div className='steps'>
       {
         steps.map((step, i) => {
+          const id = `step__${experiment.sample_id}__${experiment.name}__${i}`
+
           const jobs = step.job
           const name = step.name
           const endDate = getLastEndDate(jobs)
@@ -181,6 +177,7 @@ class ExperimentTable extends Component {
             { 'step--error': false },
             { 'step--in-progress': inProgress },
             { 'step--not-started': notStarted },
+            { 'step--active': this.state.popoverOpen && id === this.state.popoverTarget },
           )
 
           const onRef = !inProgress ? undefined : ref => {
@@ -188,11 +185,11 @@ class ExperimentTable extends Component {
               this.stepsToScrollIntoView[experiment.id] = ref
           }
 
-          const id = `step__${experiment.sample_id}__${experiment.name}__${i}`
-          const openPopover = () => this.openPopover(id, { step, analysis: experiment.analysis })
+          const openPopover = () =>
+            this.openPopover(id, { step, analysis: experiment.analysis })
 
-          return <div className={className} onClick={openPopover} ref={onRef}>
-            <div id={id} className='step__dot' />
+          return <div id={id} className={className} onClick={openPopover} ref={onRef}>
+            <div className='step__dot' />
             <div className='step__name' title={name}>{name}</div>
             <div className='step__details text-message'>
               { endDate }
