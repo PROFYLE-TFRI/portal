@@ -85,12 +85,15 @@ body {
 
 /* <ExperimentTable/> */
 
+.ExperimentTable .react-bs-container-body {
+  overflow: unset !important;
+}
+
 .ExperimentTable__stepsHeader {
-  /*width: 400px;*/
 }
 .ExperimentTable__stepsColumn {
-  /*width: 400px;*/
-  overflow-x: scroll !important;
+  overflow: hidden !important;
+  padding: 0 !important;
 }
 
 .ExperimentTable tr > *:nth-child(1) { width: 150px; }
@@ -100,14 +103,13 @@ body {
 .ExperimentTable tr > *:nth-child(5) { width: 90px; }
 
 .steps {
-  display: flex;
-  flex: row;
-  margin: 10px;
+  padding: 10px;
+  overflow-x: scroll;
 }
 
 .step {
   position: relative;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   flex: 0 0 100px;
   width: 100px;
@@ -142,6 +144,7 @@ body {
 .step__dot {
   position: absolute;
   top: 5px;
+  left: calc(50% - 7.5px);
   content: '\A';
   background-color: #eee;
   border: 1px solid #ccc;
@@ -159,6 +162,8 @@ body {
   border: 2px solid #ddd;
   width:  20px;
   height: 20px;
+  top: -3.5px;
+  left: -3.5px;
 }
 
 .step .step__dot::before {
@@ -195,6 +200,8 @@ body {
 .step__details {
   font-size: 10px;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .job__command {
