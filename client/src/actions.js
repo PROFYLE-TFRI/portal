@@ -3,7 +3,7 @@
  */
 
 import {
-  fetchJSON
+  fetchAPI
 } from './requests'
 
 export const REQUEST_DONORS = 'REQUEST_DONORS'
@@ -106,7 +106,7 @@ export function fetchDonors() {
 
     dispatch(requestDonors())
 
-    fetchJSON('./donor/list')
+    fetchAPI('/donor/list')
     .then(donors => dispatch(receiveDonors(donors)))
     .catch(err => {
       dispatch(receiveDonors({}))
