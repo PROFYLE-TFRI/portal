@@ -49,9 +49,9 @@ class ExperimentTable extends Component {
     Object.entries(this.stepsToScrollIntoView).forEach(([ id, step ]) => {
       if (step === true || step === null)
         return
-      const scrollArea = step.parentElement.parentElement
-      scrollArea.scrollLeft =
-        step.offsetLeft - scrollArea.offsetLeft - scrollArea.getBoundingClientRect().width / 2
+      const scrollArea = step.parentElement
+      const scrollBox = scrollArea.getBoundingClientRect()
+      scrollArea.scrollLeft = step.offsetLeft - scrollBox.left - scrollBox.width / 2
       this.stepsToScrollIntoView[id] = true
     })
   }
@@ -161,26 +161,28 @@ class ExperimentTable extends Component {
     return <div className='steps'>
       {
         steps.map((step, i) => {
-          const id = `step__${experiment.sample_id}__${experiment.name}__${i}`
+          const id = ['step', experiment.sample_id, experiment.name, i].join('__')
 
           const jobs = step.job
           const name = step.name
           const endDate = getLastEndDate(jobs)
 
+          const isDone = jobs.every(hasEnded)
           const inProgress = jobs.some(isRunning)
           const notStarted = !inProgress && jobs.every(job => job.job_end_date === undefined)
 
           const className = cx(
               'step',
             { 'step--success': jobs.every(job => job.status === 'success') },
-            { 'step--warning': false },
-            { 'step--error': false },
+            { 'step--warning': jobs.some(job => job.status === 'warning') },
+            { 'step--error':   jobs.some(job => job.status === 'error') },
             { 'step--in-progress': inProgress },
             { 'step--not-started': notStarted },
             { 'step--active': this.state.popoverOpen && id === this.state.popoverTarget },
           )
 
-          const onRef = !inProgress ? undefined : ref => {
+          // We need to scroll to the last done/in-progress job, thus we attach a ref
+          const onRef = !(inProgress || isDone) ? undefined : ref => {
             if (this.stepsToScrollIntoView[experiment.id] !== true)
               this.stepsToScrollIntoView[experiment.id] = ref
           }
@@ -204,6 +206,10 @@ class ExperimentTable extends Component {
 
 function isRunning(job) {
   return ('job_start_date' in job) && !('job_end_date' in job)
+}
+
+function hasEnded(job) {
+  return 'job_end_date' in job
 }
 
 function getLastEndDate(jobs) {
