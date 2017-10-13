@@ -210,6 +210,8 @@ body {
   overflow: auto;
   font-family: monospace;
   font-size: 12px;
+  white-space: pre;
+  background-color: rgba(0, 0, 0, 0.03);
 }
 
 .Popover__scrollArea {

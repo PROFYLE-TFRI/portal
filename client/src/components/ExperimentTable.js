@@ -8,7 +8,7 @@ import {
     BootstrapTable as Table
   , TableHeaderColumn as Header
 } from 'react-bootstrap-table';
-import { Popover, PopoverTitle, PopoverContent } from 'reactstrap';
+import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import cx from 'classname';
 
 
@@ -117,8 +117,8 @@ class ExperimentTable extends Component {
       target={popoverTarget}
       toggle={this.togglePopover}
     >
-      <PopoverTitle>Jobs for { name }</PopoverTitle>
-      <PopoverContent>
+      <PopoverHeader>Jobs for { name }</PopoverHeader>
+      <PopoverBody>
         <table className='table table-sm'>
           <tbody>
             <tr><th>Assembly Used</th><td>{ generalInformation.assembly_used }</td></tr>
@@ -140,7 +140,7 @@ class ExperimentTable extends Component {
                     <small>{ job.job_start_date || '' } - { job.job_end_date || '' }</small>
                   </div>
                   <p class='mb-1 job__command'>
-                    { job.command }
+                    { job.command.split('&&').map((cmd, i) => <span>{ (i ? '&&' : '   ') + cmd }<br/></span>) } 
                   </p>
                   <small>Status: { job.status }</small>
                 </div>
@@ -148,7 +148,7 @@ class ExperimentTable extends Component {
             }
           </div>
         </div>
-      </PopoverContent>
+      </PopoverBody>
     </Popover>
   }
 
