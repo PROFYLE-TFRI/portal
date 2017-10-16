@@ -4,7 +4,7 @@
 
 
 export function fetchJSON(url) {
-  return fetch(url)
+  return fetch(url, { credentials: 'same-origin' })
     .then(res => res.json())
     .then(res => res.ok ? Promise.resolve(res.data) : Promise.reject(res))
 }
