@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Pie, PieChart, Cell } from 'recharts';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Alert } from 'reactstrap';
 import { compose } from 'ramda';
 
 import { OPAQUE_SELECTION_COLOR, COLORS, DONOR_COLUMNS } from '../constants';
@@ -67,6 +67,7 @@ const mapStateToProps = state => ({
     isLoading: state.data.isLoading
   , selection: state.ui.selection
   , search: state.ui.search
+  , message: state.ui.message
   , donors: values(state.data.donors)
 })
 const mapDispatchToProps = dispatch => ({
@@ -85,7 +86,7 @@ class App extends Component {
 
   render() {
 
-    const { donors, selection, search } = this.props
+    const { donors, selection, search, message } = this.props
 
     const visibleDonors = filterVisibleDonors(donors, selection, search)
 
@@ -102,6 +103,20 @@ class App extends Component {
         <br/>
 
         <Charts />
+
+        {
+          message &&
+            <Alert color='danger'>
+              <h4 className='alert-heading'>Snap! An error occured</h4>
+              <p>
+                Message: { message }
+              </p>
+              <hr />
+              <p className='mb-0'>
+                <a href='mailto:romain.gregoire@mcgill.ca' className='alert-link'>Contact us</a> if the issue persists.
+              </p>
+            </Alert>
+        }
 
         <br/>
 

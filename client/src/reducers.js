@@ -3,6 +3,7 @@ import { prop } from 'ramda';
 import {
     REQUEST_DONORS
   , RECEIVE_DONORS
+  , RECEIVE_ERROR
   , SELECT_DONOR
   , DESELECT_DONOR
   , SELECT_ALL_DONORS
@@ -23,6 +24,9 @@ const { keys } = Object
 
 function uiReducer(state = createDefaultUI(), action, data) {
   switch (action.type) {
+    case RECEIVE_ERROR: {
+      return { ...state, message: action.message }
+    }
     case SELECT: {
       return { ...state,
         selection: { ...state.selection,
@@ -84,6 +88,9 @@ function dataReducer(state = createDefaultData(), action, ui) {
     }
     case RECEIVE_DONORS: {
       return { ...state, isLoading: false, donors: action.donors }
+    }
+    case RECEIVE_ERROR: {
+      return { ...state, isLoading: false }
     }
     default:
       return state;

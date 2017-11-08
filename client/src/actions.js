@@ -8,6 +8,7 @@ import {
 
 export const REQUEST_DONORS = 'REQUEST_DONORS'
 export const RECEIVE_DONORS = 'RECEIVE_DONORS'
+export const RECEIVE_ERROR  = 'RECEIVE_ERROR'
 
 export const SELECT_DONOR = 'SELECT_DONOR'
 export const DESELECT_DONOR = 'DESELECT_DONOR'
@@ -31,6 +32,13 @@ export function receiveDonors(donors) {
   return {
     type: RECEIVE_DONORS,
     donors
+  }
+}
+
+export function receiveError(message) {
+  return {
+    type: RECEIVE_ERROR,
+    message
   }
 }
 
@@ -108,10 +116,6 @@ export function fetchDonors() {
 
     fetchAPI('/donor/list')
     .then(donors => dispatch(receiveDonors(donors)))
-    .catch(err => {
-      dispatch(receiveDonors({}))
-      console.error(err)
-      // TODO handle failure
-    })
+    .catch(err => dispatch(receiveError(err.message)))
   }
 }

@@ -9,6 +9,7 @@ const { keys, values } = Object
 export function createDefaultUI() {
   return {
     search: '',
+    message: undefined,
     selection: {
       donors: new Set()
     }
