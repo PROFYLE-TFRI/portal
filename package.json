@@ -13,6 +13,7 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "express-csp-header": "^2.1.0",
+    "helmet": "^3.9.0",
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
     "ramda": "^0.24.1",
