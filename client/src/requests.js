@@ -2,7 +2,6 @@
  * requests.js
  */
 
-
 export function fetchJSON(url) {
   return fetch(url, { credentials: 'same-origin' })
     .then(res => res.json())
@@ -10,5 +9,5 @@ export function fetchJSON(url) {
 }
 
 export function fetchAPI(url) {
-  return fetchJSON(process.env.PUBLIC_URL + url)
+  return fetchJSON(process.env.PUBLIC_URL + '/api' + url)
 }

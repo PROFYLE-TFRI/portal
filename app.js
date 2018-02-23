@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/donor', require('./routes/donor'))
+app.use('/api/donor', require('./routes/donor'))
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
