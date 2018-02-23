@@ -2,10 +2,8 @@
  * donor.js
  */
 
-const { join } = require('path')
 const { indexBy, prop } = require('ramda')
-const { readDir, readFile, readJSON } = require('../helpers/filesystem')
-const config = require('../config')
+const { readDir, readJSON } = require('../helpers/filesystem')
 
 
 exports.find = (id) =>
