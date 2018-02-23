@@ -1,19 +1,19 @@
 const express = require('express')
 const router = express.Router()
 
-const { okHandler, errorHandler } = require('../helpers/handlers')
+const { dataHandler, errorHandler } = require('../helpers/handlers')
 const Donor = require('../models/donor')
 
 // GET list
-router.get('/list', (req, res, next) =>
+router.get('/find-all', (req, res, next) =>
   Donor.findAll()
-    .then(okHandler(res))
+    .then(dataHandler(res))
     .catch(errorHandler(res)))
 
 // GET by id
-router.get('/:id', (req, res, next) =>
-  Donor.find(req.params.id)
-    .then(okHandler(res))
+router.get('/find-by-id/:id', (req, res, next) =>
+  Donor.findByID(req.params.id)
+    .then(dataHandler(res))
     .catch(errorHandler(res)))
 
 module.exports = router;

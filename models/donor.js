@@ -6,7 +6,7 @@ const { indexBy, prop } = require('ramda')
 const { readDir, readJSON } = require('../helpers/filesystem')
 
 
-exports.find = (id) =>
+exports.findByID = (id) =>
   getDonor(id)
 
 exports.findAll = () =>

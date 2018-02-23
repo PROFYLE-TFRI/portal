@@ -2,9 +2,7 @@
  * actions.js
  */
 
-import {
-  fetchAPI
-} from './requests'
+import * as requests from './requests'
 
 export const REQUEST_DONORS = 'REQUEST_DONORS'
 export const RECEIVE_DONORS = 'RECEIVE_DONORS'
@@ -114,7 +112,7 @@ export function fetchDonors() {
 
     dispatch(requestDonors())
 
-    fetchAPI('/donor/list')
+    requests.donor.findAll()
     .then(donors => dispatch(receiveDonors(donors)))
     .catch(err => dispatch(receiveError(err.message)))
   }
