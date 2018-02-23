@@ -1,4 +1,5 @@
 package-lock.json
+/data
 /public/
 node_modules/
 config.js
