@@ -8,7 +8,12 @@ exports.errorHandler = res => err => {
   res.end()
 }
 
-exports.okHandler = res => data => {
+exports.okHandler = res => () => {
+  res.json({ ok: true, data: null })
+  res.end()
+}
+
+exports.dataHandler = res => data => {
   res.json({ ok: true, data: data })
   res.end()
 }
