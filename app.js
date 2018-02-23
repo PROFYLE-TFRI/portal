@@ -7,8 +7,10 @@ const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const csp = require('express-csp-header')
 const session = require('express-session')
+const flash = require('connect-flash')
 
 const passport = require('./passport')
+const { isLoggedIn } = require('./helpers/auth')
 
 
 const app = express()
@@ -28,13 +30,18 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(flash())
 
 
-app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
-app.use(passport.initialize());
-app.use(passport.session()); // persistent login sessions
+app.use(session({ secret: 'ommanipadmehum', resave: true, saveUninitialized: true }))
+app.use(passport.initialize())
+app.use(passport.session()) // persistent login sessions
 
-app.use('/api/donor', require('./routes/donor'))
+app.use('/api/donor', isLoggedIn, require('./routes/donor'))
+app.use('/api/user',  isLoggedIn, require('./routes/user'))
+app.use('/api/auth',              require('./routes/auth'))
+
+
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
@@ -53,5 +60,6 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500)
   res.render('error')
 })
+
 
 module.exports = app

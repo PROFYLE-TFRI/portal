@@ -8,16 +8,23 @@
     "build": "rm -rf ./public && mkdir public && cd client && npm run build && cp -r build/* ../public"
   },
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
     "body-parser": "~1.17.1",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "express-csp-header": "^2.1.0",
+    "express-session": "^1.15.6",
     "helmet": "^3.9.0",
     "jade": "~1.11.0",
     "morgan": "~1.8.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
     "ramda": "^0.24.1",
-    "serve-favicon": "~2.4.2"
+    "serve-favicon": "~2.4.2",
+    "sqlite3": "^3.1.13",
+    "twilio": "^3.11.3"
   },
   "devDependencies": {
     "nodemon": "^1.12.1"
