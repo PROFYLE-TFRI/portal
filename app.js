@@ -6,6 +6,9 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const helmet = require('helmet')
 const csp = require('express-csp-header')
+const session = require('express-session')
+
+const passport = require('./passport')
 
 
 const app = express()
@@ -17,7 +20,7 @@ app.set('view engine', 'jade')
 
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(logger('dev'))
 app.use(helmet())
 app.use(csp({ policies: { 'default-src': [csp.SELF] } }))
@@ -25,6 +28,11 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+
+
+app.use(session({ secret: 'ilovescotchscotchyscotchscotch' })); // session secret
+app.use(passport.initialize());
+app.use(passport.session()); // persistent login sessions
 
 app.use('/api/donor', require('./routes/donor'))
 
