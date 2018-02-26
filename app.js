@@ -26,7 +26,9 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(logger('dev'))
 app.use(helmet())
 app.use(csp({ policies: {
-  'default-src': [csp.SELF, 'https://fonts.googleapis.com']
+  directives: {
+    'default-src': [csp.SELF, 'https://fonts.googleapis.com']
+  }
 } }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
