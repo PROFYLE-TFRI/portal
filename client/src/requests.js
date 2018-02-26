@@ -17,6 +17,11 @@ export const user = {
   remove:   (id)   => get(`/user/remove/${id}`),
 }
 
+export const auth = {
+  logIn:      (email, password, code) => post('/auth/login', { email, password, code }),
+  logOut:     () => post('/auth/logout'),
+  isLoggedIn: () => post('/auth/is-logged-in'),
+}
 
 function fetchAPI(method, route, data) {
   return axios.request({

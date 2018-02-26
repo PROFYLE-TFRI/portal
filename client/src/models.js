@@ -6,23 +6,6 @@ import { prop } from 'ramda';
 const { keys, values } = Object
 
 
-export function createDefaultUI() {
-  return {
-    search: '',
-    message: undefined,
-    selection: {
-      donors: new Set()
-    }
-  }
-}
-export function createDefaultData() {
-  return {
-      isLoading: false
-    , donors: {}
-  }
-}
-
-
 export function computeValues(state) {
   const donors = values(state.donors)
 

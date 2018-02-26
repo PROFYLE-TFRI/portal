@@ -1,19 +1,21 @@
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Pie, PieChart, Cell } from 'recharts';
 import { Container, Row, Col, Alert } from 'reactstrap';
+import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
 import { compose } from 'ramda';
 
-import { OPAQUE_SELECTION_COLOR, COLORS, DONOR_COLUMNS } from '../constants';
-import { select, deselect } from '../actions';
+import { DONOR_COLUMNS } from '../constants';
+import { select, deselect, logOut } from '../actions';
 import './App.css';
+import Icon from './Icon';
+import Login from './Login';
 import SearchInput from './SearchInput';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
 import SampleTable from './SampleTable';
 import ExperimentTable from './ExperimentTable';
-
-const { keys, values, entries } = Object
 
 const columns = DONOR_COLUMNS.map(c => c.field)
 
@@ -56,8 +58,6 @@ function columnContains(d, term) {
     const value = hasUpperCase ? (d[field] + '') : (d[field] + '').toLowerCase()
     const hasValue = value.includes(term)
 
-    console.log(field, value, term, hasValue)
-
     return hasValue
   }
 }
@@ -68,12 +68,12 @@ const mapStateToProps = state => ({
   , selection: state.ui.selection
   , search: state.ui.search
   , message: state.ui.message
-  , donors: values(state.data.donors)
+  , donors: Object.values(state.data.donors)
+  , auth: state.auth
 })
-const mapDispatchToProps = dispatch => ({
-    select: compose(dispatch, select)
-  , deselect: compose(dispatch, deselect)
-})
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ select, deselect, logOut }, dispatch)
+
 class App extends Component {
 
   handleClick(which, ev) {
@@ -84,64 +84,90 @@ class App extends Component {
       this.props.select(which, value)
   }
 
-  render() {
+  renderLogin() {
+    return (
+      <div className='App'>
+        <Login />
+      </div>
+    )
+  }
 
-    const { donors, selection, search, message } = this.props
+  render() {
+    const { auth, donors, selection, search, message } = this.props
+
+    if (!auth.isLoggedIn)
+      return this.renderLogin()
+
 
     const visibleDonors = filterVisibleDonors(donors, selection, search)
 
     const selectedDonors = filterSelectedDonors(donors, selection, search)
 
-    const selectedSamples = selectedDonors.map(d => values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
+    const selectedSamples = selectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
 
-    const selectedExperiments = selectedSamples.map(s => values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+    const selectedExperiments = selectedSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
     const selectedDonorsCount = selection.donors.size === 0 ? 0 : selectedDonors.length
 
     return (
-      <Container className="App">
-        <br/>
+      <div className='App'>
+        <div className='App__content'>
+          <Container>
 
-        <Charts />
+            <Navbar color='faded' expand='md'>
+              <Nav className='ml-auto' navbar>
+                <NavItem>
+                  <NavLink href='#' onClick={this.props.logOut}>
+                    <Icon name='sign-out' /> Log Out
+                  </NavLink>
+                </NavItem>
+              </Nav>
+            </Navbar>
 
-        {
-          message &&
-            <Alert color='danger'>
-              <h4 className='alert-heading'>Snap! An error occured</h4>
-              <p>
-                Message: { message }
-              </p>
-              <hr />
-              <p className='mb-0'>
-                <a href='mailto:romain.gregoire@mcgill.ca' className='alert-link'>Contact us</a> if the issue persists.
-              </p>
-            </Alert>
-        }
+            <br/>
 
-        <br/>
+            <Charts />
 
-        <Row>
-          <Col sm={{ size: 8 }}>
-            <h4>
-              { donors.length } donors <span className='text-message'>
-                ({ selectedDonorsCount } selected, { visibleDonors.length } visible)
-              </span>
-            </h4>
-          </Col>
-          <Col sm={{ size: 4 }}>
-            <SearchInput />
-          </Col>
-        </Row>
+            {
+              message &&
+              <Alert color='danger'>
+                <h4 className='alert-heading'>Snap! An error occured</h4>
+                <p>
+                  Message: { message }
+                </p>
+                <hr />
+                <p className='mb-0'>
+                  <a href='mailto:romain.gregoire@mcgill.ca' className='alert-link'>Contact us</a> if the issue persists.
+                </p>
+              </Alert>
+            }
 
-        <br/>
+            <br/>
 
-        <DonorTable donors={visibleDonors} />
+            <Row>
+              <Col sm={{ size: 8 }}>
+                <h4>
+                  { donors.length } donors <span className='text-message'>
+                    ({ selectedDonorsCount } selected, { visibleDonors.length } visible)
+                  </span>
+                </h4>
+              </Col>
+              <Col sm={{ size: 4 }}>
+                <SearchInput />
+              </Col>
+            </Row>
 
-        <SampleTable samples={selectedSamples} />
+            <br/>
 
-        <ExperimentTable experiments={selectedExperiments} />
+            <DonorTable donors={visibleDonors} />
 
-      </Container>
+            <SampleTable samples={selectedSamples} />
+
+            <ExperimentTable experiments={selectedExperiments} />
+
+          </Container>
+        </div>
+      </div>
     )
   }
 }

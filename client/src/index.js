@@ -13,6 +13,10 @@ import registerServiceWorker from './registerServiceWorker';
 import { rootReducer } from './reducers';
 import { fetchDonors } from './actions';
 import App from './components/App';
+import * as requests from './requests'
+import * as actions from './actions'
+
+window.requests = requests
 
 
 const initialState = {}
@@ -29,7 +33,11 @@ render(
   document.querySelector('#root')
 )
 
-store.dispatch(fetchDonors())
+store.dispatch(actions.isLoggedIn())
+  .then(isLoggedIn => {
+    if (isLoggedIn)
+      store.dispatch(fetchDonors())
+  })
 
 
 // Register service worker

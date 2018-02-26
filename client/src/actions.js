@@ -2,7 +2,13 @@
  * actions.js
  */
 
+import k from './shared-constants'
 import * as requests from './requests'
+
+export const LOG_IN       = createFetchConstants('LOG_IN')
+export const LOG_OUT      = createFetchConstants('LOG_OUT')
+export const IS_LOGGED_IN = createFetchConstants('IS_LOGGED_IN')
+export const REQUIRES_2FA = 'REQUIRES_2FA'
 
 export const REQUEST_DONORS = 'REQUEST_DONORS'
 export const RECEIVE_DONORS = 'RECEIVE_DONORS'
@@ -19,6 +25,74 @@ export const SELECT_ALL = 'SELECT_ALL'
 export const DESELECT_ALL = 'DESELECT_ALL'
 
 export const SEARCH = 'SEARCH'
+
+export const logIn = createFetchAction(LOG_IN, (email, password, code) => {
+  return (dispatch, getState) => {
+    const { auth } = getState()
+
+    if (auth.isLoggedIn || auth.isLoading)
+      return
+
+    dispatch(logIn.request())
+
+    return requests.auth.logIn(email, password, code)
+    .then(user => dispatch(logIn.receive(user)))
+    .then(() => dispatch(fetchDonors()))
+    .then(() => true)
+    .catch(err => {
+      if (err.message === k.AUTH.REQUIRES_2FA)
+        return dispatch(requires2fa())
+      if (err.message === k.AUTH.INVALID_2FA)
+        return dispatch(logIn.error('Invalid code', false))
+      if (err.message === k.AUTH.WRONG_USER_OR_PASSWORD)
+        return dispatch(logIn.error('Wrong user/password combination', false))
+      return dispatch(logIn.error(err))
+    })
+  }
+})
+
+export const logOut = createFetchAction(LOG_OUT, () => {
+  return (dispatch, getState) => {
+    const { auth } = getState()
+
+    if (!auth.isLoggedIn || auth.isLoading)
+      return
+
+    dispatch(logOut.request())
+
+    return requests.auth.logOut()
+    .then(() => dispatch(logOut.receive()))
+    .then(() => true)
+    .catch(err => dispatch(logOut.error(err)))
+  }
+})
+
+export const isLoggedIn = createFetchAction(IS_LOGGED_IN, () => {
+  return (dispatch, getState) => {
+    const { auth } = getState()
+
+    if (auth.isLoading)
+      return
+
+    dispatch(isLoggedIn.request())
+
+    return requests.auth.isLoggedIn()
+    .then(user =>
+      (
+        dispatch(isLoggedIn.receive(user)),
+        Boolean(user)
+      )
+    )
+    .catch(err => dispatch(isLoggedIn.error(err)))
+  }
+})
+
+export function requires2fa(value = true) {
+  return {
+    type: REQUIRES_2FA,
+    payload: value
+  }
+}
 
 export function requestDonors() {
   return {
@@ -114,6 +188,23 @@ export function fetchDonors() {
 
     requests.donor.findAll()
     .then(donors => dispatch(receiveDonors(donors)))
-    .catch(err => dispatch(receiveError(err.message)))
+    .catch(err => dispatch(receiveError(err)))
   }
+}
+
+// Helpers
+
+function createFetchConstants(name) {
+  return {
+    REQUEST: `${name}.REQUEST`,
+    RECEIVE: `${name}.RECEIVE`,
+    ERROR: `${name}.ERROR`,
+  }
+}
+
+function createFetchAction(ks, fn) {
+  fn.request = () => ({ type: ks.REQUEST })
+  fn.receive = (payload) => ({ type: ks.RECEIVE, payload })
+  fn.error   = (message, error = true) => ({ type: ks.ERROR, error, payload: message })
+  return fn
 }
