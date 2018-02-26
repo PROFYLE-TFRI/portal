@@ -9,9 +9,6 @@ const passport = require('../passport')
 // POST pass login request to passport
 router.post('/login', (req, res, next) => {
   passport.authenticate('local-login', (err, user, info) => {
-
-    console.log(err, user, info)
-
     if (err)
       return next(err)
 
