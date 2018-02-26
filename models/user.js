@@ -58,7 +58,7 @@ function remove(id) {
 }
 
 function comparePassword(user, password) {
-  return bcrypt.compareSync(user.password, password)
+  return bcrypt.compareSync(password, user.password)
 }
 
 
@@ -76,6 +76,8 @@ function serialize(user) {
 }
 
 function deserialize(user) {
+  if (user === undefined)
+    return undefined
   return {
     ...user,
     isAdmin: Boolean(user.isAdmin),
