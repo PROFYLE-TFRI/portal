@@ -1,5 +1,7 @@
-package-lock.json
 /data
 /public/
-node_modules/
+/client/build/
 config.js
+
+package-lock.json
+node_modules/
