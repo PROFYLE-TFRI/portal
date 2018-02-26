@@ -5,6 +5,8 @@
 const passport = require('passport')
 const LocalStrategy = require('passport-local').Strategy
 
+const k = require('./client/src/shared-constants')
+const TwoFA = require('./helpers/2fa-manager')
 const User = require('./models/user')
 
 // =========================================================================
@@ -42,17 +44,27 @@ passport.use('local-login', new LocalStrategy(localStrategyOptions, (req, email,
     .then(user => {
       // if no user is found, return the message
       if (!user)
-        return done(null, false, req.flash('loginMessage', 'No user found.')) // req.flash is the way to set flashdata using connect-flash
+        return done(null, false, k.AUTH.WRONG_USER_OR_PASSWORD)
 
       // if the user is found but the password is wrong
       if (!User.comparePassword(user, password))
-        return done(null, false, req.flash('loginMessage', 'Oops! Wrong password.')) // create the loginMessage and save it to session as flashdata
+        return done(null, false, k.AUTH.WRONG_USER_OR_PASSWORD)
+
+      // check if we need to 2fa
+      if (!req.body.code)
+        return TwoFA.sendCode(user)
+          .then(() => done(null, false, k.AUTH.REQUIRES_2FA))
+          .catch(err => done(err, null))
+
+      // check if 2fa is valid
+      if (!TwoFA.isValid(req.body.code, user))
+        return done(null, false, k.AUTH.INVALID_2FA)
 
       // all is well, return successful user
-      return done(null, user)
+      return done(null, user, null)
     })
     .catch(err => {
-      done(err)
+      done(err, null)
     })
 
 }))

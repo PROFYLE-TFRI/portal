@@ -15,5 +15,17 @@ CREATE TABLE users (
     permissions text not null
 );
 
+INSERT INTO users
+    (name, email, phone, password, isAdmin, permissions)
+    VALUES
+    (
+        'Romain',
+        'romgrk.cc@gmail.com',
+        '5147781580',
+        '$2a$08$F//DVY3.rh/RxlPFx6uh8Ow.pGvscK.mSbSQ2wsk3Yz9MWWx6t6pa', -- secret
+        1,
+        '[]'
+    );
+
 
 -- vim:et
