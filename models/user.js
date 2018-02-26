@@ -71,7 +71,7 @@ function serialize(user) {
   if ('permissions' in serializedUser)
     serializedUser.permissions = JSON.stringify(user.permissions)
   if ('password' in serializedUser)
-    serializedUser.password = bcrypt.hashSync(user.password, bcrypt.genSaltSync(8), null)
+    serializedUser.password = hash(user.password)
   return serializedUser
 }
 
@@ -81,4 +81,8 @@ function deserialize(user) {
     isAdmin: Boolean(user.isAdmin),
     permissions: JSON.parse(user.permissions),
   }
+}
+
+function hash(password) {
+  return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null)
 }
