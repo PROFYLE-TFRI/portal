@@ -18,14 +18,31 @@ const db = new sqlite3.Database(config.paths.database)
 
 findAll('SELECT * FROM sqlite_master')
 .then(rows => {
+
+  // Tables already exist
+  if (rows.length !== 0)
+    return
+
+  // Split table creation statements & run them
+  const statements = fs.readFileSync('./tables.sql').toString().split(';')
+  const actions = []
+  db.serialize(() => {
+    statements.forEach(s => {
+      actions.push(
+        run(s)
+          .catch(err => err.code === 'SQLITE_MISUSE' ? // Empty statement
+              Promise.resolve()
+            : Promise.reject(err)))
+    })
+  })
   /* eslint-disable no-console */
-  if (rows.length === 0)
-    run(fs.readFileSync('./tables.sql').toString())
-      .then(changes => console.log('Created SQL tables'))
-      .catch(err => {
-        console.error(err)
-        process.exit(1)
-      })
+  Promise.all(actions)
+    .then(() => console.log('Created SQL tables'))
+    .catch(err => {
+      console.log(err.code)
+      console.error(err)
+      process.exit(1)
+    })
   /* eslint-enable no-console */
 })
 
