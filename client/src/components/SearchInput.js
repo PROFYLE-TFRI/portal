@@ -4,12 +4,10 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Input, InputGroup, InputGroupButton, Button } from 'reactstrap';
+import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
 import { compose } from 'ramda';
 
 import { search } from '../actions';
-
-const { keys, values, entries } = Object
 
 
 
@@ -44,9 +42,9 @@ class App extends Component {
     return (
       <InputGroup>
         <Input value={value} placeholder='Search...' onChange={this.onChange}/>
-        <InputGroupButton>
+        <InputGroupAddon addonType='prepend'>
           <Button onClick={this.onClickClear}>Clear</Button>
-        </InputGroupButton>
+        </InputGroupAddon>
       </InputGroup>
     )
   }

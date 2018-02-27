@@ -190,7 +190,7 @@ class ExperimentTable extends Component {
           const openPopover = () =>
             this.openPopover(id, { step, analysis: experiment.analysis })
 
-          return <div id={id} className={className} onClick={openPopover} ref={onRef}>
+          return <div key={id} id={id} className={className} onClick={openPopover} ref={onRef}>
             <div className='step__dot' />
             <div className='step__name' title={name}>{name}</div>
             <div className='step__details text-message'>

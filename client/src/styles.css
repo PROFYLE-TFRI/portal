@@ -109,6 +109,18 @@ html, body, #root {
   cursor: pointer;
 }
 
+/* for link-like buttons */
+.link {
+  color: #007bff;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+}
+.link:hover {
+  text-decoration: underline;
+}
 
 /*
  * Elements

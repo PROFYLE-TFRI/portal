@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Pie, PieChart, Cell } from 'recharts';
 import { Container, Row, Col, Alert } from 'reactstrap';
-import { Nav, Navbar, NavbarBrand, NavItem, NavLink } from 'reactstrap';
-import { compose } from 'ramda';
+import { Nav, Navbar, NavItem, NavLink } from 'reactstrap';
 
 import { DONOR_COLUMNS } from '../constants';
 import { select, deselect, logOut } from '../actions';

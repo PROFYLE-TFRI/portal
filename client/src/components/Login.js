@@ -22,23 +22,30 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ logIn, requires2fa }, dispatch)
 
+const initialState = {
+  email: '',
+  password: '',
+  code: '',
+  transitionEnded: true,
+  showCode: false,
+}
+
 class Login extends Component {
 
-  state = {
-    email: '',
-    password: '',
-    code: '',
-    transitionEnded: true,
-    showCode: false,
-  }
+  state = initialState
 
   onSubmit = (ev) => {
     ev.preventDefault()
-    const email    = this.email ? this.email.value : this.state.email
+    const email    = this.email    ? this.email.value    : this.state.email
     const password = this.password ? this.password.value : this.state.password
-    const code     = this.code ? this.code.value : this.state.code
+    const code     = this.code     ? this.code.value     : this.state.code
     this.setState({ email, password, code })
     this.props.logIn(email, password, code)
+  }
+
+  onTransitionEnd = (ev) => {
+    if (!this.state.transitionEnded)
+      this.setState({ transitionEnded: true })
   }
 
   goBack() {
@@ -52,13 +59,16 @@ class Login extends Component {
       this.setState({ transitionEnded: false })
       setTimeout(() => this.setState({ showCode: props.auth.requires2fa }), 10)
     }
+    if (props.auth.isLoggedIn !== this.props.auth.isLoggedIn) {
+      this.setState(initialState)
+    }
   }
 
   render() {
     const { auth } = this.props
     const { transitionEnded } = this.state
 
-    const showCredentials = !transitionEnded || !auth.requires2fa
+    const showCredentials = !transitionEnded || !this.state.showCode
     const showCode        = !transitionEnded || this.state.showCode
 
     return (
@@ -78,11 +88,11 @@ class Login extends Component {
               <div className='Login__tabs'>
                 {
                   showCredentials &&
-                  <div className='Login__credentials' onTransitionEnd={() => this.setState({ transitionEnded: true })}>
+                  <div className='Login__credentials' onTransitionEnd={this.onTransitionEnd}>
                     <FormGroup>
                       <InputGroup>
                         <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label for='email' className='input-group-text Login__label'>Email</label>
+                          <label htmlFor='email' className='input-group-text Login__label'>Email</label>
                         </InputGroupAddon>
                         <Input type='email' name='email' id='email' ref={e => e && (this.email = findDOMNode(e))} required />
                       </InputGroup>
@@ -90,7 +100,7 @@ class Login extends Component {
                     <FormGroup>
                       <InputGroup>
                         <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label for='password' className='input-group-text Login__label'>Password</label>
+                          <label htmlFor='password' className='input-group-text Login__label'>Password</label>
                         </InputGroupAddon>
                         <Input type='password' name='password' id='password' ref={e => e && (this.password = findDOMNode(e))} required />
                       </InputGroup>
@@ -100,16 +110,16 @@ class Login extends Component {
 
                 {
                   showCode &&
-                  <div className='Login__code' onTransitionEnd={() => this.setState({ transitionEnded: true })}>
+                  <div className='Login__code' onTransitionEnd={this.onTransitionEnd}>
                     <FormGroup>
                       <InputGroup>
                         <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label for='code' className='input-group-text Login__label'>Code</label>
+                          <label htmlFor='code' className='input-group-text Login__label'>Code</label>
                         </InputGroupAddon>
                         <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
                       </InputGroup>
                     </FormGroup>
-                    <a href='#' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</a>
+                    <button className='link' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</button>
                   </div>
                 }
               </div>

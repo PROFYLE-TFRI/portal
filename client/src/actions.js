@@ -77,12 +77,10 @@ export const isLoggedIn = createFetchAction(IS_LOGGED_IN, () => {
     dispatch(isLoggedIn.request())
 
     return requests.auth.isLoggedIn()
-    .then(user =>
-      (
-        dispatch(isLoggedIn.receive(user)),
-        Boolean(user)
-      )
-    )
+    .then(user => {
+      dispatch(isLoggedIn.receive(user))
+      return Boolean(user)
+    })
     .catch(err => dispatch(isLoggedIn.error(err)))
   }
 })

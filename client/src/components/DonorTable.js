@@ -3,20 +3,15 @@
  */
 
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable as Table
-  , TableHeaderColumn as Header
-} from 'react-bootstrap-table';
-import { compose } from 'ramda';
+import { BootstrapTable as Table } from 'react-bootstrap-table';
 
 
 import { renderColumn } from '../helpers/table';
 import { selectDonor, deselectDonor } from '../actions';
 import { selectAllDonors, deselectAllDonors } from '../actions';
 import { SELECTION_COLOR, DONOR_COLUMNS } from '../constants';
-
-const { values } = Object
 
 
 
@@ -25,12 +20,9 @@ const { values } = Object
 const mapStateToProps = state => ({
   selected: [...state.ui.selection.donors]
 })
-const mapDispatchToProps = dispatch => ({
-    selectDonor:       compose(dispatch, selectDonor)
-  , deselectDonor:     compose(dispatch, deselectDonor)
-  , selectAllDonors:   compose(dispatch, selectAllDonors)
-  , deselectAllDonors: compose(dispatch, deselectAllDonors)
-})
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ selectDonor , deselectDonor , selectAllDonors , deselectAllDonors }, dispatch)
+
 class DonorTable extends Component {
 
   render() {

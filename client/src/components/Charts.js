@@ -6,13 +6,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Pie, PieChart, Cell, Sector } from 'recharts';
-import { Container, Row, Col, Button } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import { compose } from 'ramda';
 
 import { COLORS } from '../constants';
 import { select, deselect, deselectAll } from '../actions';
 
-const { keys, values, entries } = Object
+const { values, entries } = Object
 
 
 
@@ -57,11 +57,11 @@ class Charts extends Component {
       <Row>
 
         {
-          charts.map(({ title, which, field }) => {
+          charts.map(({ title, which, field }, i) => {
 
             const data = generateChartData(donors, field, selection[which])
 
-            return <Col>
+            return <Col key={i}>
 
               <h4 className='text-center'>
                 <span className='Charts__title'>
@@ -80,6 +80,7 @@ class Charts extends Component {
 
               <PieChart width={540} height={300}>
                 <Pie data={data}
+                  dataKey='value'
                   onClick={this.handleClick.bind(this, which)}
                   cx='50%'
                   cy='50%'
@@ -89,7 +90,7 @@ class Charts extends Component {
                 >
                   {
                     data.map((entry, index) =>
-                      <Cell fill={getColor(entry, index, selection[which])}/>)
+                      <Cell key={index} fill={getColor(entry, index, selection[which])}/>)
                   }
                 </Pie>
               </PieChart>
@@ -108,14 +109,14 @@ function renderLabel(props) {
     cx,
     cy,
     midAngle,
-    innerRadius,
+    // innerRadius,
     outerRadius,
     startAngle,
     endAngle,
     fill,
     payload,
-    percent,
-    value
+    // percent,
+    // value
   } = props;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
@@ -161,8 +162,8 @@ function renderLabel(props) {
         {`(${ payload.value } donor${ payload.value > 1 ? 's' : '' })`}
       </text>
     </g>
-  );
-};
+  )
+}
 
 function generateChartData(records, property, selection) {
   const map = {}

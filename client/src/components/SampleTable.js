@@ -4,16 +4,13 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable as Table
-  , TableHeaderColumn as Header
-} from 'react-bootstrap-table';
+import { BootstrapTable as Table } from 'react-bootstrap-table';
 import { compose } from 'ramda';
 
 import { renderColumn } from '../helpers/table';
 import { selectDonor, deselectDonor } from '../actions';
 import { selectAllDonors, deselectAllDonors } from '../actions';
-import { SELECTION_COLOR, SAMPLE_COLUMNS } from '../constants';
+import { SAMPLE_COLUMNS } from '../constants';
 
 const { values } = Object
 
@@ -36,21 +33,21 @@ class SampleTable extends Component {
   render() {
 
     const { samples } = this.props
-    const { selectDonor, deselectDonor, selectAllDonors, deselectAllDonors } = this.props
 
     const options = {
       sizePerPage: 15,
       hideSizePerPage: true
     }
-    const selectRowProp = {
-      //mode: 'checkbox',
-      //clickToSelect: true,
-      //bgColor: SELECTION_COLOR,
-      //onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
-      //onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
-      //selected: selected
-            //selectRow={selectRowProp}
-    }
+
+    /* selectRow={selectRowProp}
+     * const selectRowProp = {
+     *  mode: 'checkbox',
+     *  clickToSelect: true,
+     *  bgColor: SELECTION_COLOR,
+     *  onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
+     *  onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
+     *  selected: selected
+     *}*/
 
     return (
       <div className='SampleTable table-sm'>
