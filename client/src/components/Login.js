@@ -24,21 +24,42 @@ const mapDispatchToProps = dispatch =>
 
 class Login extends Component {
 
+  state = {
+    email: '',
+    password: '',
+    code: '',
+    transitionEnded: true,
+    showCode: false,
+  }
+
   onSubmit = (ev) => {
     ev.preventDefault()
-    const email = this.email.value
-    const password = this.password.value
-    const code = this.code.value
+    const email    = this.email ? this.email.value : this.state.email
+    const password = this.password ? this.password.value : this.state.password
+    const code     = this.code ? this.code.value : this.state.code
+    this.setState({ email, password, code })
     this.props.logIn(email, password, code)
   }
 
   goBack() {
     this.props.requires2fa(false)
-    this.code.value = ''
+    if (this.code)
+      this.code.value = ''
+  }
+
+  componentWillReceiveProps(props) {
+    if (props.auth.requires2fa !== this.props.auth.requires2fa) {
+      this.setState({ transitionEnded: false })
+      setTimeout(() => this.setState({ showCode: props.auth.requires2fa }), 10)
+    }
   }
 
   render() {
     const { auth } = this.props
+    const { transitionEnded } = this.state
+
+    const showCredentials = !transitionEnded || !auth.requires2fa
+    const showCode        = !transitionEnded || this.state.showCode
 
     return (
       <Form className='Login' onSubmit={this.onSubmit}>
@@ -50,38 +71,47 @@ class Login extends Component {
           </Row>
           <Row>
             <Col sm={{ size: 6, offset: 3 }} className={
-              classname('Login__form', { 'Login__form--requires2fa': auth.requires2fa})
-            }>
+              classname('Login__form', { 'Login__form--requires2fa': this.state.showCode})
+            }
+            >
 
-              <div className='Login__credentials'>
-                <FormGroup>
-                  <InputGroup>
-                    <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                      <label for='email' className='input-group-text Login__label'>Email</label>
-                    </InputGroupAddon>
-                    <Input type='email' name='email' id='email' ref={e => e && (this.email = findDOMNode(e))} required />
-                  </InputGroup>
-                </FormGroup>
-                <FormGroup>
-                  <InputGroup>
-                    <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                      <label for='password' className='input-group-text Login__label'>Password</label>
-                    </InputGroupAddon>
-                    <Input type='password' name='password' id='password' ref={e => e && (this.password = findDOMNode(e))} required />
-                  </InputGroup>
-                </FormGroup>
-              </div>
+              <div className='Login__tabs'>
+                {
+                  showCredentials &&
+                  <div className='Login__credentials' onTransitionEnd={() => this.setState({ transitionEnded: true })}>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                          <label for='email' className='input-group-text Login__label'>Email</label>
+                        </InputGroupAddon>
+                        <Input type='email' name='email' id='email' ref={e => e && (this.email = findDOMNode(e))} required />
+                      </InputGroup>
+                    </FormGroup>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                          <label for='password' className='input-group-text Login__label'>Password</label>
+                        </InputGroupAddon>
+                        <Input type='password' name='password' id='password' ref={e => e && (this.password = findDOMNode(e))} required />
+                      </InputGroup>
+                    </FormGroup>
+                  </div>
+                }
 
-              <div className='Login__code'>
-                <FormGroup>
-                  <InputGroup>
-                    <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                      <label for='code' className='input-group-text Login__label'>Code</label>
-                    </InputGroupAddon>
-                    <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
-                  </InputGroup>
-                </FormGroup>
-                <a href='#' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</a>
+                {
+                  showCode &&
+                  <div className='Login__code' onTransitionEnd={() => this.setState({ transitionEnded: true })}>
+                    <FormGroup>
+                      <InputGroup>
+                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                          <label for='code' className='input-group-text Login__label'>Code</label>
+                        </InputGroupAddon>
+                        <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
+                      </InputGroup>
+                    </FormGroup>
+                    <a href='#' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</a>
+                  </div>
+                }
               </div>
 
             </Col>

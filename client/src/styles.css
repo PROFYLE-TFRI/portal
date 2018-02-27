@@ -136,29 +136,40 @@ html, body, #root {
 }
 .Login > * {
   position: absolute;
-  top: 20%;
-  /*transform: translateY(-50%);*/
+  top: 30%;
+  transform: translateY(-50%);
 }
 .Login__form {
-  display: inline-flex;
   overflow: hidden;
   padding-top: 15px;
   padding-bottom: 15px;
 }
-.Login__form > * {
+.Login__tabs {
+  position: relative;
+  width: 100%;
+  height: 100px;
+}
+.Login__tabs > * {
   transition: all .25s;
 }
-.Login__form.Login__form--requires2fa > * {
-  transform: translateX(calc(-100% - 20px));
-}
 .Login__credentials {
-  flex: 0 0 auto;
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   margin-right: 20px;
 }
 .Login__code {
-  flex: 0 0 auto;
+  position: absolute;
+  top: 0;
+  left: calc(100% + 20px);
   width: 100%;
+}
+.Login__form--requires2fa .Login__credentials {
+  left: calc(-100% - 20px);
+}
+.Login__form--requires2fa .Login__code {
+  left: 0;
 }
 
 
