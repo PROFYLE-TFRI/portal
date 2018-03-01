@@ -15,13 +15,17 @@ import {
   , SELECT_ALL
   , DESELECT_ALL
   , SEARCH
+  , SET_TAB
 } from './actions';
+import * as USER from './actions/user';
 import { computeValues } from './models';
+import { TABS } from './constants'
 
 const { keys } = Object
 
 function createDefaultUI() {
   return {
+    tab: TABS.PORTAL,
     search: '',
     message: undefined,
     selection: {
@@ -58,7 +62,10 @@ function uiReducer(state = createDefaultUI(), action, data) {
     }
 
     case SEARCH: {
-      return { ...state, search: action.value }
+      return { ...state, search: action.payload }
+    }
+    case SET_TAB: {
+      return { ...state, tab: action.payload }
     }
 
     case SELECT_DONOR: {
@@ -157,10 +164,65 @@ function dataReducer(state = createDefaultData(), action, ui) {
   }
 }
 
+function createDefaultUsers() {
+  return {
+    isLoading: false,
+    data: [],
+    message: undefined,
+  }
+}
+function usersReducer(state = createDefaultUsers(), action) {
+  switch (action.type) {
+    case USER.FIND_ALL.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case USER.FIND_ALL.RECEIVE: {
+      return { ...state, isLoading: false, data: action.payload }
+    }
+    case USER.FIND_ALL.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case USER.CREATE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case USER.CREATE.RECEIVE: {
+      return { ...state, isLoading: false, data: [...state.data, action.payload] }
+    }
+    case USER.CREATE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case USER.UPDATE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case USER.UPDATE.RECEIVE: {
+      return { ...state, isLoading: false, data: state.data.map(user => user.id === action.payload.id ? action.payload : user) }
+    }
+    case USER.UPDATE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case USER.REMOVE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case USER.REMOVE.RECEIVE: {
+      return { ...state, isLoading: false, data: state.data.filter(user => user.id === action.meta.id) }
+    }
+    case USER.REMOVE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    default:
+      return state;
+  }
+}
+
 export const rootReducer = (state = {}, action) => {
   const data = computeValues(dataReducer(state.data, action))
   const ui = uiReducer(state.ui, action, data)
   const auth = authReducer(state.auth, action)
+  const users = usersReducer(state.users, action)
 
   // Initialize empty selections
   keys(data.values).forEach(which => {
@@ -168,5 +230,5 @@ export const rootReducer = (state = {}, action) => {
       ui.selection[which] = new Set()
   })
 
-  return { ui, data, auth }
+  return { ui, data, auth, users }
 }

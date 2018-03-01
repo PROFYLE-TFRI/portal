@@ -56,3 +56,9 @@ export const EXPERIMENT_COLUMNS = [
   , { field: 'protocol_type',     title: 'Protocol' }
   , { field: 'sequencing_center', title: 'Seq. Center' }
 ]
+
+
+export const TABS = {
+  PORTAL: 'PORTAL',
+  USERS: 'USER',
+}

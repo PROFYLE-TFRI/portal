@@ -11,7 +11,7 @@ import { createStore, applyMiddleware } from 'redux';
 import './styles.css';
 import registerServiceWorker from './registerServiceWorker';
 import { rootReducer } from './reducers';
-import { fetchDonors } from './actions';
+import { doInitialFetch } from './actions';
 import App from './components/App';
 import * as requests from './requests'
 import * as actions from './actions'
@@ -36,7 +36,7 @@ render(
 store.dispatch(actions.isLoggedIn())
   .then(isLoggedIn => {
     if (isLoggedIn)
-      store.dispatch(fetchDonors())
+      store.dispatch(doInitialFetch())
   })
 
 

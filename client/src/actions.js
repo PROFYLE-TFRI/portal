@@ -4,6 +4,8 @@
 
 import k from './shared-constants'
 import * as requests from './requests'
+import { createFetchAction, createFetchConstants } from './helpers/actions'
+import * as User from './actions/user'
 
 export const LOG_IN       = createFetchConstants('LOG_IN')
 export const LOG_OUT      = createFetchConstants('LOG_OUT')
@@ -25,6 +27,18 @@ export const SELECT_ALL = 'SELECT_ALL'
 export const DESELECT_ALL = 'DESELECT_ALL'
 
 export const SEARCH = 'SEARCH'
+export const SET_TAB = 'SET_TAB'
+
+export const doInitialFetch = () => {
+  return (dispatch, getState) => {
+    const { auth } = getState()
+
+    dispatch(fetchDonors())
+
+    if (auth.user.isAdmin)
+      dispatch(User.findAll())
+  }
+}
 
 export const logIn = createFetchAction(LOG_IN, (email, password, code) => {
   return (dispatch, getState) => {
@@ -36,16 +50,18 @@ export const logIn = createFetchAction(LOG_IN, (email, password, code) => {
     dispatch(logIn.request())
 
     return requests.auth.logIn(email, password, code)
-    .then(user => dispatch(logIn.receive(user)))
-    .then(() => dispatch(fetchDonors()))
-    .then(() => true)
+    .then(user => {
+      dispatch(logIn.receive(user))
+      dispatch(doInitialFetch())
+      return true
+    })
     .catch(err => {
       if (err.message === k.AUTH.REQUIRES_2FA)
         return dispatch(requires2fa())
       if (err.message === k.AUTH.INVALID_2FA)
-        return dispatch(logIn.error('Invalid code', false))
+        return dispatch(logIn.error('Invalid code', undefined, false))
       if (err.message === k.AUTH.WRONG_USER_OR_PASSWORD)
-        return dispatch(logIn.error('Wrong user/password combination', false))
+        return dispatch(logIn.error('Wrong user/password combination', undefined, false))
       return dispatch(logIn.error(err))
     })
   }
@@ -91,6 +107,7 @@ export function requires2fa(value = true) {
     payload: value
   }
 }
+
 
 export function requestDonors() {
   return {
@@ -171,7 +188,14 @@ export function deselectAll(which) {
 export function search(value) {
   return {
     type: SEARCH,
-    value
+    payload: value
+  }
+}
+
+export function setTab(tab) {
+  return {
+    type: SET_TAB,
+    payload: tab
   }
 }
 
@@ -188,21 +212,4 @@ export function fetchDonors() {
     .then(donors => dispatch(receiveDonors(donors)))
     .catch(err => dispatch(receiveError(err)))
   }
-}
-
-// Helpers
-
-function createFetchConstants(name) {
-  return {
-    REQUEST: `${name}.REQUEST`,
-    RECEIVE: `${name}.RECEIVE`,
-    ERROR: `${name}.ERROR`,
-  }
-}
-
-function createFetchAction(ks, fn) {
-  fn.request = () => ({ type: ks.REQUEST })
-  fn.receive = (payload) => ({ type: ks.RECEIVE, payload })
-  fn.error   = (message, error = true) => ({ type: ks.ERROR, error, payload: message })
-  return fn
 }

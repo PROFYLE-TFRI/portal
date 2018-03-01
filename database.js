@@ -60,7 +60,7 @@ function run(query, params = {}) {
 
 function insert(query, params = {}) {
   return new Promise((resolve, reject) => {
-    db.run(query, addAtSign(params), function(err) {
+    db.run(query, addAtSign(params, true), function(err) {
       if (err)
         reject(err)
       else
@@ -94,9 +94,11 @@ function findAll(query, params = {}) {
 
 // Helpers
 
-function addAtSign(object) {
+function addAtSign(object, forInsert = false) {
   const result = {}
   for (let key in object) {
+    if (forInsert && key === 'id')
+      continue
     result['@' + key] = object[key]
   }
   return result

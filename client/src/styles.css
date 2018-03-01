@@ -109,6 +109,10 @@ html, body, #root {
   cursor: pointer;
 }
 
+.nav-tabs .nav-link {
+  cursor: pointer;
+}
+
 /* for link-like buttons */
 .link {
   color: #007bff;
@@ -136,7 +140,17 @@ html, body, #root {
   height: 100%;
   overflow: scroll;
 }
-
+.App__navbar {
+  position: relative;
+}
+.App__logout {
+  position: absolute;
+  right: 0;
+  padding: 0.5rem 1rem;
+}
+.App__tabs .tab-pane {
+  padding-top: 1rem;
+}
 
 /* Login */
 
@@ -337,4 +351,14 @@ html, body, #root {
   max-height: 400px;
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+
+
+/*
+ * UserPortal
+ */
+
+.UserPortal__table td:last-child {
+  width: 90px;
 }
