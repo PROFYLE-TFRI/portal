@@ -18,7 +18,7 @@ module.exports = {
 }
 
 function findAll() {
-  return db.findAll('SELECT * FROM users').then(deserialize)
+  return db.findAll('SELECT * FROM users').then(user => user.map(deserialize))
 }
 
 function findByID(id) {
