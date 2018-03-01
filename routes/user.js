@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const { okHandler, dataHandler, errorHandler } = require('../helpers/handlers')
+const { isAdmin } = require('../helpers/auth')
 const User = require('../models/user')
 
 // GET list
@@ -17,19 +18,19 @@ router.get('/find-by-id/:id', (req, res, next) =>
     .catch(errorHandler(res)))
 
 // POST create
-router.post('/create', (req, res, next) =>
+router.post('/create', isAdmin, (req, res, next) =>
   User.create(req.body)
     .then(dataHandler(res))
     .catch(errorHandler(res)))
 
 // POST update
-router.post('/update', (req, res, next) =>
+router.post('/update', isAdmin, (req, res, next) =>
   User.update(req.body)
     .then(okHandler(res))
     .catch(errorHandler(res)))
 
 // POST remove
-router.post('/remove/:id', (req, res, next) =>
+router.post('/remove/:id', isAdmin, (req, res, next) =>
   User.remove(req.params.id)
     .then(okHandler(res))
     .catch(errorHandler(res)))
