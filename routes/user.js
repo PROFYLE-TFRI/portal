@@ -26,7 +26,7 @@ router.post('/create', isAdmin, (req, res, next) =>
 // POST update
 router.post('/update', isAdmin, (req, res, next) =>
   User.update(req.body)
-    .then(okHandler(res))
+    .then(dataHandler(res))
     .catch(errorHandler(res)))
 
 // POST remove

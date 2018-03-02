@@ -9,7 +9,7 @@ module.exports = {
 
 function getUpdateSet(object) {
   return Object.keys(object)
-    .filter(key => key === 'id')
+    .filter(key => key !== 'id')
     .map(key => `${key} = @${key}`)
     .join(', ')
 }

@@ -49,6 +49,8 @@ findAll('SELECT * FROM sqlite_master')
 
 function run(query, params = {}) {
   return new Promise((resolve, reject) => {
+    console.log(require('util').inspect(query, { colors: true, depth: 3 }))
+    console.log(require('util').inspect(addAtSign(params), { colors: true, depth: 3 }))
     db.run(query, addAtSign(params), function(err) {
       if (err)
         reject(err)

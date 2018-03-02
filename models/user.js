@@ -48,6 +48,7 @@ function update(data) {
        SET ${ SQL.getUpdateSet(data) }
      WHERE id = @id
     `, serialize(data))
+  .then(() => findByID(data.id))
 }
 
 function remove(id) {
