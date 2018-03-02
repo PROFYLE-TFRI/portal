@@ -28,6 +28,8 @@ export function createFetchAction(ks, fn) {
 
 function asMessage(error) {
   console.error(error)
+  if (typeof error === 'string')
+    return error
   if (error.response)
     return error.response.data.message
   return error.message

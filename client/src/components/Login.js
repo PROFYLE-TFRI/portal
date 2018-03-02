@@ -119,7 +119,7 @@ class Login extends Component {
                         <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
                       </InputGroup>
                     </FormGroup>
-                    <button className='link' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</button>
+                    <button type='button' className='link' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</button>
                   </div>
                 }
               </div>
