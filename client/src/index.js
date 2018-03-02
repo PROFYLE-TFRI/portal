@@ -6,7 +6,7 @@ import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { createLogger } from 'redux-logger';
 import thunkMiddleware from 'redux-thunk';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 
 import './styles.css';
 import registerServiceWorker from './registerServiceWorker';
@@ -21,10 +21,12 @@ window.requests = requests
 
 const initialState = {}
 
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+
 const store =
   (process.env.NODE_ENV === 'production')
   ? createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware))
-  : createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware, createLogger()))
+  : createStore(rootReducer, initialState, composeEnhancers(applyMiddleware(thunkMiddleware, createLogger())))
 
 render(
   <Provider store={store}>
