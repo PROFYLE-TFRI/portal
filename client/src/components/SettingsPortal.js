@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Container, Table, Row, Col, Alert, Input, Label, Form, FormGroup, } from 'reactstrap';
+import { Container, Table, Row, Col, Alert, Input, Label, Form, FormGroup, FormText, } from 'reactstrap';
 
 import Button from './Button'
 
@@ -98,7 +98,7 @@ class SettingsPortal extends Component {
           </FormGroup>
           <FormGroup row>
             <Label for='phone' sm={2}>Phone</Label>
-            <Col sm={10}>
+            <Col sm={5}>
               <Input
                 type='text'
                 id='phone'
@@ -108,17 +108,25 @@ class SettingsPortal extends Component {
                 pattern='\d{10}'
               />
             </Col>
+            <Col sm={5} className='align-self-center'>
+              <FormText color='muted'>
+                Ten digits (e.g. 5142701000)
+              </FormText>
+            </Col>
           </FormGroup>
 
-          <FormGroup>
-            <Button
-              icon='check'
-              outline
-              color='primary'
-              loading={isLoading}
-            >
-              Save
-            </Button>
+          <FormGroup row>
+            <Col sm={2}></Col>
+            <Col sm={10}>
+              <Button
+                icon='check'
+                outline
+                color='primary'
+                loading={isLoading}
+              >
+                Save
+              </Button>
+            </Col>
           </FormGroup>
         </Form>
       </Container>
