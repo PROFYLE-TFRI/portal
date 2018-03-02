@@ -137,6 +137,13 @@ function authReducer(state = createDefaultAuth(), action) {
     case IS_LOGGED_IN.ERROR: {
       return { ...state, isLoading: false  }
     }
+
+    case USER.UPDATE.RECEIVE: {
+      if (action.payload.id === state.user.id)
+        return { ...state, user: action.payload }
+      return state
+    }
+
     default:
       return state;
   }
@@ -211,6 +218,11 @@ function usersReducer(state = createDefaultUsers(), action) {
     }
     case USER.REMOVE.ERROR: {
       return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case IS_LOGGED_IN.RECEIVE:
+    case LOG_IN.RECEIVE: {
+      return { ...state, isLoading: false, data: [action.payload] }
     }
 
     default:

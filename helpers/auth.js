@@ -5,6 +5,8 @@
 module.exports = {
   isLoggedIn,
   isAdmin,
+  notAuthenticated,
+  forbidden
 }
 
 function isLoggedIn(req, res, next) {

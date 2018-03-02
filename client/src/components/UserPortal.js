@@ -5,7 +5,9 @@ import { Container, Table, Row, Col, Alert, Input, Label, Form, FormGroup, } fro
 
 import Button from './Button'
 
+import asString from '../helpers/as-string'
 import * as User from '../actions/user';
+import * as UserUtils from '../helpers/user'
 
 
 const ACTIONS = {
@@ -14,8 +16,7 @@ const ACTIONS = {
 }
 
 const mapStateToProps = state => ({
-    users: state.users
-  , auth: state.auth
+  users: state.users
 })
 const mapDispatchToProps = dispatch =>
   bindActionCreators(User, dispatch)
@@ -26,98 +27,93 @@ class UserPortal extends Component {
     userID: undefined,
   }
 
-  createUser = (user) => {
-
-  }
-
   onCancel = () => {
     this.setState({ action: undefined, userID: undefined })
   }
 
-  onAccept = () => {
-    const user = {
-      id: document.querySelector('[name=id]').value,
-      name: document.querySelector('[name=name]').value,
-      email: document.querySelector('[name=email]').value,
-      password: document.querySelector('[name=password]').value,
-      phone: document.querySelector('[name=phone]').value,
-      isAdmin: document.querySelector('[name=isAdmin]').checked,
-      permissions: JSON.parse(document.querySelector('[name=permissions]').value),
-    }
-
+  onAccept = (newUser) => {
     let action
 
     if (this.state.action === ACTIONS.CREATE) {
-      action = this.props.create(user)
+      action = this.props.create(newUser)
     } else {
-      if (user.password === this.props.users.data.find(u => u.id === this.state.userID).password)
-        delete user.password
-      action = this.props.update(user)
+      const user = this.props.users.data.find(u => u.id === this.state.userID)
+      const diff = UserUtils.getDiffObject(user, newUser)
+      action = this.props.update(diff)
     }
 
     action.then(() => this.setState({ action: undefined, userID: undefined }))
   }
 
   render() {
-    const { auth, users } = this.props
+    const { users } = this.props
     const { action, userID } = this.state
 
     return (
       <Container className='UserPortal'>
-        <Form onSubmit={this.onSubmit}>
-          <Table className='UserPortal__table'>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Password</th>
-                <th>Phone</th>
-                <th>Admin?</th>
-                <th>Permissions</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                users.data.map(user =>
-                  action === ACTIONS.EDIT && userID === user.id ?
-                    <EditRow user={user} onAccept={this.onAccept} onCancel={this.onCancel} />
-                  :
-                    <tr key={user.id}>
-                      <th scope='row'>{ user.id }</th>
-                      <td>{ user.name }</td>
-                      <td>{ user.email }</td>
-                      <td><b>{ '*'.repeat(Math.random() * 6 + 4)}</b></td>
-                      <td>{ user.phone }</td>
-                      <td>{ user.isAdmin.toString() }</td>
-                      <td>{ JSON.stringify(user.permissions) }</td>
-                      <td>
-                        <Button
-                          icon='edit'
-                          outline
-                          color='warning'
-                          size='sm'
-                          onClick={() => this.setState({ action: ACTIONS.EDIT, userID: user.id })}
-                        /> <Button
-                          icon='trash'
-                          outline
-                          color='danger'
-                          size='sm'
-                        />
-                      </td>
-                    </tr>
-                )
-              }
+        {
+          users.message &&
+          <Alert color='danger'>
+            <h4 className='alert-heading'>
+              An error occured:
+            </h4>
+            <p>
+              { asString(users.message) }
+            </p>
+          </Alert>
+        }
+        <Table className='UserPortal__table'>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Password</th>
+              <th>Phone</th>
+              <th>Admin?</th>
+              <th>Permissions</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              users.data.map(user =>
+                action === ACTIONS.EDIT && userID === user.id ?
+                  <EditRow user={user} onAccept={this.onAccept} onCancel={this.onCancel} />
+                :
+                  <tr key={user.id}>
+                    <th scope='row'>{ user.id }</th>
+                    <td>{ user.name }</td>
+                    <td>{ user.email }</td>
+                    <td><b>{ '*'.repeat(Math.random() * 6 + 4)}</b></td>
+                    <td>{ user.phone }</td>
+                    <td>{ user.isAdmin.toString() }</td>
+                    <td>{ JSON.stringify(user.permissions) }</td>
+                    <td>
+                      <Button
+                        icon='edit'
+                        outline
+                        color='warning'
+                        size='sm'
+                        onClick={() => this.setState({ action: ACTIONS.EDIT, userID: user.id })}
+                      /> <Button
+                        icon='trash'
+                        outline
+                        color='danger'
+                        size='sm'
+                      />
+                    </td>
+                  </tr>
+              )
+            }
 
-              {
-                action === ACTIONS.CREATE &&
-                  <EditRow user={{ permissions: [] }} onAccept={this.onAccept} onCancel={this.onCancel} />
-              }
+            {
+              action === ACTIONS.CREATE &&
+                <EditRow user={{ permissions: [] }} onAccept={this.onAccept} onCancel={this.onCancel} />
+            }
 
-            </tbody>
-          </Table>
-        </Form>
+          </tbody>
+        </Table>
 
         <Button
           icon='plus'
@@ -133,52 +129,58 @@ class UserPortal extends Component {
   }
 }
 
-function EditRow({ user, onAccept, onCancel }) {
-  return (
-    <tr>
-      <th scope='row'>
-        { user.id }
-        <input type='hidden' name='id' value={user.id} />
-      </th>
-      <td>
-        <Input type='text' name='name' defaultValue={user.name} />
-      </td>
-      <td>
-        <Input type='email' name='email' defaultValue={user.email} />
-      </td>
-      <td>
-        <Input type='password' name='password' defaultValue={user.password} />
-      </td>
-      <td>
-        <Input type='text' name='phone' defaultValue={user.phone} />
-      </td>
-      <td>
-        <input type='checkbox' name='isAdmin' defaultChecked={user.isAdmin} />
-      </td>
-      <td>
-        <Input type='text' name='permissions' defaultValue={JSON.stringify(user.permissions)} />
-      </td>
-      <td>
-        <Button
-          type='button'
-          icon='check'
-          outline
-          color='success'
-          size='sm'
-          onClick={onAccept}
-        /> <Button
-          type='button'
-          icon='times'
-          outline
-          color='secondary'
-          size='sm'
-          onClick={onCancel}
-        />
-      </td>
-    </tr>
-  )
-}
+class EditRow extends React.Component {
+  constructor(props) {
+    super(props)
+    const { user = {} } = props
+    this.state = UserUtils.deserialize(user)
+  }
 
+  componentWillReceiveProps({ user = {} }) {
+    this.setState(UserUtils.deserialize(user))
+  }
+
+  onClickAccept = () => {
+    const user = UserUtils.serialize(this.state)
+    this.props.onAccept(user)
+  }
+
+  render() {
+    const { user, onCancel } = this.props
+
+    return (
+      <tr>
+        <th scope='row'>
+          { user.id }
+          <input type='hidden' name='id' value={user.id} />
+        </th>
+        <td><Input type='text'     name='name'         defaultValue={user.name}                         onChange={ev => this.setState({ name: ev.target.value })} /></td>
+        <td><Input type='email'    name='email'        defaultValue={user.email}                        onChange={ev => this.setState({ email: ev.target.value })} /></td>
+        <td><Input type='password' name='password'     defaultValue={user.password}                     onChange={ev => this.setState({ password: ev.target.value })} /></td>
+        <td><Input type='text'     name='phone'        defaultValue={user.phone}                        onChange={ev => this.setState({ phone: ev.target.value })} /></td>
+        <td><input type='checkbox' name='isAdmin'      defaultChecked={user.isAdmin}                    onChange={ev => this.setState({ isAdmin: ev.target.checked })} /></td>
+        <td><Input type='text'     name='permissions'  defaultValue={JSON.stringify(user.permissions)}  onChange={ev => this.setState({ permissions: ev.target.value })} /></td>
+        <td>
+          <Button
+            type='button'
+            icon='check'
+            outline
+            color='success'
+            size='sm'
+            onClick={this.onClickAccept}
+          /> <Button
+            type='button'
+            icon='times'
+            outline
+            color='secondary'
+            size='sm'
+            onClick={onCancel}
+          />
+        </td>
+      </tr>
+    )
+  }
+}
 
 export default connect(
   mapStateToProps,

@@ -11,6 +11,7 @@ import Icon from './Icon';
 import Login from './Login';
 import MainPortal from './MainPortal';
 import UserPortal from './UserPortal';
+import SettingsPortal from './SettingsPortal';
 
 
 
@@ -67,6 +68,14 @@ class App extends Component {
                   </NavLink>
                 </NavItem>
             }
+            <NavItem>
+              <NavLink
+                className={classname({ active: currentTab === TABS.SETTINGS })}
+                onClick={() => this.props.setTab(TABS.SETTINGS)}
+              >
+                Settings
+              </NavLink>
+            </NavItem>
 
             <button className='App__logout link' onClick={this.props.logOut}>
               <Icon name='sign-out' /> Log Out
@@ -79,6 +88,9 @@ class App extends Component {
             </TabPane>
             <TabPane tabId={TABS.USERS}>
               <UserPortal />
+            </TabPane>
+            <TabPane tabId={TABS.SETTINGS}>
+              <SettingsPortal />
             </TabPane>
           </TabContent>
 

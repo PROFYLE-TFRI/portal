@@ -24,9 +24,13 @@ router.post('/create', isAdmin, (req, res, next) =>
     .catch(errorHandler(res)))
 
 // POST update
-// Only for admins, or for self
+// Only for admins, or for self (and self can't modify isAdmin & permissions)
 router.post('/update', (req, res, next) =>
-  !(req.user.isAdmin || req.user.id === req.body.id)
+  !(req.user.isAdmin
+    || (req.user.id === req.body.id
+      && req.body.isAdmin === undefined
+      && req.body.permissions === undefined
+    ))
   ? forbidden(res)
   : User.update(req.body)
     .then(dataHandler(res))

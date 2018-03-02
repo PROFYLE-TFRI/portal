@@ -61,4 +61,5 @@ export const EXPERIMENT_COLUMNS = [
 export const TABS = {
   PORTAL: 'PORTAL',
   USERS: 'USER',
+  SETTINGS: 'SETTINGS',
 }
