@@ -6,6 +6,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Pie, PieChart, Cell, Sector } from 'recharts';
+import Curve from 'recharts/es6/shape/Curve';
+import { polarToCartesian } from 'recharts/es6/util/PolarUtils';
 import { Row, Col, Button } from 'reactstrap';
 import { compose } from 'ramda';
 
@@ -15,6 +17,7 @@ import { select, deselect, deselectAll } from '../actions';
 const { values, entries } = Object
 
 
+const MIN_PERCENT = 0.05
 
 
 const mapStateToProps = state => ({
@@ -50,7 +53,6 @@ class Charts extends Component {
     const charts = [
         { title: 'Diseases',  which: 'diseases',  field: 'disease' }
       , { title: 'Provinces', which: 'provinces', field: 'recruitement_team.province' }
-    //, { title: 'Hospitals', which: 'hospitals', field: 'recruitement_team.hospital' }
     ]
 
     return (
@@ -78,22 +80,13 @@ class Charts extends Component {
                 </span>
               </h4>
 
-              <PieChart width={540} height={300}>
-                <Pie data={data}
-                  dataKey='value'
-                  onClick={this.handleClick.bind(this, which)}
-                  cx='50%'
-                  cy='50%'
-                  innerRadius={40}
-                  outerRadius={80}
-                  label={renderLabel}
-                >
-                  {
-                    data.map((entry, index) =>
-                      <Cell key={index} fill={getColor(entry, index, selection[which])}/>)
-                  }
-                </Pie>
-              </PieChart>
+              <CustomPieChart
+                data={data}
+                selection={selection}
+                which={which}
+                onClick={this.handleClick.bind(this, which)}
+              />
+
             </Col>
           })
         }
@@ -103,21 +96,66 @@ class Charts extends Component {
   }
 }
 
-function renderLabel(props) {
+class CustomPieChart extends React.Component {
+  state = {
+    activeIndex: undefined
+  }
+
+  onEnter = (data, index) => {
+    this.setState({ activeIndex: index })
+  }
+
+  onLeave = (data, index) => {
+    this.setState({ activeIndex: undefined })
+  }
+
+  render() {
+    const { data, onClick, selection, which } = this.props
+
+    return (
+      <PieChart width={540} height={300}>
+        <Pie data={data}
+          dataKey='value'
+          cx='50%'
+          cy='50%'
+          innerRadius={40}
+          outerRadius={80}
+          label={renderLabel}
+          labelLine={false}
+          onClick={onClick}
+          onMouseEnter={this.onEnter}
+          onMouseLeave={this.onLeave}
+          activeIndex={this.state.activeIndex}
+          activeShape={renderActiveShape}
+        >
+          {
+            data.map((entry, index) =>
+            <Cell key={index} fill={getColor(entry, index, selection[which])}/>)
+          }
+        </Pie>
+      </PieChart>
+    )
+  }
+}
+
+function renderLabel(params) {
   const RADIAN = Math.PI / 180;
   const {
     cx,
     cy,
     midAngle,
-    // innerRadius,
+    innerRadius,
     outerRadius,
     startAngle,
     endAngle,
     fill,
     payload,
-    // percent,
+    percent,
     // value
-  } = props;
+  } = params;
+
+  const name = payload.name === 'null' ? '(Empty)' : payload.name
+
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
   const sx = cx + (outerRadius + 10) * cos;
@@ -128,11 +166,33 @@ function renderLabel(props) {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
-  const name = payload.name === 'null' ? '(Empty)' : payload.name
+  const textStyle = {
+    fontSize: '11px',
+    fontWeight: payload.selected ? 'bold' : 'normal',
+    fontStyle: payload.name === 'null' ? 'italic' : 'normal',
+    fill: '#333',
+  }
+  const countTextStyle = {
+    fontSize: '11px',
+    fill: '#999',
+  }
 
-  const textStyle = { fontWeight: payload.selected ? 'bold' : 'normal' }
-  if (payload.name === 'null')
-    textStyle.fontStyle = 'italic'
+  const offsetRadius = 20
+  const startPoint = polarToCartesian(params.cx, params.cy, params.outerRadius, midAngle)
+  const endPoint   = polarToCartesian(params.cx, params.cy, params.outerRadius + offsetRadius, midAngle)
+  const lineProps = {
+    ...params,
+    fill: 'none',
+    stroke: fill,
+    points: [startPoint, endPoint],
+  }
+
+  const displayLabel = payload.selected || percent > MIN_PERCENT
+
+  if (!displayLabel) {
+    return null
+  }
+
 
   return (
     <g>
@@ -149,18 +209,132 @@ function renderLabel(props) {
         />
       }
 
+      <Curve
+        { ...lineProps }
+        type='linear'
+        className='recharts-pie-label-line'
+      />
+
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none'/>
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke='none'/>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
         textAnchor={textAnchor}
-        fill='#333'
         style={textStyle}
       >
         { name }
       </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={14} textAnchor={textAnchor} fill='#999'>
+      <text
+        x={ex + (cos >= 0 ? 1 : -1) * 12}
+        y={ey}
+        dy={14}
+        textAnchor={textAnchor}
+        style={countTextStyle}
+      >
         {`(${ payload.value } donor${ payload.value > 1 ? 's' : '' })`}
       </text>
+
+    </g>
+  )
+}
+
+function renderActiveShape(params) {
+  const RADIAN = Math.PI / 180;
+  const {
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    startAngle,
+    endAngle,
+    fill,
+    payload,
+    percent,
+    // value
+  } = params;
+
+  const name = payload.name === 'null' ? '(Empty)' : payload.name
+
+  const sin = Math.sin(-RADIAN * midAngle);
+  const cos = Math.cos(-RADIAN * midAngle);
+  const sx = cx + (outerRadius + 10) * cos;
+  const sy = cy + (outerRadius + 10) * sin;
+  const mx = cx + (outerRadius + 20) * cos;
+  const my = cy + (outerRadius + 20) * sin;
+  const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+  const ey = my;
+  const textAnchor = cos >= 0 ? 'start' : 'end';
+
+  const textStyle = {
+    fontSize: '11px',
+    fontWeight: payload.selected ? 'bold' : 'normal',
+    fontStyle: payload.name === 'null' ? 'italic' : 'normal',
+    fill: '#333',
+  }
+  const countTextStyle = {
+    fontSize: '11px',
+    fill: '#999',
+  }
+
+  const offsetRadius = 20
+  const startPoint = polarToCartesian(params.cx, params.cy, params.outerRadius, midAngle)
+  const endPoint   = polarToCartesian(params.cx, params.cy, params.outerRadius + offsetRadius, midAngle)
+  const lineProps = {
+    ...params,
+    fill: 'none',
+    stroke: fill,
+    points: [startPoint, endPoint],
+  }
+
+  return (
+    <g>
+
+      <Sector
+        cx={cx}
+        cy={cy}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        innerRadius={innerRadius}
+        outerRadius={outerRadius}
+        fill={fill}
+      />
+
+      { payload.selected &&
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 10}
+          fill={fill}
+        />
+      }
+
+      <Curve
+        { ...lineProps }
+        type='linear'
+        className='recharts-pie-label-line'
+      />
+
+      <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none'/>
+      <circle cx={ex} cy={ey} r={2} fill={fill} stroke='none'/>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
+        textAnchor={textAnchor}
+        style={textStyle}
+      >
+        { name }
+      </text>
+      <text
+        x={ex + (cos >= 0 ? 1 : -1) * 12}
+        y={ey}
+        dy={14}
+        textAnchor={textAnchor}
+        style={countTextStyle}
+      >
+        {`(${ payload.value } donor${ payload.value > 1 ? 's' : '' })`}
+      </text>
+
     </g>
   )
 }
