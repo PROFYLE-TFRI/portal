@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 
 const { okHandler, dataHandler, errorHandler } = require('../helpers/handlers')
-const { isAdmin } = require('../helpers/auth')
+const { isAdmin, forbidden } = require('../helpers/auth')
 const User = require('../models/user')
 
 // GET list
@@ -24,8 +24,11 @@ router.post('/create', isAdmin, (req, res, next) =>
     .catch(errorHandler(res)))
 
 // POST update
-router.post('/update', isAdmin, (req, res, next) =>
-  User.update(req.body)
+// Only for admins, or for self
+router.post('/update', (req, res, next) =>
+  !(req.user.isAdmin || req.user.id === req.body.id)
+  ? forbidden(res)
+  : User.update(req.body)
     .then(dataHandler(res))
     .catch(errorHandler(res)))
 
