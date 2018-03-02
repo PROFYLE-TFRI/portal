@@ -30,7 +30,7 @@ function isValid(code, user) {
 
 function generateCode() {
   let code = ''
-  for (let i = 0; i < 6; i++)
+  for (let i = 0; i < 4; i++)
     code += Math.round(Math.random() * 9)
   return code
 }
