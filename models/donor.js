@@ -2,8 +2,9 @@
  * donor.js
  */
 
+const path = require('path')
 const { indexBy, prop } = require('ramda')
-const { readDir, readJSON } = require('../helpers/filesystem')
+const { exists, readDir, readJSON } = require('../helpers/filesystem')
 
 
 exports.findByID = (id) =>
@@ -27,18 +28,18 @@ function attachExperiments(donor) {
   return Promise.all(Object.keys(donor.samples).map(sampleID => {
 
     return readDir(getSamplePath(donor.id, sampleID))
-    .then(experimentsID =>
-      Promise.all(experimentsID.map(experimentID =>
+    .then(exprimentTypes =>
+      Promise.all(exprimentTypes.map(experimentType =>
 
         Promise.all(
           [
-            readJSON(getExperimentJSONPath(donor.id, sampleID, experimentID)),
-            readJSON(getExperimentAnalysisJSONPath(donor.id, sampleID, experimentID))
+            readJSON(getExperimentJSONPath(donor.id, sampleID, experimentType)),
+            readJSON(getExperimentAnalysisJSONPath(donor.id, sampleID, experimentType))
               .catch(err => Promise.resolve(null))
           ]
         )
-        .then(([experiment, analysis]) => normalizeExperiment(experimentID, sampleID, experiment, analysis))
-
+        .then(([experiment, analysis]) => normalizeExperiment(experimentType, sampleID, experiment, analysis))
+        .then(experiment => attachAlignements(donor.id, sampleID, experiment))
       ))
       .then(indexBy(prop('id')))
       .then(experimentsByID => donor.samples[sampleID].experiments = experimentsByID)
@@ -46,6 +47,26 @@ function attachExperiments(donor) {
 
   }))
   .then(() => donor)
+}
+
+function attachAlignements(id, sampleID, experiment) {
+  const alignementsPath = getExperimentAlignementsPath(id, sampleID, experiment.experiment_type)
+
+  console.log(alignementsPath)
+
+  return exists(alignementsPath)
+  .then(doExists =>
+    (doExists ?
+        readDir(alignementsPath)
+      : Promise.resolve([]))
+    .then(files => {
+      console.log(files)
+      experiment.alignements = files
+        .filter(file => /\.bam$/.test(file))
+        .map(file => path.join(alignementsPath, file))
+      return experiment
+    })
+  )
 }
 
 function normalizeDonor(id, data) {
@@ -76,10 +97,10 @@ function normalizeSample(id, donorID, data) {
   return data
 }
 
-function normalizeExperiment(id, sampleID, data, analysis) {
-  data.id = `${sampleID}.${id}`
-  data.name = id
+function normalizeExperiment(type, sampleID, data, analysis) {
+  data.id = `${sampleID}.${type}`
   data.analysis = analysis
+  console.assert(type === data.experiment_type)
   return data
 }
 
@@ -91,10 +112,14 @@ function getSamplePath(id, sampleID) {
   return `${id}/${sampleID}`
 }
 
-function getExperimentJSONPath(id, sampleID, experimentID) {
-  return `${id}/${sampleID}/${experimentID}/${sampleID}.${experimentID}.json`
+function getExperimentJSONPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/${sampleID}.${experimentType}.json`
 }
 
-function getExperimentAnalysisJSONPath(id, sampleID, experimentID) {
-  return `${id}/${sampleID}/${experimentID}/analysis.json`
+function getExperimentAlignementsPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/alignements`
+}
+
+function getExperimentAnalysisJSONPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/analysis.json`
 }
