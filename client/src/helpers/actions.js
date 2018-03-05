@@ -26,11 +26,15 @@ export function createFetchAction(ks, fn) {
 }
 
 
-function asMessage(error) {
+export function asMessage(error) {
   console.error(error)
   if (typeof error === 'string')
     return error
-  if (error.response)
+  if (error.response) {
+    console.error('API error:')
+    console.error(error.response.data.message)
+    console.error(error.response.data.stack)
     return error.response.data.message
+  }
   return error.message
 }

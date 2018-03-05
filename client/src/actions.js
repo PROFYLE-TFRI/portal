@@ -4,7 +4,7 @@
 
 import k from './shared-constants'
 import * as requests from './requests'
-import { createFetchAction, createFetchConstants } from './helpers/actions'
+import { createFetchAction, createFetchConstants, asMessage } from './helpers/actions'
 import * as User from './actions/user'
 
 export const LOG_IN       = createFetchConstants('LOG_IN')
@@ -125,7 +125,8 @@ export function receiveDonors(donors) {
 export function receiveError(message) {
   return {
     type: RECEIVE_ERROR,
-    message
+    error: true,
+    message: asMessage(message)
   }
 }
 
