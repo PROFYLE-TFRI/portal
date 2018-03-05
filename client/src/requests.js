@@ -14,7 +14,7 @@ export const user = {
   findByID: (id)   => get(`/user/find-by-id/${id}`),
   create:   (user) => post('/user/create', user),
   update:   (user) => post('/user/update', user),
-  remove:   (id)   => get(`/user/remove/${id}`),
+  remove:   (id)   => post(`/user/remove/${id}`),
 }
 
 export const auth = {

@@ -101,6 +101,7 @@ class UserPortal extends Component {
                         outline
                         color='danger'
                         size='sm'
+                        onClick={() => this.props.remove(user.id)}
                       />
                     </td>
                   </tr>
