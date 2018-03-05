@@ -57,7 +57,7 @@ class SettingsPortal extends Component {
 
     return (
       <Container className='SettingsPortal'>
-        <Form onSubmit={this.onSubmit} autocomplete='off'>
+        <Form onSubmit={this.onSubmit} autoComplete='off'>
           <FormGroup row>
             <Label for='name' sm={2}>Name</Label>
             <Col sm={10}>
@@ -79,7 +79,7 @@ class SettingsPortal extends Component {
                 defaultValue={user.email}
                 onChange={this.getSetter('email')}
                 required
-                autocomplete='new-email'
+                autoComplete='new-email'
               />
             </Col>
           </FormGroup>
@@ -92,7 +92,7 @@ class SettingsPortal extends Component {
                 defaultValue={user.password}
                 onChange={this.getSetter('password')}
                 required
-                autocomplete='new-password'
+                autoComplete='new-password'
               />
             </Col>
           </FormGroup>
