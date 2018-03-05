@@ -52,15 +52,12 @@ function attachExperiments(donor) {
 function attachAlignements(id, sampleID, experiment) {
   const alignementsPath = getExperimentAlignementsPath(id, sampleID, experiment.experiment_type)
 
-  console.log(alignementsPath)
-
   return exists(alignementsPath)
   .then(doExists =>
     (doExists ?
         readDir(alignementsPath)
       : Promise.resolve([]))
     .then(files => {
-      console.log(files)
       experiment.alignements = files
         .filter(file => /\.bam$/.test(file))
         .map(file => path.join(alignementsPath, file))
