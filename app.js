@@ -57,7 +57,13 @@ app.use((req, res, next) => {
 // error handler
 app.use((err, req, res, next) => {
   if (req.originalUrl.startsWith('/api')) {
-    res.json({ ok: false, message: typeof err === 'string' ? err : JSON.stringify(err) })
+    res.json({
+      ok: false,
+      message: typeof err === 'string' ? err : JSON.stringify(err),
+      meta: {
+        url: req.originalUrl
+      }
+    })
     res.end()
     return
   }
