@@ -132,11 +132,11 @@ class UserPortal extends Component {
 class EditRow extends React.Component {
   constructor(props) {
     super(props)
-    const { user = {} } = props
+    const { user = UserUtils.createNew() } = props
     this.state = UserUtils.deserialize(user)
   }
 
-  componentWillReceiveProps({ user = {} }) {
+  componentWillReceiveProps({ user = UserUtils.createNew() }) {
     this.setState(UserUtils.deserialize(user))
   }
 
