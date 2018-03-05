@@ -214,7 +214,7 @@ function usersReducer(state = createDefaultUsers(), action) {
       return { ...state, isLoading: true }
     }
     case USER.REMOVE.RECEIVE: {
-      return { ...state, isLoading: false, data: state.data.filter(user => user.id === action.meta.id) }
+      return { ...state, isLoading: false, data: state.data.filter(user => user.id !== action.meta.id) }
     }
     case USER.REMOVE.ERROR: {
       return { ...state, isLoading: false, message: action.payload  }
