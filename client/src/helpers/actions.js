@@ -31,10 +31,11 @@ export function asMessage(error) {
   if (typeof error === 'string')
     return error
   if (error.response) {
-    console.error('API error:')
-    console.error(error.response.data.message)
-    console.error(error.response.data.stack)
+    console.error('API: ' + error.response.data.message + '\n' + error.response.data.stack.join('\n'))
     return error.response.data.message
+  }
+  if (error.fromAPI) {
+    console.error('API: ' + error.message + '\n' + error.stack.join('\n'))
   }
   return error.message
 }

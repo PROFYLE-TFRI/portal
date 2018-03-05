@@ -36,8 +36,15 @@ function fetchAPI(method, route, data) {
       if (apiResult.ok)
         return Promise.resolve(apiResult.data)
       else
-        return Promise.reject(new Error(apiResult.message))
+        return Promise.reject(createError(apiResult))
     })
 }
 function get(route)        { return fetchAPI('get',  route, undefined) }
 function post(route, data) { return fetchAPI('post', route, data) }
+
+function createError(apiResult) {
+  const error = new Error(apiResult.message)
+  error.stack = apiResult.stack
+  error.fromAPI = true
+  return error
+}
