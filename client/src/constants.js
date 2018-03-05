@@ -52,7 +52,7 @@ export const SAMPLE_COLUMNS = [
 export const EXPERIMENT_COLUMNS = [
     { field: 'id',                title: 'Experiment' }
   , { field: 'assay_type',        title: 'Assay Type' }
-  , { field: 'experiment_type',   title: 'Experiment' }
+  , { field: 'experiment_type',   title: 'Type' }
   , { field: 'protocol_type',     title: 'Protocol' }
   , { field: 'sequencing_center', title: 'Seq. Center' }
 ]

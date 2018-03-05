@@ -49,6 +49,7 @@ class DonorTable extends Component {
             selectRow={selectRowProp}
             options={options}
             pagination={true}
+            trClassName='clickable'
         >
           {
             DONOR_COLUMNS.map(renderColumn)

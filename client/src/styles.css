@@ -29,6 +29,10 @@ html, body, #root {
   font-weight: 700;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 
 /*
  * Scrollbars

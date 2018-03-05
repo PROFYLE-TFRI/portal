@@ -12,6 +12,7 @@ export function renderColumn({ field, title, type, uri }, i) {
     <Header
       key={field}
       isKey={i === 0}
+      columnTitle={true}
       dataSort={true}
       dataField={field}
       dataFormat={
