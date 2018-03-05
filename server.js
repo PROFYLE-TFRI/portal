@@ -41,6 +41,8 @@ app.use(session({ secret: 'ommanipadmehum', resave: true, saveUninitialized: tru
 app.use(passport.initialize())
 app.use(passport.session()) // persistent login sessions
 
+app.use('/files',     isLoggedIn, require('./routes/files'))
+
 app.use('/api/donor', isLoggedIn, require('./routes/donor'))
 app.use('/api/user',  isLoggedIn, require('./routes/user'))
 app.use('/api/auth',              require('./routes/auth'))
