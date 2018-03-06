@@ -35,14 +35,14 @@ export const DONOR_COLUMNS = [
     { field: 'id',                         title: 'Donor', isKey: true }
   , { field: 'age',                        title: 'Age' }
   , { field: 'sex',                        title: 'Sex' }
-  , { field: 'disease',                    title: 'Disease', uri: 'disease_ontology_uri' }
+  , { field: 'disease',                    title: 'Disease', uri: 'disease_ontology_uri', showTitle: false }
   , { field: 'recruitement_team.hospital', title: 'Hospital' }
   , { field: 'recruitement_team.province', title: 'Province' }
 ]
 
 export const SAMPLE_COLUMNS = [
     { field: 'id',                       title: 'Sample', isKey: true }
-  , { field: 'tissue_type',              title: 'Tissue Type', uri: 'tissue_type_ontology_uri' }
+  , { field: 'tissue_type',              title: 'Tissue Type', uri: 'tissue_type_ontology_uri', showTitle: false }
   , { field: 'tumor',                    title: 'Tumor?' }
   , { field: 'sample_submission_date',   title: 'Submission Date' }
   , { field: 'storage_location',         title: 'Storage Location' }

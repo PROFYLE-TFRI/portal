@@ -7,12 +7,21 @@ import { TableHeaderColumn as Header } from 'react-bootstrap-table';
 
 
 
-export function renderColumn({ field, title, type, uri, format, isKey }, i) {
+export function renderColumn({
+  field,
+  title,
+  type,
+  uri,
+  format,
+  isKey,
+  showTitle = true,
+}, i) {
+
   return (
     <Header
       key={field}
       isKey={isKey}
-      columnTitle={true}
+      columnTitle={showTitle}
       dataSort={true}
       dataField={field}
       dataFormat={
@@ -27,5 +36,9 @@ export function renderColumn({ field, title, type, uri, format, isKey }, i) {
 }
 
 export function formatLink(link, text = link) {
-  return <a href={link}>{text}</a>
+  return (
+    <a href={link} title={text}>
+      {text}
+    </a>
+  )
 }
