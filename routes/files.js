@@ -10,15 +10,26 @@ router.use(range({ accept: 'bytes' }))
 
 // GET file
 router.use('/', (req, res, next) => {
+  if (req.get('Range') === undefined)
+    sendRequest(req, res)
+  else
+    sendRangeRequest(req, res)
+})
 
-  if (!req.range || !req.range.first || !res.range.last) {
-    res.status(400)
-    res.send('Not a range request')
+function sendRequest(req, res) {
+  const stream = fs.createReadStream(req.url)
+  stream.on('open', () => {
+    res.set('Content-Type', 'application/octet-stream')
+    stream.pipe(res)
+  })
+  stream.on('error', err => {
+    res.status(500)
+    res.send(JSON.stringify(err))
     res.end()
-    return
-  }
+  })
+}
 
-
+function sendRangeRequest(req, res) {
   const start = req.range.first
   const end   = req.range.last
 
@@ -56,10 +67,10 @@ router.use('/', (req, res, next) => {
     })
     stream.on('error', err => {
       res.status(500)
-      res.send(JSON.stringify())
+      res.send(JSON.stringify(err))
       res.end()
     })
   })
-})
+}
 
 module.exports = router;
