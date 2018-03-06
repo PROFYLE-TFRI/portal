@@ -50,7 +50,7 @@ function attachExperiments(donor) {
 }
 
 function attachAlignements(id, sampleID, experiment) {
-  const alignementsPath = getExperimentAlignementsPath(id, sampleID, experiment.experiment_type)
+  const alignementsPath = getExperimentAlignementsPath(id, sampleID, experiment.type)
 
   return exists(alignementsPath)
   .then(doExists =>
@@ -97,7 +97,7 @@ function normalizeSample(id, donorID, data) {
 function normalizeExperiment(type, sampleID, data, analysis) {
   data.id = `${sampleID}.${type}`
   data.analysis = analysis
-  console.assert(type === data.experiment_type)
+  data.type = type
   return data
 }
 
