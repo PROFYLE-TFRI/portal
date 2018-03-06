@@ -234,7 +234,7 @@ html, body, #root {
 .ExperimentTable__stepsColumn {
   overflow: hidden !important;
   padding: 0 !important;
-  vertical-align: middle;
+  vertical-align: middle !important;
 }
 
 .ExperimentTable tr > *:nth-child(1) { width: 150px; }
