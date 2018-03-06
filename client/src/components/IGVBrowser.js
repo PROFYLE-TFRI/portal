@@ -16,6 +16,23 @@
   <script type="text/javascript" src="https://igv.org/web/release/1.0.9/igv-1.0.9.js"></script>
   <!--/ IGV.js -->
 
+  Usage:
+
+    <IGVBrowser
+      reference={{ id: 'hg19' }}
+      locus='chr8:128,747,267-128,754,546'
+      trackDefaults={{ alignment: { height: 150 } }}
+      tracks={
+        selectedEntries
+          .filter(([file, selected]) => selected)
+          .map(([file, _]) => ({
+            name: (file.match(/[^/]+$/) || [file])[0],
+            url: `/files/${file}`
+          }))
+      }
+      showGenes={true}
+    />
+
  */
 
 
@@ -30,12 +47,10 @@ const SourceTypes = propTypes.oneOf([
   'file', 'gcs', 'ga4gh'
 ])
 
-const Track = propTypes.shape({
+const TrackBase = {
   type:             TrackTypes, // Track type                                                                                                                            	 No default. If not specified, type is inferred from file format
   sourceType:       SourceTypes, // Type of data source. Valid values are "file", "gcs" for Google Cloud Storage, and "ga4gh" for the Global Alliance API                 	 "file"
   format:           propTypes.string, // File format                                                                                                                           	 No default. If not specified format is inferred from file name extension
-  name:             propTypes.string.isRequired, // Display name (label). Required
-  url:              propTypes.string.isRequired, // URL to the track data resource, such as a file or webservice. Required
   indexURL:         propTypes.string, // URL to a file index, such as a BAM .bai, Tabix .tbi, or Tribble .idx file.
   indexed:          propTypes.bool, // Flag used to indicate if a file is indexed or not. If indexURL is provided this flag is redundant. If the indexURL is not provided and this flag is true index files will be searched by file name convention. NOTE: This is a change from previous igv releases.
   order:            propTypes.number, // Integer value specifying relative order of track position on the screen. To pin a track to the bottom use Number.MAX_VALUE. If no order is specified, tracks appear in order of their addition.
@@ -46,14 +61,24 @@ const Track = propTypes.shape({
   maxHeight:        propTypes.number, // Maximum height of track in pixels                                                                                                     	 500
   visibilityWindow: propTypes.number, // Maximum window size in base pairs for which indexed annotations or variants are displayed                                             	 1 MB for variants, 30 KB for alignments, whole chromosome for other track types
   /* TODO per-type options */
+}
+
+const Track = propTypes.shape({
+  ...TrackBase,
+  name:             propTypes.string.isRequired, // Display name (label). Required
+  url:              propTypes.string.isRequired, // URL to the track data resource, such as a file or webservice. Required
+})
+
+const TrackDefault = propTypes.shape({
+  ...TrackBase
 })
 
 const TrackDefaults = propTypes.shape({
-  annotation: Track,
-  wig: Track,
-  alignment: Track,
-  variant: Track,
-  seg: Track,
+  annotation: TrackDefault,
+  wig: TrackDefault,
+  alignment: TrackDefault,
+  variant: TrackDefault,
+  seg: TrackDefault,
 })
 
 const BrowserOptions = {
@@ -72,29 +97,48 @@ const BrowserOptions = {
   doubleClickDelay: propTypes.number, // Maximum between mouse clicks in milliseconds to trigger a double-click	500
 }
 
+
+const genesTrack = {
+  name: 'Genes',
+    type: 'annotation',
+    format: 'bed',
+    sourceType: 'file',
+    url: 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz',
+    indexURL: 'https://s3.amazonaws.com/igv.broadinstitute.org/annotations/hg19/genes/refGene.hg19.bed.gz.tbi',
+    order: Number.MAX_VALUE,
+    visibilityWindow: 300000000,
+    displayMode: 'EXPANDED'
+}
+
 export default class IGVBrowser extends React.Component {
-  static propTypes = BrowserOptions
+  static propTypes = {
+    ...BrowserOptions,
+    showGenes: propTypes.bool,
+  }
 
   componentDidMount() {
     // IGV.js code is impure, therefore we need to make a copy of everything we pass to it
-    this.browser = igv.createBrowser(this.element, {  ...this.props  })
+    this.browser = igv.createBrowser(this.element, { ...this.props, tracks: getTracks(this.props) })
   }
 
   componentWillReceiveProps(props) {
-    if (!tracksEqual(this.props.tracks, props.tracks)) {
+    const previousTracksList = getTracks(this.props)
+    const nextTracksList = getTracks(props)
+
+    if (!tracksEqual(previousTracksList, nextTracksList)) {
 
       const previousTracks = new Set()
       const nextTracks = new Set()
 
-      this.props.tracks.forEach(track => previousTracks.add(getTrackID(track)))
-      props.tracks.forEach(track => nextTracks.add(getTrackID(track)))
+      previousTracksList.forEach(track => previousTracks.add(getTrackID(track)))
+      nextTracksList.forEach(track => nextTracks.add(getTrackID(track)))
 
       /*
        * Here, we access igv.Browser internals because the Browser#removeTrackByName
        * function is not in the 1.9 release, but it should be used when available
        */
       const tracksToRemove = this.browser.trackViews.filter(view => !nextTracks.has(getTrackID(view.track))).map(view => view.track)
-      const tracksToAdd = props.tracks.filter(track => !previousTracks.has(getTrackID(track)))
+      const tracksToAdd = nextTracksList.filter(track => !previousTracks.has(getTrackID(track)))
 
       tracksToRemove.forEach(track => this.browser.removeTrack(track))
       tracksToAdd.forEach(track => this.browser.loadTrack(track))
@@ -106,6 +150,10 @@ export default class IGVBrowser extends React.Component {
       <div className='IGVBrowser' ref={e => e && (this.element = e)} />
     )
   }
+}
+
+function getTracks(props) {
+  return props.showGenes ? props.tracks.concat(genesTrack) : props.tracks
 }
 
 function tracksEqual(previous, next) {
