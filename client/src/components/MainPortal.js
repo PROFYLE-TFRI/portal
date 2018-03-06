@@ -7,6 +7,7 @@ import { DONOR_COLUMNS } from '../constants';
 import { select, deselect, logOut } from '../actions';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
+import ExperimentModal from './ExperimentModal';
 import ExperimentTable from './ExperimentTable';
 import IGVBrowser from './IGVBrowser';
 import SampleTable from './SampleTable';
@@ -55,9 +56,10 @@ class MainPortal extends Component {
 
     const visibleDonors = filterVisibleDonors(donors, selection, search)
     const selectedDonors = filterSelectedDonors(donors, selection, search)
+    const visibleAndSelectedDonors = filterSelectedDonors(visibleDonors, selection, search)
 
-    const selectedSamples = visibleDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
-    const selectedExperiments = selectedSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+    const visibleSamples = visibleAndSelectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
+    const selectedExperiments = visibleSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
     const selectedDonorsCount = selection.donors.size === 0 ? 0 : selectedDonors.length
 
@@ -102,7 +104,7 @@ class MainPortal extends Component {
           <Col>
             <h4>
               { samples.length } samples <span className='text-muted'>
-                ({ selectedSamples.length } visible)
+                ({ visibleSamples.length } visible)
               </span>
             </h4>
           </Col>
@@ -110,7 +112,7 @@ class MainPortal extends Component {
 
         <br/>
 
-        <SampleTable samples={selectedSamples} />
+        <SampleTable samples={visibleSamples} />
 
         <Row>
           <Col>
@@ -125,6 +127,8 @@ class MainPortal extends Component {
         <br/>
 
         <ExperimentTable experiments={selectedExperiments} />
+
+        <ExperimentModal />
 
       </Container>
     )
