@@ -32,7 +32,7 @@ export const COLORS = [
 
 
 export const DONOR_COLUMNS = [
-    { field: 'id',                         title: 'Donor' }
+    { field: 'id',                         title: 'Donor', isKey: true }
   , { field: 'age',                        title: 'Age' }
   , { field: 'sex',                        title: 'Sex' }
   , { field: 'disease',                    title: 'Disease', uri: 'disease_ontology_uri' }
@@ -41,7 +41,7 @@ export const DONOR_COLUMNS = [
 ]
 
 export const SAMPLE_COLUMNS = [
-    { field: 'id',                       title: 'Sample' }
+    { field: 'id',                       title: 'Sample', isKey: true }
   , { field: 'tissue_type',              title: 'Tissue Type', uri: 'tissue_type_ontology_uri' }
   , { field: 'tumor',                    title: 'Tumor?' }
   , { field: 'sample_submission_date',   title: 'Submission Date' }
@@ -50,7 +50,7 @@ export const SAMPLE_COLUMNS = [
 ]
 
 export const EXPERIMENT_COLUMNS = [
-    { field: 'id',                title: 'Experiment' }
+    { field: 'id',                title: 'Experiment', isKey: true }
   , { field: 'assay_type',        title: 'Assay Type' }
   , { field: 'experiment_type',   title: 'Type' }
   , { field: 'protocol_type',     title: 'Protocol' }
