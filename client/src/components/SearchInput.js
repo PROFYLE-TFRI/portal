@@ -42,7 +42,7 @@ class App extends Component {
     return (
       <InputGroup>
         <Input value={value} placeholder='Search...' onChange={this.onChange}/>
-        <InputGroupAddon addonType='prepend'>
+        <InputGroupAddon addonType='append'>
           <Button onClick={this.onClickClear}>Clear</Button>
         </InputGroupAddon>
       </InputGroup>
