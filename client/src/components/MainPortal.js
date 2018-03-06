@@ -5,14 +5,14 @@ import { Container, Row, Col, Alert } from 'reactstrap';
 
 import { DONOR_COLUMNS } from '../constants';
 import { select, deselect, logOut } from '../actions';
-import SearchInput from './SearchInput';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
-import SampleTable from './SampleTable';
 import ExperimentTable from './ExperimentTable';
+import IGVBrowser from './IGVBrowser';
+import SampleTable from './SampleTable';
+import SearchInput from './SearchInput';
 
 const columns = DONOR_COLUMNS.map(c => c.field)
-
 
 
 const mapStateToProps = state => ({
@@ -72,7 +72,7 @@ class MainPortal extends Component {
         <Row>
           <Col sm={{ size: 8 }}>
             <h4>
-              { donors.length } donors <span className='text-message'>
+              { donors.length } donors <span className='text-muted'>
                 ({ selectedDonorsCount } selected, { visibleDonors.length } visible)
               </span>
             </h4>

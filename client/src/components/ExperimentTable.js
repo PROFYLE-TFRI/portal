@@ -154,7 +154,11 @@ class ExperimentTable extends Component {
 
   renderSteps(cell, experiment) {
     if (!experiment || !experiment.analysis)
-      return <em>No steps</em>
+      return (
+        <div className='steps steps--empty'>
+          <em>No steps</em>
+        </div>
+      )
 
     const steps = experiment.analysis.pipeline.step
 
@@ -193,7 +197,7 @@ class ExperimentTable extends Component {
           return <div key={id} id={id} className={className} onClick={openPopover} ref={onRef}>
             <div className='step__dot' />
             <div className='step__name' title={name}>{name}</div>
-            <div className='step__details text-message'>
+            <div className='step__details text-muted'>
               { endDate }
             </div>
           </div>

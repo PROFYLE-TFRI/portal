@@ -20,7 +20,7 @@ html, body, #root {
   text-align: center;
 }
 
-.text-message {
+.text-muted {
   color: #999;
   fill: #999;
 }
@@ -229,6 +229,12 @@ html, body, #root {
 .ExperimentTable__stepsColumn {
   overflow: hidden !important;
   padding: 0 !important;
+  vertical-align: middle;
+}
+.ExperimentTable__stepsColumn {
+  overflow: hidden !important;
+  padding: 0 !important;
+  vertical-align: middle;
 }
 
 .ExperimentTable tr > *:nth-child(1) { width: 150px; }
@@ -240,6 +246,11 @@ html, body, #root {
 .steps {
   padding: 10px;
   overflow-x: scroll;
+}
+.steps--empty {
+  padding: 0 .3rem;
+  color: #999;
+  overflow-x: hidden;
 }
 
 .step {
