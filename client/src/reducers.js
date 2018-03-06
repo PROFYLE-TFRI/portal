@@ -1,3 +1,4 @@
+import { compose, indexBy, prop, flatten } from 'ramda';
 import {
     LOG_IN
   , LOG_OUT
@@ -29,7 +30,8 @@ function createDefaultUI() {
     search: '',
     message: undefined,
     selection: {
-      donors: new Set()
+      donors: new Set(),
+      experiment: undefined,
     },
   }
 }
@@ -153,6 +155,8 @@ function createDefaultData() {
   return {
       isLoading: false
     , donors: {}
+    , samples: {}
+    , experiments: {}
   }
 }
 function dataReducer(state = createDefaultData(), action, ui) {
@@ -161,7 +165,24 @@ function dataReducer(state = createDefaultData(), action, ui) {
       return { ...state, isLoading: true }
     }
     case RECEIVE_DONORS: {
-      return { ...state, isLoading: false, donors: action.donors }
+      const donors = action.donors
+      const samples =
+        indexBy(prop('id'),
+          flatten(
+            Object.values(action.donors)
+              .map(compose(Object.values, prop('samples')))))
+      const experiments =
+        indexBy(prop('id'),
+          flatten(
+            Object.values(samples)
+              .map(compose(Object.values, prop('experiments')))))
+      return {
+        ...state,
+        isLoading: false,
+        donors,
+        samples,
+        experiments,
+      }
     }
     case RECEIVE_ERROR: {
       return { ...state, isLoading: false }
