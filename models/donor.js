@@ -39,7 +39,7 @@ function attachExperiments(donor) {
           ]
         )
         .then(([experiment, analysis]) => normalizeExperiment(experimentType, sampleID, experiment, analysis))
-        .then(experiment => attachAlignements(donor.id, sampleID, experiment))
+        .then(experiment => attachAlignments(donor.id, sampleID, experiment))
       ))
       .then(indexBy(prop('id')))
       .then(experimentsByID => donor.samples[sampleID].experiments = experimentsByID)
@@ -49,18 +49,18 @@ function attachExperiments(donor) {
   .then(() => donor)
 }
 
-function attachAlignements(id, sampleID, experiment) {
-  const alignementsPath = getExperimentAlignementsPath(id, sampleID, experiment.type)
+function attachAlignments(id, sampleID, experiment) {
+  const alignments = getExperimentAlignmentsPath(id, sampleID, experiment.type)
 
-  return exists(alignementsPath)
+  return exists(alignments)
   .then(doExists =>
     (doExists ?
-        readDir(alignementsPath)
+        readDir(alignments)
       : Promise.resolve([]))
     .then(files => {
-      experiment.alignements = files
+      experiment.alignments = files
         .filter(file => /\.bam$/.test(file))
-        .map(file => path.join(alignementsPath, file))
+        .map(file => path.join(alignments, file))
       return experiment
     })
   )
@@ -113,8 +113,8 @@ function getExperimentJSONPath(id, sampleID, experimentType) {
   return `${id}/${sampleID}/${experimentType}/${sampleID}.${experimentType}.json`
 }
 
-function getExperimentAlignementsPath(id, sampleID, experimentType) {
-  return `${id}/${sampleID}/${experimentType}/alignements`
+function getExperimentAlignmentsPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/alignments`
 }
 
 function getExperimentAnalysisJSONPath(id, sampleID, experimentType) {
