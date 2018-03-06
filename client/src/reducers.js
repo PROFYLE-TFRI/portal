@@ -11,6 +11,8 @@ import {
   , DESELECT_DONOR
   , SELECT_ALL_DONORS
   , DESELECT_ALL_DONORS
+  , SELECT_EXPERIMENT
+  , DESELECT_EXPERIMENT
   , SELECT
   , DESELECT
   , SELECT_ALL
@@ -92,6 +94,18 @@ function uiReducer(state = createDefaultUI(), action, data) {
         selection: { ...state.selection,
           donors: new Set() } }
     }
+
+    case SELECT_EXPERIMENT: {
+      return { ...state,
+        selection: { ...state.selection,
+          experiment: action.payload } }
+    }
+    case DESELECT_EXPERIMENT: {
+      return { ...state,
+        selection: { ...state.selection,
+          experiment: undefined } }
+    }
+
     default:
       return state;
   }

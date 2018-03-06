@@ -21,6 +21,9 @@ export const DESELECT_DONOR = 'DESELECT_DONOR'
 export const SELECT_ALL_DONORS = 'SELECT_ALL_DONORS'
 export const DESELECT_ALL_DONORS = 'DESELECT_ALL_DONORS'
 
+export const SELECT_EXPERIMENT   = 'SELECT_EXPERIMENT'
+export const DESELECT_EXPERIMENT = 'DESELECT_EXPERIMENT'
+
 export const SELECT = 'SELECT'
 export const DESELECT = 'DESELECT'
 export const SELECT_ALL = 'SELECT_ALL'
@@ -153,6 +156,19 @@ export function selectAllDonors() {
 export function deselectAllDonors() {
   return {
     type: DESELECT_ALL_DONORS
+  }
+}
+
+export function selectExperiment(id) {
+  return {
+    type: SELECT_EXPERIMENT,
+    payload: id
+  }
+}
+
+export function deselectExperiment() {
+  return {
+    type: DESELECT_EXPERIMENT
   }
 }
 
