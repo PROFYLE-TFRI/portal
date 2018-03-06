@@ -49,6 +49,7 @@ class DonorTable extends Component {
             selectRow={selectRowProp}
             options={options}
             pagination={true}
+            hover={true}
             trClassName='clickable'
         >
           {

@@ -76,7 +76,10 @@ class ExperimentTable extends Component {
 
     const options = {
       sizePerPage: 15,
-      hideSizePerPage: true
+      hideSizePerPage: true,
+      onRowClick: (...args) => {
+        console.log(args)
+      }
     }
 
     return (
@@ -84,6 +87,8 @@ class ExperimentTable extends Component {
         <Table data={experiments} version='4'
             options={options}
             pagination={true}
+            hover={true}
+            trClassName='clickable'
         >
           {
             EXPERIMENT_COLUMNS.map(renderColumn)
@@ -193,8 +198,11 @@ class ExperimentTable extends Component {
               this.stepsToScrollIntoView[experiment.id] = ref
           }
 
-          const openPopover = () =>
+          const openPopover = (ev) => {
+            ev.preventDefault()
+            ev.stopPropagation()
             this.openPopover(id, { step, analysis: experiment.analysis })
+          }
 
           return <div key={id} id={id} className={className} onClick={openPopover} ref={onRef}>
             <div className='step__dot' />
