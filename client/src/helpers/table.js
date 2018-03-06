@@ -7,15 +7,16 @@ import { TableHeaderColumn as Header } from 'react-bootstrap-table';
 
 
 
-export function renderColumn({ field, title, type, uri }, i) {
+export function renderColumn({ field, title, type, uri, format, isKey }, i) {
   return (
     <Header
       key={field}
-      isKey={i === 0}
+      isKey={isKey}
       columnTitle={true}
       dataSort={true}
       dataField={field}
       dataFormat={
+        format !== undefined ? format :
         type === 'link' ? formatLink :
         uri !== undefined ? (_, data, ...args) => formatLink(data[uri], data[field]) :
         /* otherwise */ undefined}
