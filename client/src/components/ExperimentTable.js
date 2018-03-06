@@ -3,6 +3,7 @@
  */
 
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
     BootstrapTable as Table
@@ -12,6 +13,7 @@ import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import cx from 'classname';
 
 
+import { selectExperiment } from '../actions'
 import { renderColumn } from '../helpers/table';
 import { EXPERIMENT_COLUMNS } from '../constants';
 
@@ -25,8 +27,9 @@ const mapStateToProps = state => ({
     donors: values(state.data.donors)
   , selected: [...state.ui.selection.donors]
 })
-const mapDispatchToProps = dispatch => ({
-})
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ selectExperiment }, dispatch)
+
 class ExperimentTable extends Component {
   constructor() {
     super()
@@ -77,8 +80,8 @@ class ExperimentTable extends Component {
     const options = {
       sizePerPage: 15,
       hideSizePerPage: true,
-      onRowClick: (...args) => {
-        console.log(args)
+      onRowClick: (experiment) => {
+        this.props.selectExperiment(experiment.id)
       }
     }
 
