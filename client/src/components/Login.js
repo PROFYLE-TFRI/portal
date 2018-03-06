@@ -64,7 +64,7 @@ class Login extends Component {
     }
   }
 
-  render() {
+  renderContent() {
     const { auth } = this.props
     const { transitionEnded } = this.state
 
@@ -72,79 +72,94 @@ class Login extends Component {
     const showCode        = !transitionEnded || this.state.showCode
 
     return (
-      <Form className='Login' onSubmit={this.onSubmit}>
-        <Container>
-          <Row>
-            <Col sm={{ size: 6, offset: 3 }}>
-              <h1>Log In</h1>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={{ size: 6, offset: 3 }} className={
-              classname('Login__form', { 'Login__form--requires2fa': this.state.showCode})
-            }
-            >
+      <Container>
+        <Row>
+          <Col sm={{ size: 6, offset: 3 }}>
+            <h1 className='Login__title'>Log In</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={{ size: 6, offset: 3 }} className={
+            classname('Login__form', { 'Login__form--requires2fa': this.state.showCode})
+          }
+          >
 
-              <div className='Login__tabs'>
-                {
-                  showCredentials &&
-                  <div className='Login__credentials' onTransitionEnd={this.onTransitionEnd}>
-                    <FormGroup>
-                      <InputGroup>
-                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label htmlFor='email' className='input-group-text Login__label'>Email</label>
-                        </InputGroupAddon>
-                        <Input type='email' name='email' id='email' ref={e => e && (this.email = findDOMNode(e))} required />
-                      </InputGroup>
-                    </FormGroup>
-                    <FormGroup>
-                      <InputGroup>
-                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label htmlFor='password' className='input-group-text Login__label'>Password</label>
-                        </InputGroupAddon>
-                        <Input type='password' name='password' id='password' ref={e => e && (this.password = findDOMNode(e))} required />
-                      </InputGroup>
-                    </FormGroup>
-                  </div>
-                }
-
-                {
-                  showCode &&
-                  <div className='Login__code' onTransitionEnd={this.onTransitionEnd}>
-                    <FormGroup>
-                      <InputGroup>
-                        <InputGroupAddon addonType='prepend' className='input-group-prepend'>
-                          <label htmlFor='code' className='input-group-text Login__label'>Code</label>
-                        </InputGroupAddon>
-                        <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
-                      </InputGroup>
-                    </FormGroup>
-                    <button type='button' className='link' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</button>
-                  </div>
-                }
-              </div>
-
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={{ size: 6, offset: 3 }} className='text-center'>
-              <Button loading={auth.isLoading}>
-                Submit
-              </Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={{ size: 6, offset: 3 }}>
-              <br/>
+            <div className='Login__tabs'>
               {
-                auth.message &&
-                  <Alert color='danger'>
-                    { auth.message }
-                  </Alert>
+                showCredentials &&
+                <div className='Login__credentials' onTransitionEnd={this.onTransitionEnd}>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                        <label htmlFor='email' className='input-group-text Login__label'>Email</label>
+                      </InputGroupAddon>
+                      <Input type='email' name='email' id='email' ref={e => e && (this.email = findDOMNode(e))} required />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                        <label htmlFor='password' className='input-group-text Login__label'>Password</label>
+                      </InputGroupAddon>
+                      <Input type='password' name='password' id='password' ref={e => e && (this.password = findDOMNode(e))} required />
+                    </InputGroup>
+                  </FormGroup>
+                </div>
               }
-            </Col>
-          </Row>
-        </Container>
+
+              {
+                showCode &&
+                <div className='Login__code' onTransitionEnd={this.onTransitionEnd}>
+                  <FormGroup>
+                    <InputGroup>
+                      <InputGroupAddon addonType='prepend' className='input-group-prepend'>
+                        <label htmlFor='code' className='input-group-text Login__label'>Code</label>
+                      </InputGroupAddon>
+                      <Input type='code' name='code' id='code' ref={e => e && (this.code = findDOMNode(e))} />
+                    </InputGroup>
+                  </FormGroup>
+                  <button type='button' className='link' onClick={() => this.goBack()}><Icon name='caret-left' /> Back</button>
+                </div>
+              }
+            </div>
+
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={{ size: 6, offset: 3 }} className='text-center'>
+            <Button loading={auth.isLoading}>
+              Submit
+            </Button>
+          </Col>
+        </Row>
+        <Row>
+          <Col sm={{ size: 6, offset: 3 }}>
+            <br/>
+            {
+              auth.message &&
+                <Alert color='danger'>
+                  { auth.message }
+                </Alert>
+            }
+          </Col>
+        </Row>
+      </Container>
+    )
+  }
+
+  render() {
+    const { auth } = this.props
+
+    return (
+      <Form className='Login' onSubmit={this.onSubmit}>
+        { !auth.initialCheck &&
+            <div className='Login__loading'>
+              <Icon name='spinner' spin /> Loading
+            </div>
+        }
+        { auth.initialCheck &&
+            this.renderContent()
+        }
       </Form>
     )
   }

@@ -113,6 +113,7 @@ function uiReducer(state = createDefaultUI(), action, data) {
 
 function createDefaultAuth() {
   return {
+    initialCheck: false,
     isLoading: false,
     isLoggedIn: false,
     requires2fa: false,
@@ -138,7 +139,7 @@ function authReducer(state = createDefaultAuth(), action) {
       return { ...state, isLoading: true }
     }
     case LOG_OUT.RECEIVE: {
-      return createDefaultAuth()
+      return { ...createDefaultAuth(), initialCheck: true }
     }
     case LOG_OUT.ERROR: {
       return { ...state, isLoading: false  }
@@ -148,7 +149,13 @@ function authReducer(state = createDefaultAuth(), action) {
     }
     case IS_LOGGED_IN.RECEIVE: {
       const isLoggedIn = action.payload !== false
-      return { ...state, isLoading: false, isLoggedIn: isLoggedIn, user: isLoggedIn ? action.payload : undefined  }
+      return {
+        ...state,
+        initialCheck: true,
+        isLoading: false,
+        isLoggedIn: isLoggedIn,
+        user: isLoggedIn ? action.payload : undefined
+      }
     }
     case IS_LOGGED_IN.ERROR: {
       return { ...state, isLoading: false  }
