@@ -34,10 +34,10 @@ function createDefaultUI() {
   }
 }
 function uiReducer(state = createDefaultUI(), action, data) {
+  if (action.error)
+    return { ...state, message: action.message }
+
   switch (action.type) {
-    case RECEIVE_ERROR: {
-      return { ...state, message: action.message }
-    }
     case SELECT: {
       return { ...state,
         selection: { ...state.selection,
