@@ -17,7 +17,7 @@ router.use('/', (req, res, next) => {
 })
 
 function sendRequest(req, res) {
-  const stream = fs.createReadStream(req.url)
+  const stream = fs.createReadStream(getPath(req.url))
   stream.on('open', () => {
     res.set('Content-Type', 'application/octet-stream')
     stream.pipe(res)
@@ -30,10 +30,11 @@ function sendRequest(req, res) {
 }
 
 function sendRangeRequest(req, res) {
+  const path = getPath(req.url)
   const start = req.range.first
   const end   = req.range.last
 
-  fs.exists(req.url)
+  fs.exists(path)
   .then(ok => {
     if (!ok) {
       res.status(404)
@@ -42,11 +43,9 @@ function sendRangeRequest(req, res) {
       return
     }
 
-    return fs.stat(req.url)
+    return fs.stat(path)
   })
   .then(stat => {
-    console.log(stat.size)
-    console.log(req.range)
 
     if (start > stat.size || end > stat.size) {
       res.status(400)
@@ -55,7 +54,7 @@ function sendRangeRequest(req, res) {
       return
     }
 
-    const stream = fs.createReadStream(req.url, { start, end })
+    const stream = fs.createReadStream(path, { start, end })
     stream.on('open', () => {
       res.range({
         first: start,
@@ -71,6 +70,10 @@ function sendRangeRequest(req, res) {
       res.end()
     })
   })
+}
+
+function getPath(url) {
+  return url.replace(/\?.*$/, '')
 }
 
 module.exports = router;
