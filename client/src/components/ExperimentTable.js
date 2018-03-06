@@ -131,16 +131,18 @@ class ExperimentTable extends Component {
           </tbody>
         </table>
         <div className='Popover__scrollArea'>
-          <div class='list-group'>
+          <div className='list-group'>
             {
               jobs.map(job =>
-                <div key={job.id} class='list-group-item flex-column align-items-start'>
-                  <div class='d-flex w-100 justify-content-between'>
-                    <h5 class='mb-1'>{ job.id }</h5>
+                <div key={job.id} className='list-group-item flex-column align-items-start'>
+                  <div className='d-flex w-100 justify-content-between'>
+                    <h5 className='mb-1'>{ job.id }</h5>
                     <small>{ job.job_start_date || '' } - { job.job_end_date || '' }</small>
                   </div>
-                  <p class='mb-1 job__command'>
-                    { job.command.split('&&').map((cmd, i) => <span>{ (i ? '&&' : '   ') + cmd }<br/></span>) } 
+                  <p className='mb-1 job__command'>
+                    { job.command.split('&&').map((cmd, i) =>
+                        <span key={i}>{ (i ? '&&' : '   ') + cmd }<br/></span>)
+                    }
                   </p>
                   <small>Status: { job.status }</small>
                 </div>
