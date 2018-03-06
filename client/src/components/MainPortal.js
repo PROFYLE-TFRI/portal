@@ -21,6 +21,8 @@ const mapStateToProps = state => ({
   , search: state.ui.search
   , message: state.ui.message
   , donors: Object.values(state.data.donors)
+  , samples: Object.values(state.data.samples)
+  , experiments: Object.values(state.data.experiments)
   , auth: state.auth
 })
 const mapDispatchToProps = dispatch =>
@@ -37,7 +39,15 @@ class MainPortal extends Component {
   }
 
   render() {
-    const { auth, donors, selection, search, message } = this.props
+    const {
+      auth,
+      donors,
+      samples,
+      experiments,
+      selection,
+      search,
+      message
+    } = this.props
 
     if (!auth.isLoggedIn)
       return this.renderLogin()
@@ -45,8 +55,10 @@ class MainPortal extends Component {
 
     const visibleDonors = filterVisibleDonors(donors, selection, search)
     const selectedDonors = filterSelectedDonors(donors, selection, search)
-    const selectedSamples = selectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
+
+    const selectedSamples = visibleDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
     const selectedExperiments = selectedSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+
     const selectedDonorsCount = selection.donors.size === 0 ? 0 : selectedDonors.length
 
     return (
@@ -85,7 +97,33 @@ class MainPortal extends Component {
         <br/>
 
         <DonorTable donors={visibleDonors} />
+
+        <Row>
+          <Col>
+            <h4>
+              { samples.length } samples <span className='text-muted'>
+                ({ selectedSamples.length } visible)
+              </span>
+            </h4>
+          </Col>
+        </Row>
+
+        <br/>
+
         <SampleTable samples={selectedSamples} />
+
+        <Row>
+          <Col>
+            <h4>
+              { experiments.length } experiments <span className='text-muted'>
+                ({ selectedExperiments.length } visible)
+              </span>
+            </h4>
+          </Col>
+        </Row>
+
+        <br/>
+
         <ExperimentTable experiments={selectedExperiments} />
 
       </Container>
