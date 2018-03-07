@@ -2,7 +2,7 @@
  * models.js
  */
 
-import { prop } from 'ramda';
+import { prop } from './helpers/rambda';
 const { keys, values } = Object
 
 

@@ -5,11 +5,14 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Pie, PieChart, Cell, Sector } from 'recharts';
 import Curve from 'recharts/es6/shape/Curve';
+import PieChart from 'recharts/es6/chart/PieChart';
+import Pie from 'recharts/es6/polar/Pie';
+import Cell from 'recharts/es6/component/Cell';
+import Sector from 'recharts/es6/shape/Sector';
 import { polarToCartesian } from 'recharts/es6/util/PolarUtils';
 import { Row, Col, Button } from 'reactstrap';
-import { compose } from 'ramda';
+import { compose } from '../helpers/rambda';
 
 import { COLORS } from '../constants';
 import { select, deselect, deselectAll } from '../actions';

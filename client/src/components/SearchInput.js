@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
-import { compose } from 'ramda';
+import { compose } from '../helpers/rambda';
 
 import { search } from '../actions';
 

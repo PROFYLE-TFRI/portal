@@ -1,4 +1,5 @@
-import { compose, indexBy, prop, flatten } from 'ramda';
+import { compose, prop, flatten } from './helpers/rambda';
+import indexBy from './helpers/index-by'
 import {
     LOG_IN
   , LOG_OUT

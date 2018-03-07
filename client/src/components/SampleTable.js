@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { BootstrapTable as Table } from 'react-bootstrap-table';
-import { compose } from 'ramda';
+import { compose } from '../helpers/rambda';
 
 import { renderColumn } from '../helpers/table';
 import { selectDonor, deselectDonor } from '../actions';

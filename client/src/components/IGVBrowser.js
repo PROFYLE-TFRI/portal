@@ -138,7 +138,9 @@ export default class IGVBrowser extends React.Component {
        * Here, we access igv.Browser internals because the Browser#removeTrackByName
        * function is not in the 1.9 release, but it should be used when available
        */
-      const tracksToRemove = this.browser.trackViews.filter(view => !nextTracks.has(getTrackID(view.track))).map(view => view.track)
+      const tracksToRemove = this.browser.trackViews
+        .filter(view => view.track.id !== 'ruler' && view.track.id !== 'sequence' && !nextTracks.has(getTrackID(view.track)))
+        .map(view => view.track)
       const tracksToAdd = nextTracksList.filter(track => !previousTracks.has(getTrackID(track)))
 
       tracksToRemove.forEach(track => this.browser.removeTrack(track))
