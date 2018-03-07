@@ -235,6 +235,9 @@ html, body, #root {
 
 /* <Charts/> */
 
+.Charts__placeholder {
+  display: inline-block;
+}
 .Charts__title {
   position: relative;
 }

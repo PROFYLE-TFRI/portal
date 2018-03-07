@@ -9,6 +9,7 @@
     "bootstrap": "^4.0.0",
     "classname": "0.0.0",
     "font-awesome": "^4.7.0",
+    "lodash": "^4.17.5",
     "react": "^16.0.0",
     "react-addons-css-transition-group": "^15.6.2",
     "react-addons-transition-group": "^15.6.2",
@@ -20,11 +21,13 @@
     "recharts": "^1.0.0-apha.5",
     "redux": "^3.7.2",
     "redux-logger": "^3.0.6",
-    "redux-thunk": "^2.2.0"
+    "redux-thunk": "^2.2.0",
+    "sw-precache": "^5.2.1"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && npm run build-dist",
+    "build": "react-scripts build && npm run build-sw && npm run build-dist",
+    "build-sw": "sw-precache --root=build --static-file-globs='build/static/**/*'",
     "build-dist": "NODE_ENV=production babel -d dist src",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"

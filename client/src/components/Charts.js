@@ -14,6 +14,7 @@ import Sector from 'recharts/es6/shape/Sector';
 import { polarToCartesian } from 'recharts/es6/util/PolarUtils';
 import { Row, Col, Button } from 'reactstrap';
 import { compose } from '../helpers/rambda';
+import isEqual from 'lodash/isEqual'
 
 import { COLORS } from '../constants';
 import { select, deselect, deselectAll } from '../actions';
@@ -22,9 +23,11 @@ const { values, entries } = Object
 
 
 const RADIAN = Math.PI / 180;
+const MIN_PERCENT    = 0.05
 const MIN_DIFF_ANGLE = 50
-const MIN_PERCENT = 0.05
 
+const PIE_WIDTH  = 540
+const PIE_HEIGHT = 300
 
 const mapStateToProps = state => ({
     isLoading: state.data.isLoading
@@ -35,6 +38,16 @@ const mapDispatchToProps = dispatch =>
   bindActionCreators({ select , deselect , deselectAll }, dispatch)
 
 class Charts extends Component {
+
+  state = {
+    didMount: false
+  }
+
+  componentDidMount() {
+    if (!this.state.didMount && typeof window !== 'undefined') {
+      setTimeout(() => this.setState({ didMount: true }), 50)
+    }
+  }
 
   handleClick(which, ev) {
     const value = ev.payload.name === 'null' ? null : ev.payload.name
@@ -50,7 +63,7 @@ class Charts extends Component {
   }
 
   render() {
-
+    const { didMount } = this.state
     const { donors, selection } = this.props
 
     const charts = [
@@ -83,11 +96,18 @@ class Charts extends Component {
                 </span>
               </h4>
 
-              <CustomPieChart
-                data={data}
-                selection={selection[which]}
-                onClick={this.handleClick.bind(this, which)}
-              />
+              {
+                didMount &&
+                  <CustomPieChart
+                    data={data}
+                    selection={selection[which]}
+                    onClick={this.handleClick.bind(this, which)}
+                  />
+              }
+              {
+                !didMount &&
+                  <div className='Charts__placeholder' style={{ width: PIE_WIDTH, height: PIE_HEIGHT }}/>
+              }
 
             </Col>
           })
@@ -100,7 +120,8 @@ class Charts extends Component {
 
 class CustomPieChart extends React.Component {
   state = {
-    activeIndex: undefined
+    canUpdate: false,
+    activeIndex: undefined,
   }
 
   onEnter = (data, index) => {
@@ -111,11 +132,29 @@ class CustomPieChart extends React.Component {
     this.setState({ activeIndex: undefined })
   }
 
+  componentDidMount() {
+    /*
+     * This ugly hack prevents the Pie labels from not appearing
+     * when Pie props change before the end of the animation.
+     */
+    setTimeout(() => this.setState({ canUpdate: true }), 3000)
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (this.state !== state && state.canUpdate)
+      return true
+
+    if (isEqual(this.props.data, props.data) && isEqual(this.props.selection, props.selection))
+      return false
+
+    return true
+  }
+
   render() {
     const { data, onClick, selection } = this.props
 
     return (
-      <PieChart width={540} height={300}>
+      <PieChart width={PIE_WIDTH} height={PIE_HEIGHT}>
         <Pie data={data}
           dataKey='value'
           cx='50%'

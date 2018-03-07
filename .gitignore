@@ -1,6 +1,7 @@
 /data
 /public/
 /client/build/
+/client/dist/
 config.js
 
 package-lock.json

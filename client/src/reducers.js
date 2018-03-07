@@ -125,7 +125,7 @@ function authReducer(state = createDefaultAuth(), action) {
       return { ...state, isLoading: true }
     }
     case LOG_IN.RECEIVE: {
-      return { ...state, isLoading: false, isLoggedIn: true, user: action.payload, message: undefined }
+      return { ...state, isLoading: false, isLoggedIn: true, initialCheck: true, user: action.payload, message: undefined }
     }
     case LOG_IN.ERROR: {
       return { ...state, isLoading: false, message: action.payload  }
