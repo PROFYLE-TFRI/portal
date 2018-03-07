@@ -41,7 +41,7 @@ class ExperimentTable extends Component {
 
     this.state = {
       popoverOpen: false,
-      popoverTarget: document.body,
+      popoverTarget: typeof document !== 'undefined' ? document.body : undefined,
       popoverData: undefined
     }
   }
@@ -103,7 +103,9 @@ class ExperimentTable extends Component {
           </Header>
         </Table>
 
-        { this.renderPopover() }
+        { this.state.popoverTarge &&
+            this.renderPopover()
+        }
       </div>
     )
   }
