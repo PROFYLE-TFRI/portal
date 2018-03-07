@@ -157,7 +157,7 @@ class EditRow extends React.Component {
         </th>
         <td><Input type='text'     name='name'         defaultValue={user.name}                         onChange={ev => this.setState({ name: ev.target.value })} /></td>
         <td><Input type='email'    name='email'        defaultValue={user.email}                        onChange={ev => this.setState({ email: ev.target.value })} /></td>
-        <td><Input type='password' name='password'     defaultValue={user.password}                     onChange={ev => this.setState({ password: ev.target.value })} /></td>
+        <td><Input type='password' name='new-password' defaultValue={user.password}                     onChange={ev => this.setState({ password: ev.target.value })} autoComplete='new-password' /></td>
         <td><Input type='text'     name='phone'        defaultValue={user.phone}                        onChange={ev => this.setState({ phone: ev.target.value })} /></td>
         <td><input type='checkbox' name='isAdmin'      defaultChecked={user.isAdmin}                    onChange={ev => this.setState({ isAdmin: ev.target.checked })} /></td>
         <td><Input type='text'     name='permissions'  defaultValue={JSON.stringify(user.permissions)}  onChange={ev => this.setState({ permissions: ev.target.value })} /></td>
