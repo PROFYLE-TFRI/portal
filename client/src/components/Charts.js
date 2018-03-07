@@ -17,7 +17,8 @@ import { select, deselect, deselectAll } from '../actions';
 const { values, entries } = Object
 
 
-const MIN_PERCENT = 0.05
+const RADIAN = Math.PI / 180;
+const MIN_DIFF_ANGLE = 25
 
 
 const mapStateToProps = state => ({
@@ -82,8 +83,7 @@ class Charts extends Component {
 
               <CustomPieChart
                 data={data}
-                selection={selection}
-                which={which}
+                selection={selection[which]}
                 onClick={this.handleClick.bind(this, which)}
               />
 
@@ -110,7 +110,7 @@ class CustomPieChart extends React.Component {
   }
 
   render() {
-    const { data, onClick, selection, which } = this.props
+    const { data, onClick, selection } = this.props
 
     return (
       <PieChart width={540} height={300}>
@@ -130,7 +130,7 @@ class CustomPieChart extends React.Component {
         >
           {
             data.map((entry, index) =>
-            <Cell key={index} fill={getColor(entry, index, selection[which])}/>)
+            <Cell key={index} fill={getColor(entry, index, selection)}/>)
           }
         </Pie>
       </PieChart>
@@ -138,8 +138,9 @@ class CustomPieChart extends React.Component {
   }
 }
 
+let lastAngle = 0
+
 function renderLabel(params) {
-  const RADIAN = Math.PI / 180;
   const {
     cx,
     cy,
@@ -187,12 +188,17 @@ function renderLabel(params) {
     points: [startPoint, endPoint],
   }
 
-  const displayLabel = payload.selected || percent > MIN_PERCENT
+  if (lastAngle > midAngle)
+    lastAngle = 0
+
+  const diffAngle = midAngle - lastAngle
+  const displayLabel = payload.selected || diffAngle > MIN_DIFF_ANGLE
 
   if (!displayLabel) {
     return null
   }
 
+  lastAngle = midAngle
 
   return (
     <g>
@@ -238,7 +244,6 @@ function renderLabel(params) {
 }
 
 function renderActiveShape(params) {
-  const RADIAN = Math.PI / 180;
   const {
     cx,
     cy,
