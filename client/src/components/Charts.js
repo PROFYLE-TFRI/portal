@@ -18,7 +18,8 @@ const { values, entries } = Object
 
 
 const RADIAN = Math.PI / 180;
-const MIN_DIFF_ANGLE = 25
+const MIN_DIFF_ANGLE = 50
+const MIN_PERCENT = 0.05
 
 
 const mapStateToProps = state => ({
@@ -138,7 +139,20 @@ class CustomPieChart extends React.Component {
   }
 }
 
+/*
+ * lastAngle is mutated by renderLabel() and renderActiveShape() to
+ * indicate at which angle is the last shown label.
+ */
 let lastAngle = 0
+
+const textStyle = {
+  fontSize: '11px',
+  fill: '#333',
+}
+const countTextStyle = {
+  fontSize: '10px',
+  fill: '#999',
+}
 
 function renderLabel(params) {
   const {
@@ -167,15 +181,10 @@ function renderLabel(params) {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
-  const textStyle = {
-    fontSize: '11px',
+  const currentTextStyle = {
+    ...textStyle,
     fontWeight: payload.selected ? 'bold' : 'normal',
     fontStyle: payload.name === 'null' ? 'italic' : 'normal',
-    fill: '#333',
-  }
-  const countTextStyle = {
-    fontSize: '11px',
-    fill: '#999',
   }
 
   const offsetRadius = 20
@@ -192,7 +201,7 @@ function renderLabel(params) {
     lastAngle = 0
 
   const diffAngle = midAngle - lastAngle
-  const displayLabel = payload.selected || diffAngle > MIN_DIFF_ANGLE
+  const displayLabel = payload.selected || diffAngle > MIN_DIFF_ANGLE || percent > MIN_PERCENT
 
   if (!displayLabel) {
     return null
@@ -223,9 +232,9 @@ function renderLabel(params) {
 
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none'/>
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke='none'/>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 3}
         textAnchor={textAnchor}
-        style={textStyle}
+        style={currentTextStyle}
       >
         { name }
       </text>
@@ -270,15 +279,10 @@ function renderActiveShape(params) {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
-  const textStyle = {
-    fontSize: '11px',
+  const currentTextStyle = {
+    ...textStyle,
     fontWeight: payload.selected ? 'bold' : 'normal',
     fontStyle: payload.name === 'null' ? 'italic' : 'normal',
-    fill: '#333',
-  }
-  const countTextStyle = {
-    fontSize: '11px',
-    fill: '#999',
   }
 
   const offsetRadius = 20
@@ -290,6 +294,8 @@ function renderActiveShape(params) {
     stroke: fill,
     points: [startPoint, endPoint],
   }
+
+  lastAngle = midAngle
 
   return (
     <g>
@@ -324,9 +330,9 @@ function renderActiveShape(params) {
 
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill='none'/>
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke='none'/>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey}
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey + 3}
         textAnchor={textAnchor}
-        style={textStyle}
+        style={currentTextStyle}
       >
         { name }
       </text>
