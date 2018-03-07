@@ -70,37 +70,37 @@ class ExperimentModal extends Component {
             <Col className='ExperimentModal__label' xs='4'>
               Sample
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.sample_id}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.sample_id)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
               Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.type}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.type)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
               Experiment Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.experiment_type}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.experiment_type)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
               Assay Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.assay_type}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.assay_type)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
               Protocol Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.protocol_type}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.protocol_type)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
               Seq. Center
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.sequencing_center}</Col>
+            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.sequencing_center)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
@@ -116,7 +116,11 @@ class ExperimentModal extends Component {
             <Col className='ExperimentModal__label' xs='4'>
               Analysis
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{experiment.analysis}</Col>
+            <Col className='ExperimentModal__value'>
+              <pre>
+                {JSON.stringify(experiment.analysis)}
+              </pre>
+            </Col>
           </Row>
         </Container>
 
