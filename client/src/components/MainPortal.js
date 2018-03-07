@@ -33,7 +33,7 @@ class MainPortal extends Component {
 
   handleClick(which, ev) {
     const value = ev.payload.name
-    if (this.props.selection[which].has(value))
+    if (this.props.selection[which].includes(value))
       this.props.deselect(which, value)
     else
       this.props.select(which, value)
@@ -61,7 +61,7 @@ class MainPortal extends Component {
     const visibleSamples = visibleAndSelectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
     const selectedExperiments = visibleSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
-    const selectedDonorsCount = selection.donors.size === 0 ? 0 : selectedDonors.length
+    const selectedDonorsCount = selection.donors.length === 0 ? 0 : selectedDonors.length
 
     return (
       <Container className='MainPortal'>
@@ -138,10 +138,10 @@ class MainPortal extends Component {
 
 function filterSelectedDonors(donors, selection) {
   // Filter only selected donors, but show all if none are selected
-  if (selection.donors.size === 0)
+  if (selection.donors.length === 0)
     return donors
 
-  return donors.filter(d => selection.donors.has(d['id']))
+  return donors.filter(d => selection.donors.includes(d['id']))
 }
 
 function filterVisibleDonors(donors, selection, search) {
@@ -149,12 +149,12 @@ function filterVisibleDonors(donors, selection, search) {
 
   return donors.filter(d => {
 
-    if (selection.provinces.size > 0 &&
-        !selection.provinces.has(d['recruitement_team.province']))
+    if (selection.provinces.length > 0 &&
+        !selection.provinces.includes(d['recruitement_team.province']))
       return false
 
-    if (selection.diseases.size > 0 &&
-        !selection.diseases.has(d['disease']))
+    if (selection.diseases.length > 0 &&
+        !selection.diseases.includes(d['disease']))
       return false
 
     if (search && !terms.every(term => columns.some(columnContains(d, term))))

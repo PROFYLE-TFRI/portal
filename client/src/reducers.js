@@ -22,6 +22,7 @@ import {
   , SET_TAB
 } from './actions';
 import * as USER from './actions/user';
+import * as DONOR from './actions/donor';
 import { computeValues } from './models';
 import { TABS } from './constants'
 
@@ -33,7 +34,7 @@ function createDefaultUI() {
     search: '',
     message: undefined,
     selection: {
-      donors: new Set(),
+      donors: [],
       experiment: undefined,
     },
   }
@@ -46,24 +47,22 @@ function uiReducer(state = createDefaultUI(), action, data) {
     case SELECT: {
       return { ...state,
         selection: { ...state.selection,
-          [action.which]: new Set(state.selection[action.which]).add(action.value) } }
+          [action.which]: state.selection[action.which].concat(action.value) } }
     }
     case DESELECT: {
-      const items = new Set(state.selection[action.which])
-      items.delete(action.value)
       return { ...state,
         selection: { ...state.selection,
-          [action.which]: items } }
+          [action.which]: state.selection[action.which].filter(x => x !== action.value) } }
     }
     case SELECT_ALL: {
       return { ...state,
         selection: { ...state.selection,
-          [action.which]: new Set(data.values[action.which]) } }
+          [action.which]: data.values[action.which] } }
     }
     case DESELECT_ALL: {
       return { ...state,
         selection: { ...state.selection,
-          [action.which]: new Set() } }
+          [action.which]: [] } }
     }
 
     case SEARCH: {
@@ -76,24 +75,22 @@ function uiReducer(state = createDefaultUI(), action, data) {
     case SELECT_DONOR: {
       return { ...state,
         selection: { ...state.selection,
-          donors: new Set(state.selection.donors).add(action.id) } }
+          donors: state.selection.donors.concat(action.id) } }
     }
     case DESELECT_DONOR: {
-      const donors = new Set(state.selection.donors)
-      donors.delete(action.id)
       return { ...state,
         selection: { ...state.selection,
-          donors: donors } }
+          donors: state.selection.donors.filter(x => x !== action.value) } }
     }
     case SELECT_ALL_DONORS: {
       return { ...state,
         selection: { ...state.selection,
-          donors: new Set(keys(data.donors)) } }
+          donors: keys(data.donors) } }
     }
     case DESELECT_ALL_DONORS: {
       return { ...state,
         selection: { ...state.selection,
-          donors: new Set() } }
+          donors: [] } }
     }
 
     case SELECT_EXPERIMENT: {
@@ -183,15 +180,15 @@ function createDefaultData() {
 }
 function dataReducer(state = createDefaultData(), action, ui) {
   switch (action.type) {
-    case REQUEST_DONORS: {
+    case DONOR.FIND_ALL.REQUEST: {
       return { ...state, isLoading: true }
     }
-    case RECEIVE_DONORS: {
-      const donors = action.donors
+    case DONOR.FIND_ALL.RECEIVE: {
+      const donors = action.payload
       const samples =
         indexBy(prop('id'),
           flatten(
-            Object.values(action.donors)
+            Object.values(action.payload)
               .map(compose(Object.values, prop('samples')))))
       const experiments =
         indexBy(prop('id'),
@@ -206,7 +203,7 @@ function dataReducer(state = createDefaultData(), action, ui) {
         experiments,
       }
     }
-    case RECEIVE_ERROR: {
+    case DONOR.FIND_ALL.ERROR: {
       return { ...state, isLoading: false }
     }
     default:
@@ -282,7 +279,7 @@ export const rootReducer = (state = {}, action) => {
   // Initialize empty selections
   keys(data.values).forEach(which => {
     if (!ui.selection[which])
-      ui.selection[which] = new Set()
+      ui.selection[which] = []
   })
 
   return { ui, data, auth, users }

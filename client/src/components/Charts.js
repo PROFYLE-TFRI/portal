@@ -4,6 +4,7 @@
 
 
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Curve from 'recharts/es6/shape/Curve';
 import PieChart from 'recharts/es6/chart/PieChart';
@@ -30,18 +31,15 @@ const mapStateToProps = state => ({
   , selection: state.ui.selection
   , donors: values(state.data.donors)
 })
-const mapDispatchToProps = dispatch => ({
-    select:   compose(dispatch, select)
-  , deselect: compose(dispatch, deselect)
-  , deselectAll: compose(dispatch, deselectAll)
-})
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ select , deselect , deselectAll }, dispatch)
 
 class Charts extends Component {
 
   handleClick(which, ev) {
     const value = ev.payload.name === 'null' ? null : ev.payload.name
 
-    if (this.props.selection[which].has(value))
+    if (this.props.selection[which].includes(value))
       this.props.deselect(which, value)
     else
       this.props.select(which, value)
@@ -364,7 +362,7 @@ function generateChartData(records, property, selection) {
     .reduce((acc, [name, value]) => acc.concat({ name, value }), [])
     .map((entry, index) => {
       const name = entry.name === 'null' ? null : entry.name
-      entry.selected = selection.has(name)
+      entry.selected = selection.includes(name)
       entry.fill = getColor(entry, index, selection)
       return entry
     })
