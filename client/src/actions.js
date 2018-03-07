@@ -4,17 +4,14 @@
 
 import k from './shared-constants'
 import * as requests from './requests'
-import { createFetchAction, createFetchConstants, asMessage } from './helpers/actions'
+import { createFetchAction, createFetchConstants } from './helpers/actions'
 import * as User from './actions/user'
+import * as Donor from './actions/donor'
 
 export const LOG_IN       = createFetchConstants('LOG_IN')
 export const LOG_OUT      = createFetchConstants('LOG_OUT')
 export const IS_LOGGED_IN = createFetchConstants('IS_LOGGED_IN')
 export const REQUIRES_2FA = 'REQUIRES_2FA'
-
-export const REQUEST_DONORS = 'REQUEST_DONORS'
-export const RECEIVE_DONORS = 'RECEIVE_DONORS'
-export const RECEIVE_ERROR  = 'RECEIVE_ERROR'
 
 export const SELECT_DONOR = 'SELECT_DONOR'
 export const DESELECT_DONOR = 'DESELECT_DONOR'
@@ -36,7 +33,7 @@ export const doInitialFetch = () => {
   return (dispatch, getState) => {
     const { auth } = getState()
 
-    dispatch(fetchDonors())
+    dispatch(Donor.findAll())
 
     if (auth.user.isAdmin)
       dispatch(User.findAll())
@@ -111,27 +108,6 @@ export function requires2fa(value = true) {
   }
 }
 
-
-export function requestDonors() {
-  return {
-    type: REQUEST_DONORS
-  }
-}
-
-export function receiveDonors(donors) {
-  return {
-    type: RECEIVE_DONORS,
-    donors
-  }
-}
-
-export function receiveError(message) {
-  return {
-    type: RECEIVE_ERROR,
-    error: true,
-    message: asMessage(message)
-  }
-}
 
 export function selectDonor(id) {
   return {
@@ -213,20 +189,5 @@ export function setTab(tab) {
   return {
     type: SET_TAB,
     payload: tab
-  }
-}
-
-export function fetchDonors() {
-  return (dispatch, getState) => {
-    const { data } = getState()
-
-    if (data.isLoading)
-      return
-
-    dispatch(requestDonors())
-
-    requests.donor.findAll()
-    .then(donors => dispatch(receiveDonors(donors)))
-    .catch(err => dispatch(receiveError(err)))
   }
 }
