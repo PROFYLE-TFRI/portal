@@ -21,8 +21,8 @@ html, body, #root {
 }
 
 .text-muted {
-  color: #999;
-  fill: #999;
+  color: #999 !important;
+  fill: #999 !important;
 }
 
 .text-bold {
