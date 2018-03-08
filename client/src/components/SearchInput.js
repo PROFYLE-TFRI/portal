@@ -19,7 +19,7 @@ const mapDispatchToProps = dispatch => ({
   search: compose(dispatch, search)
 })
 
-class App extends Component {
+class SearchInput extends Component {
   constructor() {
     super()
 
@@ -54,4 +54,4 @@ class App extends Component {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(App);
+)(SearchInput);
