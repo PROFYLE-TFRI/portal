@@ -26,7 +26,21 @@ function findAll() {
     .then(indexBy(prop('id')))
 }
 
-function findDistinctChroms() {
+function findDistinctChroms(params) {
+  return findAll()
+  .then(donors => {
+    const results = []
+    forEachExperiment(donors, (experiment, sample, donor) => {
+      experiment.variants.forEach(file => {
+        results.push(getDistinctChroms(path.join(config.paths.input, file)))
+      })
+    })
+    return Promise.all(results)
+  })
+  .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
+}
+
+function findVariants() {
   return findAll()
   .then(donors => {
     const results = []
@@ -47,20 +61,6 @@ function findDistinctChroms() {
     return Promise.all(results)
   })
   .then(results => results.filter(r => r.variants.length > 0))
-}
-
-function findVariants(params) {
-  return findAll()
-  .then(donors => {
-    const results = []
-    forEachExperiment(donors, (experiment, sample, donor) => {
-      experiment.variants.forEach(file => {
-        results.push(getDistinctChroms(path.join(config.paths.input, file)))
-      })
-    })
-    return Promise.all(results)
-  })
-  .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
 }
 
 // Helpers
