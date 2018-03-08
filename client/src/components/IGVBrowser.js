@@ -146,6 +146,10 @@ export default class IGVBrowser extends React.Component {
       tracksToRemove.forEach(track => this.browser.removeTrack(track))
       tracksToAdd.forEach(track => this.browser.loadTrack(track))
     }
+
+    if (this.props.locus !== props.locus) {
+      this.browser.search(props.locus)
+    }
   }
 
   render() {
