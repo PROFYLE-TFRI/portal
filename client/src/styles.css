@@ -45,6 +45,23 @@ html, body, #root {
   width: 30px;
 }
 
+.flex-fill {
+  flex: 1;
+}
+
+
+/*
+ * Selection
+ */
+
+*::selection {
+  background: #a8d1ff;
+}
+*::-moz-selection {
+  background: #a8d1ff;
+}
+
+
 /*
  * Scrollbars
  */
@@ -232,6 +249,26 @@ html, body, #root {
   left: 0;
 }
 
+/* MainPortal */
+
+.MainPortal {}
+.MainPortal__variantSearch {
+  margin-top: 0.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
+}
+
+
+/* VariantSearch */
+
+.VariantSearch {
+  display: flex;
+  /* margin-top: 0.5rem; */
+  /* padding-top: 1rem; */
+  /* padding-bottom: 1rem; */
+}
 
 /* <Charts/> */
 
@@ -434,6 +471,11 @@ html, body, #root {
   background-color: #eee;
   margin: 0;
 }
+.ExperimentModal__position {
+  align-self: start;
+  padding: 0.75rem 1.25rem 0.75rem 0;
+}
+
 
 
 /*

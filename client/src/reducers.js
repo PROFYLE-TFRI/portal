@@ -23,6 +23,7 @@ import {
 } from './actions';
 import * as USER from './actions/user';
 import * as DONOR from './actions/donor';
+import * as VARIANT_SEARCH from './actions/variantSearch';
 import { computeValues } from './models';
 import { TABS } from './constants'
 
@@ -41,7 +42,7 @@ function createDefaultUI() {
 }
 function uiReducer(state = createDefaultUI(), action, data) {
   if (action.error)
-    return { ...state, message: action.message }
+    return { ...state, message: action.message || action.payload }
 
   switch (action.type) {
     case SELECT: {
@@ -75,12 +76,12 @@ function uiReducer(state = createDefaultUI(), action, data) {
     case SELECT_DONOR: {
       return { ...state,
         selection: { ...state.selection,
-          donors: state.selection.donors.concat(action.id) } }
+          donors: state.selection.donors.concat(action.payload) } }
     }
     case DESELECT_DONOR: {
       return { ...state,
         selection: { ...state.selection,
-          donors: state.selection.donors.filter(x => x !== action.value) } }
+          donors: state.selection.donors.filter(x => x !== action.payload) } }
     }
     case SELECT_ALL_DONORS: {
       return { ...state,
@@ -102,6 +103,64 @@ function uiReducer(state = createDefaultUI(), action, data) {
       return { ...state,
         selection: { ...state.selection,
           experiment: undefined } }
+    }
+
+    default:
+      return state;
+  }
+}
+
+function createDefaultVariantSearch() {
+  return {
+    open: false,
+    isLoading: false,
+    params: {
+      chrom: 'chr1',
+      start: 60000,
+      end: 65000,
+    },
+    results: [],
+  }
+}
+function variantSearchReducer(state = createDefaultVariantSearch(), action) {
+  switch (action.type) {
+    case VARIANT_SEARCH.CLEAR: {
+      return { ...state, params: { chrom: '', start: '', end: '' }, results: [] }
+    }
+
+    case VARIANT_SEARCH.OPEN: {
+      return { ...state, open: true }
+    }
+    case VARIANT_SEARCH.CLOSE: {
+      return { ...state, open: false }
+    }
+    case VARIANT_SEARCH.TOGGLE: {
+      return { ...state, open: !state.open }
+    }
+
+    case VARIANT_SEARCH.SET_CHROM: {
+      return { ...state, params: { ...state.params, chrom: action.payload } }
+    }
+    case VARIANT_SEARCH.SET_START: {
+      return { ...state,
+        params: { ...state.params,
+          start: Number(action.payload),
+          end: Number(action.payload) + 1
+        }
+      }
+    }
+    case VARIANT_SEARCH.SET_END: {
+      return { ...state, params: { ...state.params, end: Number(action.payload) } }
+    }
+
+    case VARIANT_SEARCH.SEARCH.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case VARIANT_SEARCH.SEARCH.RECEIVE: {
+      return { ...state, isLoading: false, results: action.payload }
+    }
+    case VARIANT_SEARCH.SEARCH.ERROR: {
+      return { ...state, isLoading: false }
     }
 
     default:
@@ -273,6 +332,7 @@ function usersReducer(state = createDefaultUsers(), action) {
 export const rootReducer = (state = {}, action) => {
   const data = computeValues(dataReducer(state.data, action))
   const ui = uiReducer(state.ui, action, data)
+  const variantSearch = variantSearchReducer(state.variantSearch, action, data)
   const auth = authReducer(state.auth, action)
   const users = usersReducer(state.users, action)
 
@@ -282,5 +342,5 @@ export const rootReducer = (state = {}, action) => {
       ui.selection[which] = []
   })
 
-  return { ui, data, auth, users }
+  return { ui, variantSearch, data, auth, users }
 }

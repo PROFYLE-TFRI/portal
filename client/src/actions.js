@@ -112,14 +112,14 @@ export function requires2fa(value = true) {
 export function selectDonor(id) {
   return {
     type: SELECT_DONOR,
-    id
+    payload: id
   }
 }
 
 export function deselectDonor(id) {
   return {
     type: DESELECT_DONOR,
-    id
+    payload: id
   }
 }
 

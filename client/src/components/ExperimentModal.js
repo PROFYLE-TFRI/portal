@@ -8,15 +8,18 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Modal, ModalHeader, ModalBody, ModalFooter, ListGroup, ListGroupItem } from 'reactstrap';
 
+import groupBy from '../helpers/group-by'
 import Button from './Button'
 import Icon from './Icon'
 import IGVBrowser from './IGVBrowser'
 import { deselectExperiment } from '../actions'
 
 
+const DEFAULT_LOCUS = 'chr1:1-15,000'
 
 const mapStateToProps = state => ({
-  experiment: state.data.experiments[state.ui.selection.experiment]
+  experiment: state.data.experiments[state.ui.selection.experiment],
+  variantSearchResults: state.variantSearch.results,
 })
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ deselectExperiment }, dispatch)
@@ -28,21 +31,32 @@ class ExperimentModal extends Component {
     this.state = {
       experiment: undefined,
       selectedFiles: {},
+      variants: [],
+      locus: DEFAULT_LOCUS,
     }
 
     if (props.experiment) {
+      /* eslint-disable react/no-direct-mutation-state */
       this.state.experiment = props.experiment
       this.state.selectedFiles = props.experiment.alignments.reduce((acc, cur) => (acc[cur] = true, acc), {})
+      /* eslint-enable react/no-direct-mutation-state */
     }
   }
 
   componentWillReceiveProps(props) {
-    const { experiment } = props
-    if (experiment)
+    const { experiment, variantSearchResults } = props
+    if (experiment) {
+
+      const variants = mergeResults(variantSearchResults.filter(result => result.experimentID === experiment.id))
+      const locus = variants.length > 0 ? getPositionAround(variants[0]) : DEFAULT_LOCUS
+
       this.setState({
         experiment: experiment,
         selectedFiles: experiment.alignments.reduce((acc, cur) => (acc[cur] = true, acc), {}),
+        variants: variants,
+        locus: locus,
       })
+    }
   }
 
   toggleSelection(file) {
@@ -55,9 +69,22 @@ class ExperimentModal extends Component {
   }
 
   renderBody() {
-    const { experiment = {}, selectedFiles } = this.state
+    const {
+      experiment = {},
+      selectedFiles,
+      variants,
+      locus,
+    } = this.state
 
     const selectedEntries = Object.entries(selectedFiles)
+    const tracks = selectedEntries
+      .filter(([file, selected]) => selected)
+      .map(([file, _]) => ({
+        name: (file.match(/[^/]+$/) || [file])[0],
+        url: `/files/${file}`
+      }))
+
+    const variantsByPosition = groupBy(getPosition, variants)
 
     return (
       <ModalBody>
@@ -149,18 +176,41 @@ class ExperimentModal extends Component {
 
         <IGVBrowser
           reference={{ id: 'hg19' }}
-          locus='chr1:1-15,000'
+          locus={locus}
           trackDefaults={{ alignment: { height: 150 } }}
-          tracks={
-            selectedEntries
-              .filter(([file, selected]) => selected)
-              .map(([file, _]) => ({
-                name: (file.match(/[^/]+$/) || [file])[0],
-                url: `/files/${file}`
-              }))
-          }
+          tracks={tracks}
           showGenes={true}
         />
+
+        <div className='title'>
+          Variants
+        </div>
+
+        <ListGroup>
+        {
+          Object.entries(variantsByPosition).map(([position, variants], i) =>
+            <ListGroupItem key={i} className='ExperimentModal__variant d-flex'>
+              <span className='ExperimentModal__position'>
+                <Button
+                  size='sm'
+                  icon='eye'
+                  onClick={() => this.setState({ locus: position })}
+                />{' '}
+                { position }
+              </span>
+              <ListGroup className='flex-fill'>
+                {
+                  variants.map((variant, i) =>
+                    <ListGroupItem key={i}>
+                      { filename(variant.file) } { variant.alt } { variant.ref }
+                    </ListGroupItem>
+                  )
+                }
+              </ListGroup>
+            </ListGroupItem>
+          )
+        }
+        </ListGroup>
 
       </ModalBody>
     )
@@ -180,6 +230,26 @@ class ExperimentModal extends Component {
       </Modal>
     )
   }
+}
+
+function mergeResults(results) {
+  return results.reduce((acc, result) =>
+    acc.concat(result.variants.map(variant => ({ file: result.file, ...variant }))), [])
+}
+
+function getPosition(variant) {
+  return `${variant.chrom}:${variant.start}-${variant.end}`
+}
+
+function getPositionAround(variant) {
+  return `${variant.chrom}:${Number(variant.start) - 100}-${Number(variant.end) + 100}`
+}
+
+function filename(filepath) {
+  const m = filepath.match(/[^/]+$/)
+  if (m)
+    return m[0]
+  return filepath
 }
 
 export default connect(

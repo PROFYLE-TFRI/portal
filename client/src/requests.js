@@ -23,6 +23,11 @@ export const auth = {
   isLoggedIn: () => post('/auth/is-logged-in'),
 }
 
+export const variant = {
+  search: (params) => post('/variant/search', params),
+  chroms: ()       => post('/variant/chroms'),
+}
+
 function fetchAPI(method, route, data) {
   return axios.request({
       method: method,
