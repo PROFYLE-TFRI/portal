@@ -39,7 +39,17 @@ function attachExperiments(donor) {
           ]
         )
         .then(([experiment, analysis]) => normalizeExperiment(experimentType, sampleID, experiment, analysis))
-        .then(experiment => attachAlignments(donor.id, sampleID, experiment))
+        .then(experiment =>
+          Promise.all([
+            getAlignments(donor.id, sampleID, experiment),
+            getVariants(donor.id, sampleID, experiment),
+          ])
+          .then(([alignments, variants]) => {
+            experiment.alignments = alignments
+            experiment.variants = variants
+            return experiment
+          })
+        )
       ))
       .then(indexBy(prop('id')))
       .then(experimentsByID => donor.samples[sampleID].experiments = experimentsByID)
@@ -49,21 +59,26 @@ function attachExperiments(donor) {
   .then(() => donor)
 }
 
-function attachAlignments(id, sampleID, experiment) {
+function getAlignments(id, sampleID, experiment) {
   const alignments = getExperimentAlignmentsPath(id, sampleID, experiment.type)
 
-  return exists(alignments)
-  .then(doExists =>
-    (doExists ?
-        readDir(alignments)
-      : Promise.resolve([]))
+  return readDirIfExists(alignments)
     .then(files => {
-      experiment.alignments = files
+      return files
         .filter(file => /\.bam$/.test(file))
         .map(file => path.join(alignments, file))
-      return experiment
     })
-  )
+}
+
+function getVariants(id, sampleID, experiment) {
+  const variantsPath = getExperimentVariantsPath(id, sampleID, experiment.type)
+
+  return readDirIfExists(variantsPath)
+    .then(files => {
+      return files
+        .filter(file => /\.vcf\.db$/.test(file))
+        .map(file => path.join(variantsPath, file))
+    })
 }
 
 function normalizeDonor(id, data) {
@@ -117,6 +132,19 @@ function getExperimentAlignmentsPath(id, sampleID, experimentType) {
   return `${id}/${sampleID}/${experimentType}/alignments`
 }
 
+function getExperimentVariantsPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/variants`
+}
+
 function getExperimentAnalysisJSONPath(id, sampleID, experimentType) {
   return `${id}/${sampleID}/${experimentType}/analysis.json`
+}
+
+function readDirIfExists(path) {
+  return exists(path)
+  .then(doExists =>
+    (doExists ?
+        readDir(path)
+      : Promise.resolve([]))
+  )
 }
