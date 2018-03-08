@@ -26,7 +26,7 @@ function findAll() {
     .then(indexBy(prop('id')))
 }
 
-function findDistinctChroms(params) {
+function findDistinctChroms() {
   return findAll()
   .then(donors => {
     const results = []
@@ -40,7 +40,7 @@ function findDistinctChroms(params) {
   .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
 }
 
-function findVariants() {
+function findVariants(params) {
   return findAll()
   .then(donors => {
     const results = []
