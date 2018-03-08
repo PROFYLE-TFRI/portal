@@ -8,7 +8,9 @@ const helmet = require('helmet')
 const csp = require('express-csp-header')
 const session = require('express-session')
 const flash = require('connect-flash')
+const SQLiteStore = require('connect-sqlite3')(session)
 
+const config = require('./config')
 const passport = require('./passport')
 const { isLoggedIn } = require('./helpers/auth')
 
@@ -41,7 +43,7 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(flash())
-app.use(session({ secret: 'ommanipadmehum', resave: true, saveUninitialized: true }))
+app.use(session({ store: new SQLiteStore({ dir: config.paths.data }), secret: 'ommanipadmehum', resave: true, saveUninitialized: true }))
 app.use(passport.initialize())
 app.use(passport.session()) // persistent login sessions
 
