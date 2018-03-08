@@ -33,7 +33,7 @@ function findDistinctChroms() {
     forEachExperiment(donors, (experiment, sample, donor) => {
       experiment.variants.forEach(file => {
         results.push(
-          getVariantsAt(join(config.paths.input, file), params)
+          getVariantsAt(path.join(config.paths.input, file), params)
           .then(variants => ({
             experimentID: experiment.id,
             sampleID: sample.id,
@@ -55,7 +55,7 @@ function findVariants(params) {
     const results = []
     forEachExperiment(donors, (experiment, sample, donor) => {
       experiment.variants.forEach(file => {
-        results.push(getDistinctChroms(join(config.paths.input, file)))
+        results.push(getDistinctChroms(path.join(config.paths.input, file)))
       })
     })
     return Promise.all(results)
