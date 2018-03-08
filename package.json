@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "watch:server": "PORT=3001 nodemon --ignore client --ignore public ./bin/www",
+    "watch:server": "NODE_ENV=development PORT=3001 nodemon --ignore client --ignore public ./bin/www",
     "watch:all": "NODE_ENV=development nodemon -i client/dist --exec 'cd client && npm run build-dist && cd .. && node --inspect bin/www'",
     "build": "rm -rf ./public && mkdir public && cd client && npm run build && cp -r build/* ../public"
   },
