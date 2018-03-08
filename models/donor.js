@@ -5,17 +5,65 @@
 const path = require('path')
 const { indexBy, prop } = require('ramda')
 const { exists, readDir, readJSON } = require('../helpers/filesystem')
+const { forEachExperiment } = require('../helpers/donor')
+const { getVariantsAt, getDistinctChroms } = require('../helpers/gemini')
+const config = require('../config')
 
+module.exports = {
+  findByID,
+  findAll,
+  findDistinctChroms,
+  findVariants,
+}
 
-exports.findByID = (id) =>
-  getDonor(id)
+function findByID(id) {
+  return getDonor(id)
+}
 
-exports.findAll = () =>
-  readDir('.')
+function findAll() {
+  return readDir('.')
     .then(ids => Promise.all(ids.map(getDonor)))
     .then(indexBy(prop('id')))
+}
 
+function findDistinctChroms() {
+  return findAll()
+  .then(donors => {
+    const results = []
+    forEachExperiment(donors, (experiment, sample, donor) => {
+      experiment.variants.forEach(file => {
+        results.push(
+          getVariantsAt(join(config.paths.input, file), params)
+          .then(variants => ({
+            experimentID: experiment.id,
+            sampleID: sample.id,
+            donorID: donor.id,
+            file,
+            variants
+          }))
+        )
+      })
+    })
+    return Promise.all(results)
+  })
+  .then(results => results.filter(r => r.variants.length > 0))
+}
 
+function findVariants(params) {
+  return findAll()
+  .then(donors => {
+    const results = []
+    forEachExperiment(donors, (experiment, sample, donor) => {
+      experiment.variants.forEach(file => {
+        results.push(getDistinctChroms(join(config.paths.input, file)))
+      })
+    })
+    return Promise.all(results)
+  })
+  .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
+}
+
+// Helpers
 
 function getDonor(id) {
   return readJSON(getDonorJSONPath(id))
@@ -41,8 +89,8 @@ function attachExperiments(donor) {
         .then(([experiment, analysis]) => normalizeExperiment(experimentType, sampleID, experiment, analysis))
         .then(experiment =>
           Promise.all([
-            getAlignments(donor.id, sampleID, experiment),
-            getVariants(donor.id, sampleID, experiment),
+            getAlignmentFiles(donor.id, sampleID, experiment),
+            getVariantFiles(donor.id, sampleID, experiment),
           ])
           .then(([alignments, variants]) => {
             experiment.alignments = alignments
@@ -59,7 +107,7 @@ function attachExperiments(donor) {
   .then(() => donor)
 }
 
-function getAlignments(id, sampleID, experiment) {
+function getAlignmentFiles(id, sampleID, experiment) {
   const alignments = getExperimentAlignmentsPath(id, sampleID, experiment.type)
 
   return readDirIfExists(alignments)
@@ -70,7 +118,7 @@ function getAlignments(id, sampleID, experiment) {
     })
 }
 
-function getVariants(id, sampleID, experiment) {
+function getVariantFiles(id, sampleID, experiment) {
   const variantsPath = getExperimentVariantsPath(id, sampleID, experiment.type)
 
   return readDirIfExists(variantsPath)
