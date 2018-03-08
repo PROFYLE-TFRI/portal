@@ -4,7 +4,7 @@ const router = express.Router()
 
 const { dataHandler, errorHandler } = require('../helpers/handlers')
 const { forEachExperiment } = require('../helpers/donor')
-const { getVariantsAt } = require('../helpers/gemini')
+const { getVariantsAt, getDistinctChroms } = require('../helpers/gemini')
 const Donor = require('../models/donor')
 const config = require('../config')
 
@@ -12,7 +12,6 @@ const config = require('../config')
 router.use('/search', (req, res, next) => {
   const params = req.body // { chrom, start, end }
 
-  console.log(params)
   Donor.findAll()
   .then(donors => {
     const results = []
@@ -37,10 +36,21 @@ router.use('/search', (req, res, next) => {
   .catch(errorHandler(res))
 })
 
-// GET by id
-router.get('/find-by-id/:id', (req, res, next) =>
-  Donor.findByID(req.params.id)
-    .then(dataHandler(res))
-    .catch(errorHandler(res)))
+// GET chroms
+router.use('/chroms', (req, res, next) => {
+  Donor.findAll()
+  .then(donors => {
+    const results = []
+    forEachExperiment(donors, (experiment, sample, donor) => {
+      experiment.variants.forEach(file => {
+        results.push(getDistinctChroms(join(config.paths.input, file)))
+      })
+    })
+    return Promise.all(results)
+  })
+  .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
+  .then(dataHandler(res))
+  .catch(errorHandler(res))
+})
 
 module.exports = router;
