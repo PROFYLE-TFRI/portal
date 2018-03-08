@@ -16,7 +16,7 @@ import { Row, Col, Button } from 'reactstrap';
 import { compose } from '../helpers/rambda';
 import isEqual from 'lodash/isEqual'
 
-import { COLORS } from '../constants';
+import { ENTITIES, COLORS } from '../constants';
 import { select, deselect, deselectAll } from '../actions';
 
 const { values, entries } = Object
@@ -67,8 +67,8 @@ class Charts extends Component {
     const { donors, selection } = this.props
 
     const charts = [
-        { title: 'Diseases',  which: 'diseases',  field: 'disease' }
-      , { title: 'Provinces', which: 'provinces', field: 'recruitement_team.province' }
+        { title: 'Diseases',  which: ENTITIES.DISEASES,  field: 'disease' }
+      , { title: 'Provinces', which: ENTITIES.PROVINCES, field: 'recruitement_team.province' }
     ]
 
     return (

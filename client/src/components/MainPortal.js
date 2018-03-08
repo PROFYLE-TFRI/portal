@@ -3,13 +3,13 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Alert } from 'reactstrap';
 
-import { DONOR_COLUMNS } from '../constants';
-import { select, deselect, logOut } from '../actions';
+import { ENTITIES, DONOR_COLUMNS } from '../constants';
+import { select, deselectAll, logOut } from '../actions';
+import Button from './Button';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
 import ExperimentModal from './ExperimentModal';
 import ExperimentTable from './ExperimentTable';
-import IGVBrowser from './IGVBrowser';
 import SampleTable from './SampleTable';
 import SearchInput from './SearchInput';
 
@@ -27,17 +27,9 @@ const mapStateToProps = state => ({
   , auth: state.auth
 })
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ select, deselect, logOut }, dispatch)
+  bindActionCreators({ select, deselectAll, logOut }, dispatch)
 
 class MainPortal extends Component {
-
-  handleClick(which, ev) {
-    const value = ev.payload.name
-    if (this.props.selection[which].includes(value))
-      this.props.deselect(which, value)
-    else
-      this.props.select(which, value)
-  }
 
   render() {
     const {
@@ -63,6 +55,10 @@ class MainPortal extends Component {
 
     const selectedDonorsCount = selection.donors.length === 0 ? 0 : selectedDonors.length
 
+    const hasSelectedButNotVisibleDonors =
+      selection.donors.length > 0 &&
+      selectedDonors.filter(x => !visibleDonors.includes(x)).length > 0
+
     return (
       <Container className='MainPortal'>
         <Charts />
@@ -86,9 +82,16 @@ class MainPortal extends Component {
         <Row>
           <Col sm={{ size: 8 }}>
             <h4>
-              { donors.length } donors <span className='text-muted'>
-                ({ selectedDonorsCount } selected, { visibleDonors.length } visible)
-              </span>
+              { donors.length } donors{' '}
+              <span className='text-muted'>
+                (<span className={hasSelectedButNotVisibleDonors ? 'text-danger' : ''}>{ selectedDonorsCount } selected</span>, { visibleDonors.length } visible)
+              </span>{' '}
+              <Button
+                size='sm'
+                onClick={() => this.props.deselectAll(ENTITIES.DONORS)}
+              >
+                Clear Selection
+              </Button>
             </h4>
           </Col>
           <Col sm={{ size: 4 }}>
