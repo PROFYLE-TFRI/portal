@@ -110,7 +110,7 @@ class MainPortal extends Component {
         <br/>
 
         <Row>
-          <Col sm={{ size: 7 }}>
+          <Col sm={{ size: 6 }}>
             <h4>
               { donors.length } donors{' '}
               <span className='text-muted'>
@@ -118,13 +118,14 @@ class MainPortal extends Component {
               </span>{' '}
               <Button
                 size='sm'
+                disabled={selection[ENTITIES.DONORS].length === 0}
                 onClick={() => this.props.deselectAll(ENTITIES.DONORS)}
               >
                 Clear Selection
               </Button>
             </h4>
           </Col>
-          <Col sm={{ size: 5 }}>
+          <Col sm={{ size: 6 }}>
             <ButtonToolbar className='justify-content-end'>
               <ButtonGroup className='mr-2'>
                 <SearchInput />
@@ -132,9 +133,11 @@ class MainPortal extends Component {
               <ButtonGroup>
                 <Button
                   active={isVariantSearchOpen}
-                  icon='caret-down'
+                  iconAfter='caret-down'
                   onClick={toggleVariantSearch}
-                />
+                >
+                  Search Variant
+                </Button>
               </ButtonGroup>
             </ButtonToolbar>
           </Col>
@@ -173,6 +176,9 @@ class MainPortal extends Component {
                 ({ selectedExperiments.length } visible)
               </span>
             </h4>
+            <div className='text-muted'>
+              Click on a row to expand the experiment
+            </div>
           </Col>
         </Row>
 

@@ -4,9 +4,10 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Input, InputGroup, InputGroupAddon, Button } from 'reactstrap';
+import { Input, InputGroup, InputGroupAddon } from 'reactstrap';
 import { compose } from '../helpers/rambda';
 
+import Button from './Button';
 import { search } from '../actions';
 
 
@@ -41,9 +42,15 @@ class SearchInput extends Component {
 
     return (
       <InputGroup>
-        <Input value={value} placeholder='Search...' onChange={this.onChange}/>
+        <Input value={value} placeholder='Filter...' onChange={this.onChange}/>
         <InputGroupAddon addonType='append'>
-          <Button onClick={this.onClickClear}>Clear</Button>
+          <Button
+            disabled={value === ''}
+            icon='close'
+            onClick={this.onClickClear}
+          >
+            <span className='sr-only'>Clear</span>
+          </Button>
         </InputGroupAddon>
       </InputGroup>
     )

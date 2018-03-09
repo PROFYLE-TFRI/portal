@@ -88,7 +88,7 @@ class Charts extends Component {
                   </span>
                   <span className='Charts__clear'>
                     <Button size='sm'
-                      disabled={selection[which].size === 0}
+                      disabled={selection[which].length === 0}
                       onClick={this.clearAll.bind(this, which)}>
                       Clear selection
                     </Button>

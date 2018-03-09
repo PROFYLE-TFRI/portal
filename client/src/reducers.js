@@ -114,6 +114,7 @@ function createDefaultVariantSearch() {
   return {
     open: false,
     isLoading: false,
+    didSearch: false,
     params: {
       chrom: 'chr1',
       start: 60000,
@@ -125,7 +126,12 @@ function createDefaultVariantSearch() {
 function variantSearchReducer(state = createDefaultVariantSearch(), action) {
   switch (action.type) {
     case VARIANT_SEARCH.CLEAR: {
-      return { ...state, params: { chrom: '', start: '', end: '' }, results: [] }
+      return {
+        ...state,
+        didSearch: false,
+        // params: { chrom: '', start: '', end: '' },
+        results: []
+      }
     }
 
     case VARIANT_SEARCH.OPEN: {
@@ -157,7 +163,12 @@ function variantSearchReducer(state = createDefaultVariantSearch(), action) {
       return { ...state, isLoading: true }
     }
     case VARIANT_SEARCH.SEARCH.RECEIVE: {
-      return { ...state, isLoading: false, results: action.payload }
+      return {
+        ...state,
+        isLoading: false,
+        didSearch: true,
+        results: action.payload
+      }
     }
     case VARIANT_SEARCH.SEARCH.ERROR: {
       return { ...state, isLoading: false }

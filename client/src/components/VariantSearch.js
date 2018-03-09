@@ -26,6 +26,11 @@ const mapDispatchToProps = dispatch =>
 
 class VariantSearch extends Component {
 
+  onSubmit = (ev) => {
+    ev.preventDefault()
+    this.props.search()
+  }
+
   render() {
 
     const {
@@ -39,7 +44,7 @@ class VariantSearch extends Component {
 
     return (
       <div className='VariantSearch align-items-center'>
-        <Form inline>
+        <Form inline onSubmit={this.onSubmit}>
           <FormGroup className='mb-2 mr-sm-2 mb-sm-0'>
             <Label for='chrom' className='mr-sm-2 sr-only'>Chrom</Label>
             <Input
@@ -70,29 +75,40 @@ class VariantSearch extends Component {
               onChange={setEnd}
             />
           </FormGroup>
-        </Form>
 
-        <Button
-          color='primary'
-          className='mr-2'
-          loading={variantSearch.isLoading}
-          onClick={search}
-        >
-          Search
-        </Button>
-        <Button
-          color='secondary'
-          icon='close'
-          onClick={clear}
-        />
+          <Button
+            type='submit'
+            color='primary'
+            className='mr-2'
+            loading={variantSearch.isLoading}
+            onClick={search}
+          >
+            Search
+          </Button>
+          <Button
+            type='button'
+            color='secondary'
+            icon='close'
+            onClick={clear}
+            disabled={variantSearch.results.length === 0}
+          />
+        </Form>
 
         <div className='flex-fill' />
 
         {
-          variantSearch.results.length > 0 &&
-            <span className='text-muted'>
-              { variantSearch.results.length } match{ variantSearch.results.length > 1 ? 'es' : '' }
-            </span>
+          variantSearch.didSearch &&
+
+            (
+              variantSearch.results.length > 0 ?
+              <span className='text-muted'>
+                { variantSearch.results.length } match{ variantSearch.results.length > 1 ? 'es' : '' }
+              </span>
+              :
+              <span className='text-muted'>
+                No results
+              </span>
+            )
         }
       </div>
     )

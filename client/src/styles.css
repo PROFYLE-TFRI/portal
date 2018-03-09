@@ -253,11 +253,6 @@ html, body, #root {
 
 .MainPortal {}
 .MainPortal__variantSearch {
-  margin-top: 0.5rem;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  border: 1px solid rgba(0,0,0,.125);
-  border-radius: .25rem;
 }
 
 
@@ -268,6 +263,10 @@ html, body, #root {
   /* margin-top: 0.5rem; */
   /* padding-top: 1rem; */
   /* padding-bottom: 1rem; */
+  margin-top: 0.5rem;
+  padding: 1rem 1rem;
+  border: 1px solid rgba(0,0,0,.125);
+  border-radius: .25rem;
 }
 
 /* <Charts/> */
