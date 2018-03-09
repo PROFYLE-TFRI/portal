@@ -30803,7 +30803,7 @@ var igv = (function (igv) {
                 var result,
                     genomicState;
 
-                result = self.featureDB[locus.toUpperCase()];
+                result = self.featureDB[locus.toLowerCase()];
                 if (result) {
                     genomicState = processSearchResult(result, locus);
                     if (genomicState) {
@@ -34194,7 +34194,7 @@ var igv = (function (igv) {
 
         featureList.forEach(function (feature) {
             if (feature.name) {
-                igv.browser.featureDB[feature.name.toUpperCase()] = feature;
+                igv.browser.featureDB[feature.name.toLowerCase()] = feature;
             }
         });
 
@@ -34431,8 +34431,8 @@ var igv = (function (igv) {
         this.labelDisplayMode = config.labelDisplayMode;
 
         this.variantHeight = config.variantHeight || this.height;
-        this.squishedCallHeight = config.squishedCallHeight || 30;
-        this.expandedCallHeight = config.expandedCallHeight || 15;
+        this.squishedCallHeight = config.squishedCallHeight || 15;
+        this.expandedCallHeight = config.expandedCallHeight || 30;
 
         this.featureHeight = config.featureHeight || 14;
 
@@ -34871,9 +34871,9 @@ var igv = (function (igv) {
 
         if (this.displayMode === "SQUISHED" && feature.row !== undefined) {
             h = this.featureHeight / 2;
-            py = this.expandedCallHeight * feature.row + 2;
+            py = this.squishedCallHeight * feature.row + 2;
         } else if (this.displayMode === "EXPANDED" && feature.row !== undefined) {
-            py = this.squishedCallHeight * feature.row + 5;
+            py = this.expandedCallHeight * feature.row + 5;
         } else {  // collapsed
             py = 5;
         }
@@ -38509,12 +38509,14 @@ var igv = (function (igv) {
         var chrAliasTable = {},
             self = this;
 
+
         // The standard mappings
         this.chromosomeNames.forEach(function (name) {
             var alias = name.startsWith("chr") ? name.substring(3) : "chr" + name;
-            chrAliasTable[alias] = name;
-            if (name === "chrM") chrAliasTable["MT"] = "chrM";
-            if (name === "MT") chrAliasTable["chrM"] = "MT";
+            chrAliasTable[alias.toLowerCase()] = name;
+            if (name === "chrM") chrAliasTable["mt"] = "chrM";
+            if (name === "MT") chrAliasTable["chrm"] = "MT";
+            chrAliasTable[name.toLowerCase()] = name;
         });
 
         // Custom mappings
@@ -38534,18 +38536,13 @@ var igv = (function (igv) {
                     array.forEach(function (alias) {
                         if (alias !== defName) {
                             chrAliasTable[alias.toLowerCase()] = defName;
-                            chrAliasTable[alias] = defName;
+                            chrAliasTable[alias] = defName;      // Should not be needed
                         }
                     });
                 }
 
             });
         }
-
-        // Case insensitiviry
-        Object.keys(chrAliasTable).forEach(function (key) {
-            chrAliasTable[key.toLowerCase()] = chrAliasTable[key];
-        })
 
         this.chrAliasTable = chrAliasTable;
 
@@ -40805,10 +40802,13 @@ var igv = (function (igv) {
             panel.$canvas = $('<canvas>');
             panel.$ideogram.append(panel.$canvas);
 
-            panel.$canvas.attr('width', panel.$ideogram.width());
-            panel.$canvas.attr('height', panel.$ideogram.height());
+            panel.dppx = igv.graphics.dppx();
+
+            panel.$canvas.attr('width', panel.$ideogram.width() * panel.dppx);
+            panel.$canvas.attr('height', panel.$ideogram.height() * panel.dppx);
 
             panel.ctx = panel.$canvas.get(0).getContext("2d");
+            panel.ctx.scale(panel.dppx, panel.dppx);
 
             panel.ideograms = {};
 
@@ -40898,7 +40898,7 @@ var igv = (function (igv) {
             canvasWidth = panel.$canvas.width();
             canvasHeight = panel.$canvas.height();
             panel.ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-            
+
             if(referenceFrame.chrName.toLowerCase() === "all") {
                 return;
             }
@@ -40908,11 +40908,13 @@ var igv = (function (igv) {
             if (undefined === image) {
 
                 image = document.createElement('canvas');
-                image.width = canvasWidth;
-                image.height = canvasHeight;
+                image.width = canvasWidth * panel.dppx;
+                image.height = canvasHeight * panel.dppx;
                 // image.height = 13;
 
-                drawIdeogram(image.getContext('2d'), image.width, image.height);
+                var context = image.getContext('2d');
+                context.scale(panel.dppx, panel.dppx);
+                drawIdeogram(context, canvasWidth, canvasHeight);
 
                 panel.ideograms[ referenceFrame.chrName ] = image;
             }
@@ -40920,7 +40922,9 @@ var igv = (function (igv) {
             // y = (canvasHeight - image.height) / 2.0;
             // panel.ctx.drawImage(image, 0, y);
             y = 0;
-            panel.ctx.drawImage(image, 0, 0);
+            panel.ctx.drawImage(image,
+              0, 0, image.width, image.height,
+              0, 0, canvasWidth, canvasHeight);
 
             // panel.ctx.save();
 
@@ -40951,7 +40955,7 @@ var igv = (function (igv) {
                 ww = (width < 2) ? 1 : width - panel.ctx.lineWidth;
 
                 yy = y + (panel.ctx.lineWidth)/2;
-                hh = image.height - panel.ctx.lineWidth;
+                hh = canvasHeight - panel.ctx.lineWidth;
 
                 panel.ctx.strokeRect(xx, yy, ww, hh);
 
@@ -41354,7 +41358,20 @@ var igv = (function (igv) {
             ctx.restore();
         },
 
+        dppx: function() {
+            // On retina displays, we create canvas that is dppx times larger than
+            // its reported size in pixels. We will style the canvas to still take
+            // the prescribed amount of pixels though. This will lead to full utilization
+            // of the available resolution
 
+            // This is taken from the 'res' npm module, modified to return 1 when feature not available
+            function ie() {
+                return Math.sqrt(screen.deviceXDPI * screen.deviceYDPI) / 96;
+            }
+
+            // devicePixelRatio: Webkit (Chrome/Android/Safari), Opera (Presto 2.8+), FF 18+
+            return typeof window == 'undefined' ? 1 : +window.devicePixelRatio || ie() || 1;
+        },
     }
 
     function doPath(ctx, x, y) {
@@ -49783,26 +49800,48 @@ var igv = (function (igv) {
             viewport.resize();
         });
 
-        if (this.scrollbar) {
-            this.scrollbar.update();
-        }
+        this.update();
 
     };
 
+    /**
+     * Call update when the content of the track has changed,  e.g. by loading or changing location.
+     */
     igv.TrackView.prototype.update = function () {
-        var self = this;
+
+        var maxContentHeight, heightPromises = [], self = this;
 
         this.viewports.forEach(function (viewport) {
-            // console.log('--- update viewport ' + self.track.id + ' locus index ' + viewport.genomicState.locusIndex + ' ---');
-            viewport.update();
+            heightPromises.push(viewport.adjustContentHeight());
         });
+        Promise.all(heightPromises)
+            .then(function (contentHeights) {
+                maxContentHeight = contentHeights.reduce(function (accumulator, currentValue) {
+                    return Math.max(accumulator, currentValue);
+                });
 
-        if (this.scrollbar) {
-            this.scrollbar.update();
-        }
+                if (self.track.autoHeight) {
+                    self.setTrackHeight(maxContentHeight, false);
+                } else if (self.track.paintAxis) {
+                    $(self.controlCanvas).height(maxContentHeight);
+                    self.controlCanvas.setAttribute("height", maxContentHeight);
+                }
 
+                if (self.scrollbar) {
+                    self.scrollbar.update();
+                }
+            })
+            .then(function () {
+                self.viewports.forEach(function (viewport) {
+                    viewport.update();
+                })
+            })
     };
 
+
+    /**
+     * Repaint existing features (e.g. a color, resort, or display mode change).
+     */
     igv.TrackView.prototype.repaint = function () {
         var self = this;
 
@@ -51100,7 +51139,7 @@ var igv = (function (igv) {
             if (!infoStr) return undefined;
 
             var info = {};
-            infoStr.split('; ').forEach(function (elem) {
+            infoStr.split(';').forEach(function (elem) {
                 var element = elem.split('=');
                 info[element[0]] = element[1];
             });
@@ -51159,22 +51198,16 @@ var igv = (function (igv) {
             maxAltLength = variant.referenceBases.length,
             start, end;
 
-
-        if (variant.info && variant.info["PERIOD"]) {
+        if (variant.info && variant.info["VT"]) {
+            variant.type = variant.info["VT"].toLowerCase();
+        } else if (variant.info && variant.info["PERIOD"]) {
             variant.type = 'str';
         }
 
 
         variant.alleles = [];
 
-        // If an STR define start and end based on reference allele.  Otherwise start and end computed below based
-        // on alternate allele type (snp, insertion, deletion)
-
-        if ('str' === variant.type) {
-            variant.start = variant.pos - 1;
-            variant.end = variant.start + variant.referenceBases.length;
-
-        } else if (isRef(variant.alternateBases)) {
+        if (isRef(variant.alternateBases)) {
             variant.type = "refblock";
         }
 
@@ -51223,6 +51256,11 @@ var igv = (function (igv) {
 
 
                 });
+            }
+
+            if ("str" === variant.type) {
+                start = variant.pos - 1;
+                end = start + variant.referenceBases.length;
             }
 
             variant.start = start;
@@ -51419,7 +51457,8 @@ var igv = (function (igv) {
                         self.callSetGroups = ['NONE'];
                         self.callSets.NONE = header.callSets;
 
-                        if ('compute' === self.visibilityWindow) {
+                        // header.features => file is not index, all features loaded
+                        if (!header.features && 'compute' === self.visibilityWindow) {
                             computeVisibilityWindow.call(self);
                         }
                     }
@@ -51482,7 +51521,8 @@ var igv = (function (igv) {
             callHeight = (this.displayMode === "EXPANDED" ? this.expandedCallHeight : this.squishedCallHeight),
             vGap = (this.displayMode === 'EXPANDED') ? this.expandedVGap : this.squishedVGap,
             groupGap = (this.displayMode === 'EXPANDED') ? this.expandedGroupGap : this.squishedGroupGap,
-            groupSpace = Object.keys(callSets).length * groupGap,
+            groupsLength = Object.keys(callSets).length,
+            groupSpace = (groupsLength-1) * groupGap,
             nRows,
             h;
 
@@ -51509,7 +51549,7 @@ var igv = (function (igv) {
             //     this.expandedCallHeight = Math.max(1, 2000 / (nCalls * nRows));
             // }
 
-            return h + vGap + groupSpace + nCalls * (callHeight + vGap);
+            return h + vGap + groupSpace + (nCalls + 1) * (callHeight + vGap);
             //return h + vGap + nCalls * nRows * (this.displayMode === "EXPANDED" ? this.expandedCallHeight : this.squishedCallHeight);
 
         }
@@ -51529,12 +51569,13 @@ var igv = (function (igv) {
             callHeight = ("EXPANDED" === this.displayMode ? this.expandedCallHeight : this.squishedCallHeight),
             vGap = (this.displayMode === 'EXPANDED') ? this.expandedVGap : this.squishedVGap,
             groupGap = (this.displayMode === 'EXPANDED') ? this.expandedGroupGap : this.squishedGroupGap,
-            px, px1, pw, py, h, style, i, variant, call, callSet, j, k, group, allRef, allVar, callSets, nCalls,
+            px, px1, pw, py, h, style, i, variant, call, callSet, j, k, group, allRef, allVar, callSets, callSetGroups, nCalls,
             firstAllele, secondAllele, lowColorScale, highColorScale, period, callsDrawn, len, variantColors;
 
         this.variantBandHeight = 10 + this.nRows * (this.variantHeight + vGap);
 
         callSets = this.callSets;
+        callSetGroups = this.callSetGroups;
         nCalls = getCallsetsLength.call(this);
 
         igv.graphics.fillRect(ctx, 0, 0, pixelWidth, pixelHeight, {'fillStyle': "rgb(255, 255, 255)"});
@@ -51604,13 +51645,9 @@ var igv = (function (igv) {
                     }
 
                     callsDrawn = 0;
-
-                    for (j = 0; j < this.callSetGroups.length; j++) {
-
-                        group = callSets[this.callSetGroups[j]];
-
+                    for (j = 0; j < callSetGroups.length; j++) {
+                        group = callSets[callSetGroups[j]];
                         for (k = 0; k < group.length; k++) {
-
                             callSet = group[k];
                             call = variant.calls[callSet.id];
                             if (call) {
@@ -51999,6 +52036,48 @@ var igv = (function (igv) {
                 groupedCallSets[key].push(callSet);
             })
         });
+
+        // group families in order: father, mother, then children
+        if ("familyId" === attribute) {
+            Object.keys(groupedCallSets).forEach(function (i) {
+                group = groupedCallSets[i];
+                group.sort(function (a, b) {
+                    var attrA = igv.sampleInformation.getAttributes(a.name);
+                    var attrB = igv.sampleInformation.getAttributes(b.name);
+                    if (attrA["fatherId"] === "0" && attrA["motherId"] === "0") {
+                        if (attrB["fatherId"] === "0" && attrB["motherId"] === "0") {
+                            if (attrA["sex"] === "1") {
+                                if (attrB["sex"] === "1") {
+                                    return 0;
+                                } else {
+                                    return -1;
+                                }
+                            } else if (attrB["sex"] === "1") {
+                                return 1;
+                            } else {
+                                return parseInt(attrB["sex"]) - parseInt(attrA["sex"]);
+                            }
+                        } else {
+                            return -1;
+                        }
+                    } else if (attrB["fatherId"] === "0" && attrB["motherId"] === "0") {
+                        return 1;
+                    } else {
+                        if (attrA["sex"] === "1") {
+                            if (attrB["sex"] === "1") {
+                                return 0;
+                            } else {
+                                return -1;
+                            }
+                        } else if (attrB["sex"] === "1") {
+                            return 1;
+                        } else {
+                            return parseInt(attrB["sex"]) - parseInt(attrA["sex"]);
+                        }
+                    }
+                });
+            });
+        }
 
         this.callSets = groupedCallSets;
         this.callSetGroups = callSetGroups;
@@ -52404,10 +52483,9 @@ var igv = (function (igv) {
         }
 
         // zoom in to see features
-        if (trackView.track.visibilityWindow !== undefined || !trackView.track.supportsWholeGenome) {
-            self.$zoomInNotice = createZoomInNotice();
-            $(this.contentDiv).append(self.$zoomInNotice);
-        }
+        self.$zoomInNotice = createZoomInNotice();
+        $(this.contentDiv).append(self.$zoomInNotice);
+
 
         function createZoomInNotice() {
             var $container,
@@ -52532,10 +52610,70 @@ var igv = (function (igv) {
         }
     };
 
+
+    /**
+     * Return a promise to adjust content height to accomodate features for current genomic state
+     *
+     * @returns {*}
+     */
+    igv.Viewport.prototype.adjustContentHeight = function () {
+
+        var self = this,
+            pixelWidth,
+            bpWidth,
+            bpStart,
+            bpEnd,
+            genomicState = self.genomicState,
+            referenceFrame = genomicState.referenceFrame,
+            chr,
+            refFrameStart,
+            chrLength;
+
+        if (!viewIsReady.call(this) || !(typeof self.trackView.track.computePixelHeight === 'function') || showZoomInNotice.call(this)) {
+            return Promise.resolve(this.getContentHeight());
+        }
+
+        chr = referenceFrame.chrName;
+
+        // Expand the requested range so we can pan a bit without reloading.  But not beyond chromosome bounds
+        chrLength = igv.browser.genome.getChromosome(chr).bpLength;
+        pixelWidth = 3 * this.canvas.width;
+        bpWidth = referenceFrame.toBP(pixelWidth);
+        bpStart = Math.floor(Math.max(0, referenceFrame.start - bpWidth / 3));
+        bpEnd = Math.ceil(Math.min(chrLength, bpStart + bpWidth));
+
+        self.startSpinner();
+
+        // console.log('get features');
+        return getFeatures.call(self, chr, bpStart, bpEnd, referenceFrame.bpPerPixel)
+
+            .then(function (features) {
+
+                var currentContentHeight,
+                    requiredContentHeight;
+
+                self.stopSpinner();
+
+                if (features) {
+
+                    // Height of content div and content canvas
+                    requiredContentHeight = self.trackView.track.computePixelHeight(features);
+                    currentContentHeight = $(self.contentDiv).height();
+
+                    if (requiredContentHeight !== currentContentHeight) {
+                        self.setContentHeight(requiredContentHeight);
+                    }
+
+                    return self.getContentHeight();
+                }
+            })
+    }
+
     igv.Viewport.prototype.update = function () {
 
-        //console.trace();
-        if (this.tile) this.tile.invalidate = true;
+        if (this.tile) {
+            this.tile.invalidate = true;
+        }
         this.repaint();
 
     };
@@ -52560,33 +52698,23 @@ var igv = (function (igv) {
         }
 
         // TODO -- show whole genome zoom in notice here
-        if (this.$zoomInNotice && this.trackView.track.visibilityWindow !== undefined && this.trackView.track.visibilityWindow > 0) {
-
-            if ((referenceFrame.bpPerPixel * this.$viewport.width() > this.trackView.track.visibilityWindow) ||
-                (referenceFrame.chrName.toLowerCase() === "all" && !this.trackView.track.supportsWholeGenome)) {
-
-                this.tile = null;
-                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-                self.stopSpinner();
-
-                this.$zoomInNotice.show();
-                return;
-            } else {
-                this.$zoomInNotice.hide();
-            }
+        if (showZoomInNotice.call(this)) {
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            this.$zoomInNotice.show();
+            return;
+        } else {
+            this.$zoomInNotice.hide();
         }
+
 
         chr = referenceFrame.chrName;
         refFrameStart = referenceFrame.start;
         refFrameEnd = refFrameStart + referenceFrame.toBP(this.canvas.width);
 
-        //  if (this.tile && this.tile.containsRange(chr, refFrameStart, refFrameEnd, referenceFrame.bpPerPixel)) {
-        // console.log('paint pre-existing canvas');
+        // Paint existing cached image, if any, while data loads.
         this.paintImage(chr, refFrameStart, refFrameEnd, referenceFrame.bpPerPixel);
 
-        if (!this.tile ||
-            this.tile.invalidate || !this.tile.containsRange(chr, refFrameStart, refFrameEnd, referenceFrame.bpPerPixel)) {
+        if (!tileIsValid.call(self, chr, refFrameStart, refFrameEnd, referenceFrame.bpPerPixel)) {
 
             //TODO -- if bpPerPixel (zoom level) changed repaint image from cached data => new optional track method to return
             //TODO -- cached features directly (not a promise for features).
@@ -52615,51 +52743,32 @@ var igv = (function (igv) {
 
                 .then(function (features) {
 
-                    var currentContentHeight,
-                        requiredContentHeight,
-                        roiPromises;
+                    var roiPromises;
 
-
-                    // self.loading = false;
                     self.loading = undefined;
 
                     self.stopSpinner();
-
-                    if (features) {
-
-                        if (typeof self.trackView.track.computePixelHeight === 'function') {
-
-                            // Height of content div and content canvas
-                            requiredContentHeight = self.trackView.track.computePixelHeight(features);
-                            currentContentHeight = $(self.contentDiv).height();
-
-
-                            if (requiredContentHeight !== currentContentHeight) {
-                                self.trackView.setContentHeightForViewport(self, requiredContentHeight)
-                            }
-                        }
-                    }
 
                     buffer = document.createElement('canvas');
                     buffer.width = pixelWidth;
                     buffer.height = self.canvas.height;
                     drawConfiguration =
-                        {
-                            features: features,
-                            context: buffer.getContext('2d'),
-                            pixelWidth: buffer.width,
-                            pixelHeight: buffer.height,
-                            bpStart: bpStart,
-                            bpEnd: bpEnd,
-                            bpPerPixel: referenceFrame.bpPerPixel,
-                            referenceFrame: referenceFrame,
-                            genomicState: genomicState,
-                            selection: self.selection,
-                            viewport: self,
-                            viewportWidth: self.$viewport.width(),
-                            viewportContainerX: genomicState.referenceFrame.toPixels(genomicState.referenceFrame.start - bpStart),
-                            viewportContainerWidth: igv.browser.viewportContainerWidth()
-                        };
+                    {
+                        features: features,
+                        context: buffer.getContext('2d'),
+                        pixelWidth: buffer.width,
+                        pixelHeight: buffer.height,
+                        bpStart: bpStart,
+                        bpEnd: bpEnd,
+                        bpPerPixel: referenceFrame.bpPerPixel,
+                        referenceFrame: referenceFrame,
+                        genomicState: genomicState,
+                        selection: self.selection,
+                        viewport: self,
+                        viewportWidth: self.$viewport.width(),
+                        viewportContainerX: genomicState.referenceFrame.toPixels(genomicState.referenceFrame.start - bpStart),
+                        viewportContainerWidth: igv.browser.viewportContainerWidth()
+                    };
 
                     if (features) {
 
@@ -52733,33 +52842,44 @@ var igv = (function (igv) {
             return (/*0 === genomicState.locusIndex &&*/ (typeof trackView.track.paintAxis === 'function') && trackView.controlCanvas.width > 0 && trackView.controlCanvas.height > 0);
         }
 
-        function viewIsReady() {
-            return igv.browser && igv.browser.genomicStateList && igv.browser.genomicStateList[self.genomicState.locusIndex].referenceFrame;
-        }
-
-
-        function getFeatures(chr, start, end, bpPerPixel) {
-            var self = this;
-            if (self.cachedFeatures && self.cachedFeatures.containsRange(chr, start, end, bpPerPixel)) {
-                return Promise.resolve(self.cachedFeatures.features)
-            }
-            else {
-                if (typeof self.trackView.track.getFeatures === "function") {
-                    return self.trackView.track.getFeatures(chr, start, end, bpPerPixel)
-                        .then(function (features) {
-                            self.cachedFeatures = new CachedFeatures(chr, start, end, bpPerPixel, features);
-                            return features;
-                        })
-                        .catch(function (error) {
-                            console.log(error);
-                        })
-                }
-                else {
-                    Promise.resolve(undefined);
-                }
-            }
+        function tileIsValid(chr, start, end, bpPerPixel) {
+            return this.tile && !this.tile.invalidate && this.tile.containsRange(chr, start, end, bpPerPixel)
         }
     };
+
+
+    function showZoomInNotice() {
+        var referenceFrame = this.genomicState.referenceFrame;
+        return (this.trackView.track.visibilityWindow !== undefined && this.trackView.track.visibilityWindow > 0 &&
+            (referenceFrame.bpPerPixel * this.$viewport.width() > this.trackView.track.visibilityWindow)) ||
+            (referenceFrame.chrName.toLowerCase() === "all" && !this.trackView.track.supportsWholeGenome);
+    }
+
+    function viewIsReady() {
+        return igv.browser && igv.browser.genomicStateList && igv.browser.genomicStateList[this.genomicState.locusIndex].referenceFrame;
+    }
+
+    function getFeatures(chr, start, end, bpPerPixel) {
+        var self = this;
+        if (self.cachedFeatures && self.cachedFeatures.containsRange(chr, start, end, bpPerPixel)) {
+            return Promise.resolve(self.cachedFeatures.features)
+        }
+        else {
+            if (typeof self.trackView.track.getFeatures === "function") {
+                return self.trackView.track.getFeatures(chr, start, end, bpPerPixel)
+                    .then(function (features) {
+                        self.cachedFeatures = new CachedFeatures(chr, start, end, bpPerPixel, features);
+                        return features;
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
+            }
+            else {
+                Promise.resolve(undefined);
+            }
+        }
+    }
 
     igv.Viewport.prototype.setContentHeight = function (contentHeight) {
         // Maximum height of a canvas is ~32,000 pixels on Chrome, possibly smaller on other platforms
@@ -52768,50 +52888,18 @@ var igv = (function (igv) {
         if (this.trackView.track.minHeight) {
             contentHeight = Math.max(this.trackView.track.minHeight, contentHeight);
         }
-
-
-
-        // Optionally adjust the trackDiv and viewport height to fit the content height, within min/max bounds
-        if (this.trackView.track.autoHeight) {
-            setTrackViewHeight.call(this, contentHeight, false);
+        if (this.trackView.track.maxHeight) {
+            contentHeight = Math.min(this.trackView.track.maxHeight, contentHeight);
         }
 
         $(this.contentDiv).height(contentHeight);
         $(this.canvas).height(contentHeight);
         this.canvas.setAttribute("height", contentHeight);
-
-        if (this.trackView.track.paintAxis) {
-            $(this.trackView.controlCanvas).height(contentHeight);
-            this.trackView.controlCanvas.setAttribute("height", contentHeight);
-        }
-
     };
 
-    function setTrackViewHeight(height, doUpdate) {
+    igv.Viewport.prototype.getContentHeight = function () {
 
-        if ((1 === this.genomicState.locusCount) || (height > $(this.trackView.trackDiv).height())) {
-
-            if (this.trackView.track.minHeight) height = Math.max(this.trackView.track.minHeight, height);
-            if (this.trackView.track.maxHeight) height = Math.min(this.trackView.track.maxHeight, height);
-
-            console.log('set trackView height ' + this.trackView.track.id + ' locus index ' + this.genomicState.locusIndex + ' requested / current ' + height + ' / ' + $(this.trackView.trackDiv).height());
-
-            this.trackView.track.height = height;
-
-            $(this.trackView.trackDiv).height(height);
-
-            if (this.trackView.track.paintAxis) {
-                $(this.trackView.controlCanvas).height(height);
-                this.trackView.controlCanvas.setAttribute("height", height);
-            }
-
-            this.$viewport.height(height);
-
-            if (doUpdate === undefined || doUpdate === true) {
-                this.update();
-            }
-
-        }
+        return $(this.contentDiv).height();
 
     }
 
@@ -53121,32 +53209,6 @@ var igv = (function (igv) {
         return this.bpPerPixel === bpPerPixel && start >= this.startBP && end <= this.endBP && chr === this.chr;
     };
 
-    // TODO: dat - Called from BAMTrack.altClick. Change call to redrawTile(viewPort, features)
-    // igv.Viewport.prototype.redrawTile = function (features) {
-    //
-    //     var buffer;
-    //
-    //     if (!this.tile) {
-    //         return;
-    //     }
-    //
-    //     buffer = document.createElement('canvas');
-    //     buffer.width = this.tile.image.width;
-    //     buffer.height = this.tile.image.height;
-    //
-    //     this.trackView.track.draw({
-    //         features: features,
-    //         context: buffer.getContext('2d'),
-    //         bpStart: this.tile.startBP,
-    //         bpPerPixel: this.tile.bpPerPixel,
-    //         pixelWidth: buffer.width,
-    //         pixelHeight: buffer.height
-    //     });
-    //
-    //
-    //     this.tile = new Tile(this.tile.chr, this.tile.startBP, this.tile.endBP, this.tile.bpPerPixel, buffer);
-    //     this.paintImage(this.genomicState.referenceFrame);
-    // };
 
     return igv;
 
