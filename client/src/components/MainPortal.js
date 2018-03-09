@@ -249,7 +249,8 @@ function columnContains(d, term) {
 }
 
 function intersection(a, b) {
-  return a.filter(x => b.includes(x))
+  const bi = new Set(b.map(x => x.id))
+  return a.filter(x => bi.has(x.id))
 }
 
 
