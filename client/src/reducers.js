@@ -36,6 +36,7 @@ function createDefaultUI() {
     message: undefined,
     selection: {
       donors: [],
+      samples: [],
       experiment: undefined,
     },
   }

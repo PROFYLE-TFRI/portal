@@ -3,57 +3,67 @@
  */
 
 import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { BootstrapTable as Table } from 'react-bootstrap-table';
-import { compose } from '../helpers/rambda';
 
+import { ENTITIES, SELECTION_COLOR, SAMPLE_COLUMNS } from '../constants';
 import { renderColumn } from '../helpers/table';
-import { selectDonor, deselectDonor } from '../actions';
-import { selectAllDonors, deselectAllDonors } from '../actions';
-import { SAMPLE_COLUMNS } from '../constants';
+import {
+  select,
+  selectAll,
+  deselect,
+  deselectAll,
+} from '../actions'
 
-const { values } = Object
 
 
-
+const selectSample       = select.bind(null, ENTITIES.SAMPLES)
+const selectAllSamples   = selectAll.bind(null, ENTITIES.SAMPLES)
+const deselectSample     = deselect.bind(null, ENTITIES.SAMPLES)
+const deselectAllSamples = deselectAll.bind(null, ENTITIES.SAMPLES)
 
 
 const mapStateToProps = state => ({
-    donors: values(state.data.donors)
-  , selected: [...state.ui.selection.donors]
+  selected: [...state.ui.selection.samples],
 })
-const mapDispatchToProps = dispatch => ({
-    selectDonor:       compose(dispatch, selectDonor)
-  , deselectDonor:     compose(dispatch, deselectDonor)
-  , selectAllDonors:   compose(dispatch, selectAllDonors)
-  , deselectAllDonors: compose(dispatch, deselectAllDonors)
-})
+const mapDispatchToProps = dispatch =>
+  bindActionCreators({ selectSample, deselectSample }, dispatch)
+
 class SampleTable extends Component {
 
   render() {
 
-    const { samples } = this.props
+    const {
+      samples,
+      selected,
+      selectSample,
+      deselectSample,
+      selectAllSamples,
+      deselectAllSamples,
+    } = this.props
 
     const options = {
       sizePerPage: 15,
       hideSizePerPage: true
     }
-
-    /* selectRow={selectRowProp}
-     * const selectRowProp = {
-     *  mode: 'checkbox',
-     *  clickToSelect: true,
-     *  bgColor: SELECTION_COLOR,
-     *  onSelect: (donor, isSelected, e) => isSelected ? selectDonor(donor.id) : deselectDonor(donor.id),
-     *  onSelectAll: (isSelected, rows) => isSelected ? selectAllDonors() : deselectAllDonors(),
-     *  selected: selected
-     *}*/
+    const selectRowProp = {
+      mode: 'checkbox',
+      clickToSelect: true,
+      bgColor: SELECTION_COLOR,
+      onSelect: (sample, isSelected, e) => isSelected ? selectSample(sample.id) : deselectSample(sample.id),
+      onSelectAll: (isSelected, rows) => isSelected ? selectAllSamples() : deselectAllSamples(),
+      selected: selected
+    }
 
     return (
       <div className='SampleTable table-sm'>
         <Table data={samples} version='4'
+            selectRow={selectRowProp}
             options={options}
             pagination={true}
+            hover={true}
+            trClassName='clickable'
         >
           {
             SAMPLE_COLUMNS.map(renderColumn)

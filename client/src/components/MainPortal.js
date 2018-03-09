@@ -64,7 +64,7 @@ class MainPortal extends Component {
       return this.renderLogin()
 
 
-    const selectedDonors = filterSelectedDonors(donors, selection, search)
+    const selectedDonors = filterSelected(donors, selection.donors)
 
     let filtered = {
       donors: filterVisibleDonors(donors, selection, search),
@@ -75,19 +75,25 @@ class MainPortal extends Component {
     if (isVariantSearchOpen && variantSearchResults.length > 0)
       filtered = filterVariantSearch(variantSearchResults, filtered)
 
-    const visibleAndSelectedDonors = filterSelectedDonors(filtered.donors, selection, search)
+    const visibleAndSelectedDonors = filterSelected(filtered.donors, selection.donors)
     const visibleSamples = visibleAndSelectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
-    const selectedExperiments = visibleSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+    const selectedSamples = filterSelected(samples, selection.samples)
+    const visibleAndSelectedSamples = filterSelected(visibleSamples, selection.samples)
+    const selectedExperiments = visibleAndSelectedSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
 
     filtered.samples = intersection(filtered.samples, visibleSamples)
     filtered.experiments = intersection(filtered.experiments, selectedExperiments)
 
 
     const selectedDonorsCount = selection.donors.length === 0 ? 0 : selectedDonors.length
-
     const hasSelectedButNotVisibleDonors =
       selection.donors.length > 0 &&
       selectedDonors.filter(x => !filtered.donors.includes(x)).length > 0
+
+    const selectedSamplesCount = selection.samples.length === 0 ? 0 : selectedSamples.length
+    const hasSelectedButNotVisibleSamples =
+      selection.samples.length > 0 &&
+      selectedSamples.filter(x => !filtered.samples.includes(x)).length > 0
 
     return (
       <Container className='MainPortal'>
@@ -111,18 +117,20 @@ class MainPortal extends Component {
 
         <Row>
           <Col sm={{ size: 6 }}>
-            <h4>
+            <h4 className='tableTitle'>
               { donors.length } donors{' '}
               <span className='text-muted'>
                 (<span className={hasSelectedButNotVisibleDonors ? 'text-danger' : ''}>{ selectedDonorsCount } selected</span>, { filtered.donors.length } visible)
               </span>{' '}
-              <Button
-                size='sm'
-                disabled={selection[ENTITIES.DONORS].length === 0}
-                onClick={() => this.props.deselectAll(ENTITIES.DONORS)}
-              >
-                Clear Selection
-              </Button>
+              {
+                selection[ENTITIES.DONORS].length > 0 &&
+                  <Button
+                    size='sm'
+                    onClick={() => this.props.deselectAll(ENTITIES.DONORS)}
+                  >
+                    Clear Selection
+                  </Button>
+              }
             </h4>
           </Col>
           <Col sm={{ size: 6 }}>
@@ -157,10 +165,20 @@ class MainPortal extends Component {
 
         <Row>
           <Col>
-            <h4>
-              { samples.length } samples <span className='text-muted'>
-                ({ visibleSamples.length } visible)
-              </span>
+            <h4 className='tableTitle'>
+              { samples.length } samples{' '}
+              <span className='text-muted'>
+                (<span className={hasSelectedButNotVisibleSamples ? 'text-danger' : ''}>{ selectedSamplesCount } selected</span>, { filtered.samples.length } visible)
+              </span>{' '}
+              {
+                selection[ENTITIES.SAMPLES].length > 0 &&
+                  <Button
+                    size='sm'
+                    onClick={() => this.props.deselectAll(ENTITIES.SAMPLES)}
+                  >
+                    Clear Selection
+                  </Button>
+              }
             </h4>
           </Col>
         </Row>
@@ -213,12 +231,12 @@ function filterVariantSearch(results, { donors, samples, experiments }) {
   }
 }
 
-function filterSelectedDonors(donors, selection) {
-  // Filter only selected donors, but show all if none are selected
-  if (selection.donors.length === 0)
-    return donors
+function filterSelected(items, selection) {
+  // Filter only selected items, but show all if none are selected
+  if (selection.length === 0)
+    return items
 
-  return donors.filter(d => selection.donors.includes(d['id']))
+  return items.filter(d => selection.includes(d['id']))
 }
 
 function filterVisibleDonors(donors, selection, search) {
