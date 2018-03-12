@@ -35,7 +35,7 @@ export const search = createFetchAction(SEARCH, () => {
 
     dispatch(search.request())
 
-    return requests.variant.search(params)
+    return requests.donor.searchVariants(params)
     .then(results => dispatch(search.receive(results)))
     .catch(err => dispatch(search.error(err)))
   }

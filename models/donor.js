@@ -12,8 +12,8 @@ const config = require('../config')
 module.exports = {
   findByID,
   findAll,
-  findDistinctChroms,
-  findVariants,
+  listChroms,
+  searchVariants,
 }
 
 function findByID(id) {
@@ -26,7 +26,7 @@ function findAll() {
     .then(indexBy(prop('id')))
 }
 
-function findDistinctChroms() {
+function listChroms() {
   return findAll()
   .then(donors => {
     const results = []
@@ -40,7 +40,7 @@ function findDistinctChroms() {
   .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
 }
 
-function findVariants(params) {
+function searchVariants(params) {
   return findAll()
   .then(donors => {
     const results = []

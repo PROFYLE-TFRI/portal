@@ -5,8 +5,10 @@
 import axios from 'axios'
 
 export const donor = {
-  findAll:  ()     => get('/donor/find-all'),
-  findByID: (id)   => get(`/donor/find-by-id/${id}`),
+  findAll:        ()       => get('/donor/find-all'),
+  findByID:       (id)     => get(`/donor/find-by-id/${id}`),
+  searchVariants: (params) => post('/donor/search-variants', params),
+  listChroms:     ()       => post('/donor/list-chroms'),
 }
 
 export const user = {
@@ -21,11 +23,6 @@ export const auth = {
   logIn:      (email, password, code) => post('/auth/login', { email, password, code }),
   logOut:     () => post('/auth/logout'),
   isLoggedIn: () => post('/auth/is-logged-in'),
-}
-
-export const variant = {
-  search: (params) => post('/variant/search', params),
-  chroms: ()       => post('/variant/chroms'),
 }
 
 function fetchAPI(method, route, data) {

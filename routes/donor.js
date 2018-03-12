@@ -16,4 +16,20 @@ router.get('/find-by-id/:id', (req, res, next) =>
     .then(dataHandler(res))
     .catch(errorHandler(res)))
 
+// POST search
+router.use('/search-variants', (req, res, next) => {
+  const params = req.body // { chrom, start, end }
+
+  Donor.searchVariants(params)
+  .then(dataHandler(res))
+  .catch(errorHandler(res))
+})
+
+// GET chroms
+router.use('/list-chroms', (req, res, next) => {
+  Donor.listChroms()
+  .then(dataHandler(res))
+  .catch(errorHandler(res))
+})
+
 module.exports = router;
