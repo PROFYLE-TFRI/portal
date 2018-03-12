@@ -7,7 +7,7 @@ const React = require('react')
 const { renderToString } = require('react-dom/server')
 const { Provider } = require('react-redux')
 
-const Donor = require('../models/donor')
+const Donor = require('./donor') /* requiring ./routes/donor.js, not ./models/donor.js */
 const User = require('../models/user')
 const configureStore = require('../client/dist/store').default
 const App = require('../client/dist/components/App').default
@@ -44,6 +44,12 @@ router.use('/', (req, res, next) => {
       .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
 
     res.send(pageHTML)
+    res.end()
+  })
+  .catch(err => {
+    console.error(err)
+    res.status(500)
+    res.send(err.message + '\n' + err.stack)
     res.end()
   })
 })

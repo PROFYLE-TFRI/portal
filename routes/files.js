@@ -1,86 +1,47 @@
 const express = require('express')
 const range = require('express-range')
 const router = express.Router()
+const axios = require('axios')
 
-const fs = require('../helpers/filesystem')
+const Peer = require('../models/peer')
 
 
 router.use(range({ accept: 'bytes' }))
 
 
 // GET file
-router.use('/', (req, res, next) => {
-  if (req.url.includes('..')) {
-    req.status(400)
-    req.send('Invalid request')
-    req.end()
-    return
-  }
+router.use('/:peerID', (req, res, next) => {
+  const { peerID } = req.params
+  const url = req.url
 
-  if (req.get('Range') === undefined)
-    sendRequest(req, res)
-  else
-    sendRangeRequest(req, res)
-})
-
-function sendRequest(req, res) {
-  const stream = fs.createReadStream(getPath(req.url))
-  stream.on('open', () => {
-    res.set('Content-Type', 'application/octet-stream')
-    stream.pipe(res)
-  })
-  stream.on('error', err => {
-    res.status(500)
-    res.send(JSON.stringify(err))
+  Peer.findByID(peerID)
+  .then(peer =>
+    axios.request({
+      url: peer.url + '/files' + url,
+      method: req.method,
+      responseType: 'arraybuffer',
+      headers: {
+        ...req.headers,
+        authorization: `APIKEY ${peer.apiKey}`
+      }
+    })
+  )
+  .then(response => {
+    res.status(response.status)
+    for (const header in response.headers) {
+      if (!/content-length/i.test(header))
+        res.set(header, response.headers[header])
+    }
+    res.set('content-type', 'application/octet-stream')
+    res.set('transfer-encoding', 'chunked')
+    res.write(response.data)
     res.end()
   })
-}
-
-function sendRangeRequest(req, res) {
-  const path = getPath(req.url)
-  const start = req.range.first
-  const end   = req.range.last
-
-  fs.exists(path)
-  .then(ok => {
-    if (!ok) {
-      res.status(404)
-      res.send('File doesnt exist')
-      res.end()
-      return
-    }
-
-    return fs.stat(path)
+  .catch(err => {
+    res.status(500)
+    res.send(err.message)
+    res.end()
   })
-  .then(stat => {
-
-    if (start > stat.size || end > stat.size) {
-      res.status(400)
-      res.send('Range out of bounds')
-      res.end()
-      return
-    }
-
-    const stream = fs.createReadStream(path, { start, end })
-    stream.on('open', () => {
-      res.range({
-        first: start,
-        last: end,
-        length: stat.size,
-      })
-      res.set('Content-Type', 'application/octet-stream')
-      stream.pipe(res)
-    })
-    stream.on('error', err => {
-      res.status(500)
-      res.send(JSON.stringify(err))
-      res.end()
-    })
-  })
-}
-
-function getPath(url) {
-  return url.replace(/\?.*$/, '')
-}
+})
 
 module.exports = router;

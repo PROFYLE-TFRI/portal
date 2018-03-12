@@ -33,7 +33,7 @@ function createServer(handler, port) {
   const server = http.createServer(handler)
   // Listen on provided port, on all network interfaces.
   server.listen(port)
-  server.on('error', onError)
+  server.on('error', onError.bind(null, port))
   server.on('listening', onListening.bind(null, server))
 
   console.log(`Listening on port ${port}`)
@@ -62,7 +62,7 @@ function normalizePort(val) {
 /**
  * Event listener for HTTP server "error" event.
  */
-function onError(error) {
+function onError(port, error) {
   if (error.syscall !== 'listen') {
     throw error
   }

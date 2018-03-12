@@ -2,32 +2,74 @@ const express = require('express')
 const router = express.Router()
 
 const { dataHandler, errorHandler } = require('../helpers/handlers')
-const Donor = require('../models/donor')
+const Peer = require('../models/peer')
+
+// Export these
+router.findAll = findAll
+router.searchVariants = searchVariants
+router.listChroms = listChroms
+
+function findAll() {
+  return Peer.request({ url: '/api/donor/find-all' })
+  .then(results => {
+
+    const finalData = {}
+    results.forEach(({ peer, data }) => {
+      Object.values(data).forEach(donor => {
+        donor.source = peer.id
+        finalData[donor.id] = donor
+      })
+    })
+
+    return finalData
+  })
+}
+
+function searchVariants(params) {
+  return Peer.request({ method: 'post', url: '/api/donor/search-variants', body: params })
+  .then(results => {
+
+    const finalData = []
+    results.forEach(({ peer, data }) => {
+      data.forEach(match => {
+        match.source = peer.id
+        finalData.push(match)
+      })
+
+    })
+
+    return finalData
+  })
+}
+
+function listChroms() {
+  return Peer.request({ url: '/api/donor/list-chroms' })
+  .then(results => {
+
+    const finalData = Array.from(new Set(results.reduce((acc, cur) => acc.concat(cur.data))))
+
+    return finalData
+  })
+}
+
 
 // GET list
-router.get('/find-all', (req, res, next) =>
-  Donor.findAll()
-    .then(dataHandler(res))
-    .catch(errorHandler(res)))
-
-// GET by id
-router.get('/find-by-id/:id', (req, res, next) =>
-  Donor.findByID(req.params.id)
-    .then(dataHandler(res))
-    .catch(errorHandler(res)))
+router.get('/find-all', (req, res, next) => {
+  findAll()
+  .then(dataHandler(res))
+  .catch(errorHandler(res))
+})
 
 // POST search
 router.use('/search-variants', (req, res, next) => {
-  const params = req.body // { chrom, start, end }
-
-  Donor.searchVariants(params)
+  searchVariants(req)
   .then(dataHandler(res))
   .catch(errorHandler(res))
 })
 
 // GET chroms
 router.use('/list-chroms', (req, res, next) => {
-  Donor.listChroms()
+  listChroms()
   .then(dataHandler(res))
   .catch(errorHandler(res))
 })

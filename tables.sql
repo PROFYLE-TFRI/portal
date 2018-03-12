@@ -28,4 +28,22 @@ INSERT INTO users
     );
 
 
+CREATE TABLE peers (
+    id       text    primary key,
+    url      text    not null unique,
+    apiKey   text    not null,
+    isActive integer not null
+);
+
+
+INSERT INTO peers
+    (id, url, apiKey, isActive)
+    VALUES
+    (
+        'local',
+        'http://localhost:3002',
+        'H6TY5YZ5Y5H3CHF',
+        1
+    );
+
 -- vim:et

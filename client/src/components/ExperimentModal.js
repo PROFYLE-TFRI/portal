@@ -17,10 +17,18 @@ import { deselectExperiment } from '../actions'
 
 const DEFAULT_LOCUS = 'chr1:1-15,000'
 
-const mapStateToProps = state => ({
-  experiment: state.data.experiments[state.ui.selection.experiment],
-  variantSearchResults: state.variantSearch.results,
-})
+const mapStateToProps = state => {
+  const experiment = state.data.experiments[state.ui.selection.experiment]
+  const sample = experiment ? state.data.samples[experiment.sample_id] : undefined
+  const donor = sample ? state.data.donors[sample.donorID] : undefined
+  const source = donor ? donor.source : undefined
+
+  return {
+    source: source,
+    experiment: experiment,
+    variantSearchResults: state.variantSearch.results,
+  }
+}
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ deselectExperiment }, dispatch)
 
@@ -57,6 +65,13 @@ class ExperimentModal extends Component {
         locus: locus,
       })
     }
+    else {
+
+      this.setState({
+        experiment: {},
+        selectedFiles: {},
+      })
+    }
   }
 
   toggleSelection(file) {
@@ -81,7 +96,7 @@ class ExperimentModal extends Component {
       .filter(([file, selected]) => selected)
       .map(([file, _]) => ({
         name: (file.match(/[^/]+$/) || [file])[0],
-        url: `/files/${file}`
+        url: `/files/${this.props.source}/${file}`
       }))
 
     const variantsByPosition = groupBy(getPosition, variants)
