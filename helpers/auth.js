@@ -2,9 +2,12 @@
  * auth.js
  */
 
+const config = require('./config')
+
 module.exports = {
   isLoggedIn,
   isAdmin,
+  hasAPIKey,
   notAuthenticated,
   forbidden
 }
@@ -23,6 +26,12 @@ function isAdmin(req, res, next) {
   next()
 }
 
+function hasAPIKey(req, res, next) {
+  const authorization = req.get('authorization')
+  if (authorization !== `APIKEY ${config.apiKey}`)
+    return forbidden(res)
+  next()
+}
 
 // Helpers
 
