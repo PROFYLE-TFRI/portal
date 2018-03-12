@@ -121,6 +121,7 @@ class UserPortal extends Component {
           outline
           color='success'
           size='sm'
+          loading={users.isLoading}
           onClick={() => this.setState({ action: ACTIONS.CREATE })}
         >
           Create New User
