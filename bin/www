@@ -4,8 +4,6 @@
  * Module dependencies.
  */
 
-const app = require('../server')
-const node = require('../node/server')
 const http = require('http')
 
 const config = require('../config')
@@ -16,10 +14,10 @@ const config = require('../config')
  */
 
 if (config.isCentral)
-  createServer(app,  process.env.PORT || '3001')
+  createServer(require('../server'),  process.env.PORT || '3001')
 
 if (config.isNode)
-  createServer(node, process.env.NODE_PORT || '3002')
+  createServer(require('../node/server'), process.env.NODE_PORT || '3002')
 
 
 
