@@ -14,6 +14,9 @@ module.exports = {
     database: path.join(__dirname, 'data', 'app.db'),
   },
 
+  isCentral: true, /* if this is a central server */
+  isNode: true, /* if this is a node server */
+
   /* Central Server Only */
   twilio: {
     account: 'AC05c9793739fbce19e2979e16e5bf0fe4',
