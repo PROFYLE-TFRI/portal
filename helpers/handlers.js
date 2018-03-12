@@ -4,7 +4,7 @@
 
 
 exports.errorHandler = res => err => {
-  res.json({ ok: false, message: err.toString(), stack: err.stack.split('\n') })
+  res.json({ ok: false, message: err.toString(), stack: err.stack })
   res.end()
 }
 

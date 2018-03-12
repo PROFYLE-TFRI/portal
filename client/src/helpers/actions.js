@@ -70,11 +70,11 @@ export function asMessage(error) {
   if (typeof error === 'string')
     return error
   if (error.response) {
-    console.error('API: ' + error.response.data.message + '\n' + error.response.data.stack.join('\n'))
+    console.error('API: ' + error.response.data.message + '\n' + error.response.data.stack)
     return error.response.data.message
   }
   if (error.fromAPI) {
-    console.error('API: ' + error.message + '\n' + error.stack.join('\n'))
+    console.error('API: ' + error.message + '\n' + error.stack)
   }
   return error.message
 }
