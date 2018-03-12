@@ -34,7 +34,8 @@ if (!state.auth.initialCheck)
 
 // Register service worker
 
-registerServiceWorker()
+if (location.protocol === 'https:')
+  registerServiceWorker()
 
 
 
