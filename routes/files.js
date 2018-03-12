@@ -10,6 +10,13 @@ router.use(range({ accept: 'bytes' }))
 
 // GET file
 router.use('/', (req, res, next) => {
+  if (req.url.includes('..')) {
+    req.status(400)
+    req.send('Invalid request')
+    req.end()
+    return
+  }
+
   if (req.get('Range') === undefined)
     sendRequest(req, res)
   else
