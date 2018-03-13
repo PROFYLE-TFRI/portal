@@ -62,7 +62,7 @@ router.get('/find-all', (req, res, next) => {
 
 // POST search
 router.use('/search-variants', (req, res, next) => {
-  searchVariants(req)
+  searchVariants(req.body)
   .then(dataHandler(res))
   .catch(errorHandler(res))
 })
