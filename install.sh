@@ -7,7 +7,7 @@
 
 set -e
 
-install_dir=${1:-'~/profyle-portal'}
+install_dir=${1:-"$HOME/profyle-portal"}
 did_finish=0
 
 red=$(echo -e '\x1b[1;91m')
