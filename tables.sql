@@ -36,6 +36,8 @@ CREATE TABLE peers (
 );
 
 
+/* inserted in ./database.js on table creation
+
 INSERT INTO peers
     (id, url, apiKey, isActive)
     VALUES
@@ -45,5 +47,6 @@ INSERT INTO peers
         'H6TY5YZ5Y5H3CHF',
         1
     );
+*/
 
 -- vim:et

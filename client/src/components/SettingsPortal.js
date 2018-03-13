@@ -8,6 +8,7 @@ import Button from './Button'
 import asString from '../helpers/as-string'
 import { update } from '../actions/user';
 import * as UserUtils from '../helpers/user'
+import getDiffObject from '../helpers/get-diff-object'
 
 
 const mapStateToProps = state => ({
@@ -37,7 +38,7 @@ class SettingsPortal extends Component {
   onSubmit = (ev) => {
     ev.preventDefault()
 
-    const diff = UserUtils.getDiffObject(
+    const diff = getDiffObject(
       this.props.user,
       UserUtils.serialize(this.state.user)
     )

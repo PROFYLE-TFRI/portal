@@ -10,15 +10,18 @@ const session = require('express-session')
 const flash = require('connect-flash')
 const SQLiteStore = require('connect-sqlite3')(session)
 
-const config = require('./config')
-const passport = require('./passport')
-const { isLoggedIn } = require('./helpers/auth')
-
 require('ignore-styles')
 require('babel-register')({
   ignore: /node_modules\/(?!react-popper|recharts)/,
   presets: ['env', 'react-app'],
 })
+
+
+const config = require('./config')
+const passport = require('./passport')
+const { isLoggedIn } = require('./helpers/auth')
+
+require('./setup-database')
 
 
 const app = express()
@@ -54,6 +57,7 @@ app.use(passport.session()) // persistent login sessions
 
 app.use('/files',       isLoggedIn, require('./routes/files'))
 app.use('/api/donor',   isLoggedIn, require('./routes/donor'))
+app.use('/api/peer',    isLoggedIn, require('./routes/peer'))
 app.use('/api/user',    isLoggedIn, require('./routes/user'))
 app.use('/api/auth',                require('./routes/auth'))
 

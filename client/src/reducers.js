@@ -21,8 +21,9 @@ import {
   , SEARCH
   , SET_TAB
 } from './actions';
-import * as USER from './actions/user';
 import * as DONOR from './actions/donor';
+import * as PEER from './actions/peer';
+import * as USER from './actions/user';
 import * as VARIANT_SEARCH from './actions/variantSearch';
 import { computeValues } from './models';
 import { TABS } from './constants'
@@ -341,12 +342,67 @@ function usersReducer(state = createDefaultUsers(), action) {
   }
 }
 
+function createDefaultPeers() {
+  return {
+    isLoading: false,
+    data: [],
+    message: undefined,
+  }
+}
+function peersReducer(state = createDefaultPeers(), action) {
+  switch (action.type) {
+    case PEER.FIND_ALL.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case PEER.FIND_ALL.RECEIVE: {
+      return { ...state, isLoading: false, data: action.payload }
+    }
+    case PEER.FIND_ALL.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case PEER.CREATE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case PEER.CREATE.RECEIVE: {
+      return { ...state, isLoading: false, data: [...state.data, action.payload] }
+    }
+    case PEER.CREATE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case PEER.UPDATE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case PEER.UPDATE.RECEIVE: {
+      return { ...state, isLoading: false, data: state.data.map(peer => peer.id === action.payload.id ? action.payload : peer) }
+    }
+    case PEER.UPDATE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    case PEER.REMOVE.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case PEER.REMOVE.RECEIVE: {
+      return { ...state, isLoading: false, data: state.data.filter(peer => peer.id !== action.meta.id) }
+    }
+    case PEER.REMOVE.ERROR: {
+      return { ...state, isLoading: false, message: action.payload  }
+    }
+
+    default:
+      return state;
+  }
+}
+
 export const rootReducer = (state = {}, action) => {
   const data = computeValues(dataReducer(state.data, action))
   const ui = uiReducer(state.ui, action, data)
   const variantSearch = variantSearchReducer(state.variantSearch, action, data)
   const auth = authReducer(state.auth, action)
   const users = usersReducer(state.users, action)
+  const peers = peersReducer(state.peers, action)
 
   // Initialize empty selections
   keys(data.values).forEach(which => {
@@ -354,5 +410,5 @@ export const rootReducer = (state = {}, action) => {
       ui.selection[which] = []
   })
 
-  return { ui, variantSearch, data, auth, users }
+  return { ui, variantSearch, data, auth, users, peers }
 }

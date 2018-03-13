@@ -59,6 +59,7 @@ export const EXPERIMENT_COLUMNS = [
 
 
 export const TABS = {
+  PEERS:    'PEERS',
   PORTAL:   'PORTAL',
   USERS:    'USER',
   SETTINGS: 'SETTINGS',

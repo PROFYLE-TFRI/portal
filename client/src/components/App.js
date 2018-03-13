@@ -10,6 +10,7 @@ import { setTab, logOut } from '../actions';
 import Icon from './Icon';
 import Login from './Login';
 import MainPortal from './MainPortal';
+import PeerPortal from './PeerPortal';
 import UserPortal from './UserPortal';
 import SettingsPortal from './SettingsPortal';
 
@@ -68,6 +69,17 @@ class App extends Component {
                   </NavLink>
                 </NavItem>
             }
+            {
+              auth.user.isAdmin &&
+                <NavItem>
+                    <NavLink
+                      className={classname({ active: currentTab === TABS.PEERS })}
+                      onClick={() => this.props.setTab(TABS.PEERS)}
+                    >
+                    Peers
+                  </NavLink>
+                </NavItem>
+            }
             <NavItem>
               <NavLink
                 className={classname({ active: currentTab === TABS.SETTINGS })}
@@ -88,6 +100,9 @@ class App extends Component {
             </TabPane>
             <TabPane tabId={TABS.USERS}>
               <UserPortal />
+            </TabPane>
+            <TabPane tabId={TABS.PEERS}>
+              <PeerPortal />
             </TabPane>
             <TabPane tabId={TABS.SETTINGS}>
               <SettingsPortal />

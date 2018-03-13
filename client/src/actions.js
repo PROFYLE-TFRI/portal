@@ -5,8 +5,9 @@
 import k from './shared-constants'
 import * as requests from './requests'
 import { createFetchAction, createFetchConstants } from './helpers/actions'
-import * as User from './actions/user'
 import * as Donor from './actions/donor'
+import * as Peer from './actions/peer'
+import * as User from './actions/user'
 
 export const LOG_IN       = createFetchConstants('LOG_IN')
 export const LOG_OUT      = createFetchConstants('LOG_OUT')
@@ -35,8 +36,10 @@ export const doInitialFetch = () => {
 
     dispatch(Donor.findAll())
 
-    if (auth.user.isAdmin)
+    if (auth.user.isAdmin) {
+      dispatch(Peer.findAll())
       dispatch(User.findAll())
+    }
   }
 }
 

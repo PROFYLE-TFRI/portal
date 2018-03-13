@@ -1,10 +1,12 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 
 /**
  * Module dependencies.
  */
 
 const http = require('http')
+const chalk = require('chalk')
 
 const config = require('../config')
 
@@ -13,11 +15,32 @@ const config = require('../config')
  * Spawn applicable servers
  */
 
-if (config.isCentral)
-  createServer(require('../server'),  process.env.PORT || '3001')
+if (config.isCentral) {
+  const centralPort = process.env.PORT || '3001'
 
-if (config.isNode)
-  createServer(require('../node/server'), process.env.NODE_PORT || '3002')
+  createServer(require('../server'), centralPort)
+  .then(server => {
+
+    if (!config.isNode)
+      console.log(chalk.yellow.bold('Running as central server only. No data served.'))
+    else
+      console.log(chalk.green.bold(`Central server running on port ${centralPort}`))
+  })
+  .catch(onError.bind(null, centralPort))
+}
+
+if (config.isNode) {
+  const nodePort = process.env.NODE_PORT || '3002'
+
+  createServer(require('../node/server'), nodePort)
+  .then(server => {
+    if (!config.isCentral)
+      console.log(chalk.yellow.bold('Running as node server only. No portal available.'))
+    else
+      console.log(chalk.green.bold(`Node server running on port ${nodePort}`))
+  })
+  .catch(onError.bind(null, nodePort))
+}
 
 
 
@@ -26,15 +49,17 @@ if (config.isNode)
  * Create HTTP server
  */
 function createServer(handler, port) {
-  handler.set('port', normalizePort(port))
+  return new Promise((resolve, reject) => {
+    // set port for Express
+    handler.set('port', normalizePort(port))
 
-  const server = http.createServer(handler)
-  // Listen on provided port, on all network interfaces.
-  server.listen(port)
-  server.on('error', onError.bind(null, port))
-  server.on('listening', onListening.bind(null, server))
+    const server = http.createServer(handler)
 
-  console.log(`Listening on port ${port}`)
+    // Listen on provided port, on all network interfaces.
+    server.listen(port)
+    server.on('error', reject)
+    server.on('listening', () => resolve(server))
+  })
 }
 
 
@@ -82,15 +107,4 @@ function onError(port, error) {
     default:
       throw error
   }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-function onListening(server) {
-  const addr = server.address()
-  const bind = typeof addr === 'string'
-    ? 'pipe ' + addr
-    : 'port ' + addr.port
-  console.log('Listening on ' + bind)
 }

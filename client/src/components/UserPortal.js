@@ -8,6 +8,7 @@ import Button from './Button'
 import asString from '../helpers/as-string'
 import * as User from '../actions/user';
 import * as UserUtils from '../helpers/user'
+import getDiffObject from '../helpers/get-diff-object'
 
 
 const ACTIONS = {
@@ -38,7 +39,7 @@ class UserPortal extends Component {
       action = this.props.create(newUser)
     } else {
       const user = this.props.users.data.find(u => u.id === this.state.userID)
-      const diff = UserUtils.getDiffObject(user, newUser)
+      const diff = getDiffObject(user, newUser)
       action = this.props.update(diff)
     }
 

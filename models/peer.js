@@ -25,8 +25,8 @@ function findByID(id) {
 }
 
 function create(peer) {
-  if (/^[a-zA-Z0-9_-]+$/.test(peer.name))
-    return Promise.reject(new Error('Name can only use characters [a-zA-Z0-9_-]'))
+  if (!/^[a-zA-Z0-9_-]+$/.test(peer.id))
+    return Promise.reject(new Error(`ID can only use characters [a-zA-Z0-9_-]: got "${peer.id}"`))
 
   return db.insert(`
     INSERT INTO peers
@@ -102,10 +102,10 @@ function request(req) {
 // Helpers
 
 function serialize(peer) {
-  const serializedUser = { ...peer }
-  if ('isActive' in serializedUser)
-    serializedUser.isActive = Number(peer.isActive)
-  return serializedUser
+  const serializedPeer = { ...peer }
+  if ('isActive' in serializedPeer)
+    serializedPeer.isActive = Number(peer.isActive)
+  return serializedPeer
 }
 
 function deserialize(peer) {

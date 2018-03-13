@@ -19,6 +19,13 @@ export const user = {
   remove:   (id)   => post(`/user/remove/${id}`),
 }
 
+export const peer = {
+  findAll:  ()     => get('/peer/find-all'),
+  create:   (peer) => post('/peer/create', peer),
+  update:   (peer) => post('/peer/update', peer),
+  remove:   (id)   => post(`/peer/remove/${id}`),
+}
+
 export const auth = {
   logIn:      (email, password, code) => post('/auth/login', { email, password, code }),
   logOut:     () => post('/auth/logout'),
