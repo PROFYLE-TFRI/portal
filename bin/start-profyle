@@ -43,6 +43,10 @@ if (config.isNode) {
   .catch(onError.bind(null, nodePort))
 }
 
+if (!config.isCentral && !config.isNode) {
+  console.error(chalk.error.bold('Nothing to run (.isCentral & .isNode are false)'))
+  process.exit(1)
+}
 
 
 
