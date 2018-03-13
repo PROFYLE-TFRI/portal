@@ -90,13 +90,14 @@ class ExperimentModal extends Component {
       variants,
       locus,
     } = this.state
+    const { source } = this.props
 
     const selectedEntries = Object.entries(selectedFiles)
     const tracks = selectedEntries
       .filter(([file, selected]) => selected)
       .map(([file, _]) => ({
         name: (file.match(/[^/]+$/) || [file])[0],
-        url: `/files/${this.props.source}/${file}`
+        url: `/files/${source}/${file}`
       }))
 
     const variantsByPosition = groupBy(getPosition, variants)
@@ -143,6 +144,12 @@ class ExperimentModal extends Component {
               Seq. Center
             </Col>{' '}
             <Col className='ExperimentModal__value'>{JSON.stringify(experiment.sequencing_center)}</Col>
+          </Row>
+          <Row>
+            <Col className='ExperimentModal__label' xs='4'>
+              Data Source
+            </Col>{' '}
+            <Col className='ExperimentModal__value'>{JSON.stringify(source)}</Col>
           </Row>
           <Row>
             <Col className='ExperimentModal__label' xs='4'>
