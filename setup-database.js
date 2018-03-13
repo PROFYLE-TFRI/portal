@@ -16,7 +16,7 @@ db.findAll('SELECT * FROM sqlite_master')
 
   // Tables already exist
   if (rows.length !== 0) {
-    console.log(chalk.blue.bold(`Re-opening database (${config.paths.database})`))
+    console.log(chalk.bold(`Re-opening database (${config.paths.database})`))
     return
   }
 

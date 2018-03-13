@@ -20,7 +20,7 @@ function onExit {
     echo "${red}Installation failed${reset}"
   else
     echo "${green}Installation completed succesfully${reset}"
-    echo "Run with ${blue}npm start${reset}"
+    echo "Run with ${blue}$install_dir/bin/start-profyle${reset}"
   fi
 }
 trap onExit EXIT
@@ -35,6 +35,11 @@ git clone https://github.com/PROFYLE-TFRI/portal $install_dir
 cd $install_dir
 npm install
 
+
+# Echo empty lines so the user can see a separation between the log & the questions
+echo ""
+echo ""
+echo ""
 
 # Defer to scripts/install.js to complete the installation
 node scripts/install.js

@@ -10,6 +10,7 @@ const chalk = require('chalk')
 
 const config = require('../config')
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production'
 
 /*
  * Spawn applicable servers
@@ -22,7 +23,7 @@ if (config.isCentral) {
   .then(server => {
 
     if (!config.isNode)
-      console.log(chalk.yellow.bold('Running as central server only. No data served.'))
+      console.log(chalk.yellow.bold(`Running as central server (no data served) on port ${centralPort}`))
     else
       console.log(chalk.green.bold(`Central server running on port ${centralPort}`))
   })
@@ -35,7 +36,7 @@ if (config.isNode) {
   createServer(require('../node/server'), nodePort)
   .then(server => {
     if (!config.isCentral)
-      console.log(chalk.yellow.bold('Running as node server only. No portal available.'))
+      console.log(chalk.yellow.bold(`Running as node server (data only) on port ${nodePort}`))
     else
       console.log(chalk.green.bold(`Node server running on port ${nodePort}`))
   })

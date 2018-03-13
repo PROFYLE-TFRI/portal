@@ -3,10 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "NODE_ENV=production node ./bin/www",
-    "watch:server": "NODE_ENV=development PORT=3001 nodemon --ignore client --ignore public ./bin/www",
-    "watch:all": "NODE_ENV=development nodemon -i client/dist --exec 'cd client && npm run build-dist && cd .. && node --inspect bin/www'",
-    "build": "rm -rf ./public && mkdir public && cd client && npm run build && cp -r build/* ../public"
+
+    "start": "NODE_ENV=production node ./bin/start-profyle",
+    "watch:server": "NODE_ENV=development PORT=3001 nodemon --ignore client --ignore public ./bin/start-profyle",
+    "watch:all": "NODE_ENV=development nodemon -i client/dist --exec 'cd client && npm run build-dist && cd .. && node --inspect bin/start-profyle'",
+    "build": "rm -rf ./public && mkdir public && cd client && npm run build && cp -r build/* ../public",
+
+    "postinstall": "cd client && npm install"
   },
   "dependencies": {
     "axios": "^0.18.0",

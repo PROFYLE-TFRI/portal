@@ -6,6 +6,7 @@
 
 const fs = require('fs')
 const path = require('path')
+const { execSync } = require('child_process')
 const inquirer = require('inquirer')
 const chalk = require('chalk')
 const clipboardy = require('clipboardy')
@@ -44,6 +45,11 @@ prompt(questions)
 
   // Print line to separate questions from report
   console.log('')
+
+  if (options.isCentral) {
+    console.log(chalk.bold('Building profyle portal frontend... (wait a moment)'))
+    execSync('npm run build', { cwd: path.join(__dirname, '..') })
+  }
 
   if (options.createDirectory) {
     try {
