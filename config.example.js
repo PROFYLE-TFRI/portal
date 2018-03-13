@@ -10,17 +10,17 @@ const path = require('path')
 module.exports = {
   paths: {
     input: '/home/rgregoir/projects/profyle-metadata/root_folder_example',
-    data: path.join(__dirname, 'data'),
+    data:     path.join(__dirname, 'data'),
     database: path.join(__dirname, 'data', 'app.db'),
   },
 
   isCentral: true, /* if this is a central server */
-  isNode: true, /* if this is a node server */
+  isNode:    true, /* if this is a node server */
 
   /* Central Server Only */
   twilio: {
-    account: 'AC05c9793739fbce19e2979e16e5bf0fe4',
-    token: '44dc0cf650c9d609dd38ad6349ccfd44',
+    account: 'TWILIO_ACCOUNT',
+    token:   'TWILIO_TOKEN',
     from: '+15146002956',
   },
 
