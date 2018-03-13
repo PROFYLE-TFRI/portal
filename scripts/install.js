@@ -68,8 +68,14 @@ prompt(questions)
   fs.writeFileSync(configPath, createConfig(options))
 
   if (options.isNode) {
-    clipboardy.writeSync(options.apiKey)
-    console.log(chalk.bold('Your randomly generated API key is ' + chalk.blue(options.apiKey) + ' (Copied to clipboard) '))
+    let copied = false
+
+    try {
+      clipboardy.writeSync(options.apiKey)
+      copied = true
+    } catch(err) { /* ignore */ }
+
+    console.log(chalk.bold('Your randomly generated API key is ' + chalk.blue(options.apiKey) + (copied ? ' (Copied to clipboard) ' : '')))
     console.log(chalk.yellow.bold(`  Send it to us! (mailto:romain.gregoire@mcgill.ca?subject=Profyle+Node&body=Key:+${options.apiKey})`))
   }
 
