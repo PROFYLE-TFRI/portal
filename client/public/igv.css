@@ -145,7 +145,10 @@
   position: relative;
   top: 0;
   width: 260px;
-  float: left; }
+  float: left;
+  display: inline-flex;
+  align-items: center;
+  height: 100%; }
   .igv-search-container input {
     position: relative;
     height: 20px;
