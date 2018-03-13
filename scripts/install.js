@@ -70,7 +70,7 @@ prompt(questions)
   if (options.isNode) {
     clipboardy.writeSync(options.apiKey)
     console.log(chalk.bold('Your randomly generated API key is ' + chalk.blue(options.apiKey) + ' (Copied to clipboard) '))
-    console.log(chalk.yellow.bold('  Send it to us! (mailto:romain.gregoire@mcgill.ca)'))
+    console.log(chalk.yellow.bold(`  Send it to us! (mailto:romain.gregoire@mcgill.ca?subject=Profyle+Node&body=Key:+${options.apiKey})`))
   }
 
   console.log(chalk.green.bold('config.js written'))
