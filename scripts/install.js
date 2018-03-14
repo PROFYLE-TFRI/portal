@@ -17,23 +17,38 @@ const configPath = path.join(__dirname, '../config.js')
 
 const prompt = inquirer.createPromptModule()
 
+
+// Load current config if it exists to populate defaults
+
+const config = fs.existsSync('../config.js') ? require('../config.js') : {}
+config.paths = config.paths || {}
+config.twilio = config.twilio || {}
+
+const opt = (a, b) => a !== undefined ? a : b
+
+
+// Questions
+
 const isCentral = options => options.isCentral
 const has2FA = options => options.isCentral && options.enable2fa
 
 const questions = [
-  { name: 'input', message: 'Which is the root folder of your data?', filter: input => input.replace('~', process.env.HOME) },
+  { name: 'input', message: 'Which is the root folder of your data?', default: opt(config.paths.input, ''), filter: input => input.replace('~', process.env.HOME) },
   { name: 'createDirectory', message: 'That directory doesn\'t exist. Would you like to create it?', type: 'confirm', default: true, when: options => !fs.existsSync(options.input) },
 
-  { name: 'isNode', message: 'Is this a node server? (a server which serves data for the portal)', type: 'confirm', default: true },
+  { name: 'isNode', message: 'Is this a node server? (a server which serves data for the portal)', type: 'confirm', default: opt(config.isNode, true) },
 
-  { name: 'isCentral',      message: 'Is this a central server? (a server that runs the actual profyle portal)',    type: 'confirm', default: false },
-  { name: 'enable2fa',      message: 'Is 2-factor authentication enabled?', type: 'confirm', default: false,          when: isCentral },
-  { name: 'twilio.account', message: 'What is your twilio account?',        type: 'input',   default: 'xxxxx',        when: has2FA },
-  { name: 'twilio.token',   message: 'What is your twilio token?',          type: 'input',   default: 'xxxxx',        when: has2FA },
-  { name: 'twilio.phone',   message: 'What is your twilio phone?',          type: 'input',   default: '+15146002956', when: has2FA },
+  { name: 'isCentral',      message: 'Is this a central server? (a server that runs the actual profyle portal)',    type: 'confirm', default: opt(config.isCentral, false) },
+  { name: 'enable2fa',      message: 'Is 2-factor authentication enabled?', type: 'confirm', default: opt(config.enable2fa,      false),          when: isCentral },
+  { name: 'twilio.account', message: 'What is your twilio account?',        type: 'input',   default: opt(config.twilio.account, 'xxxxx'),        when: has2FA },
+  { name: 'twilio.token',   message: 'What is your twilio token?',          type: 'input',   default: opt(config.twilio.token,   'xxxxx'),        when: has2FA },
+  { name: 'twilio.from',    message: 'What is your twilio phone?',          type: 'input',   default: opt(config.twilio.from,    '+15146002956'), when: has2FA },
 
   { name: 'overwrite', message: 'A config.js already exists. Would you like to overwrite it?', type: 'confirm', default: true, when: options => fs.existsSync(configPath) },
 ]
+
+
+// Main
 
 prompt(questions)
 .then(options => {
@@ -91,6 +106,10 @@ prompt(questions)
 })
 
 
+/**
+ * Creates a config.js string
+ * @param {Object} options config options
+ */
 function createConfig(options) {
   return `/*
  * config.js
@@ -117,7 +136,7 @@ module.exports = {
   twilio: {
     account: ${JSON.stringify(options.twilio.account)},
     token:   ${JSON.stringify(options.twilio.token)},
-    from:    ${JSON.stringify(options.twilio.phone)},
+    from:    ${JSON.stringify(options.twilio.from)},
   },
 
 ` : ''
