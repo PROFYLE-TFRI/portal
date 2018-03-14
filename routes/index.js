@@ -53,9 +53,8 @@ router.use('/', (req, res, next) => {
   })
   .catch(err => {
     console.error(err)
-    res.status(500)
-    res.send(err.message + '\n' + err.stack)
-    res.end()
+    // Send to the application error handler
+    next(err)
   })
 })
 
