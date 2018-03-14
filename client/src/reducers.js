@@ -28,7 +28,6 @@ import * as VARIANT_SEARCH from './actions/variantSearch';
 import { computeValues } from './models';
 import { TABS } from './constants'
 
-const { keys } = Object
 
 function createDefaultUI() {
   return {
@@ -88,7 +87,7 @@ function uiReducer(state = createDefaultUI(), action, data) {
     case SELECT_ALL_DONORS: {
       return { ...state,
         selection: { ...state.selection,
-          donors: keys(data.donors) } }
+          donors: Object.keys(data.donors) } }
     }
     case DESELECT_ALL_DONORS: {
       return { ...state,
@@ -405,7 +404,7 @@ export const rootReducer = (state = {}, action) => {
   const peers = peersReducer(state.peers, action)
 
   // Initialize empty selections
-  keys(data.values).forEach(which => {
+  Object.keys(data.values).forEach(which => {
     if (!ui.selection[which])
       ui.selection[which] = []
   })
