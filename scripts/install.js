@@ -20,7 +20,7 @@ const prompt = inquirer.createPromptModule()
 
 // Load current config if it exists to populate defaults
 
-const config = fs.existsSync('../config.js') ? require('../config.js') : {}
+const config = fs.existsSync(configPath) ? require(configPath) : {}
 config.paths = config.paths || {}
 config.twilio = config.twilio || {}
 
