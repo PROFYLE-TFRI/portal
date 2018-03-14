@@ -8,11 +8,15 @@ const { renderToString } = require('react-dom/server')
 const { Provider } = require('react-redux')
 
 const Donor = require('./donor') /* requiring ./routes/donor.js, not ./models/donor.js */
+const Peer = require('../models/peer')
 const User = require('../models/user')
+
 const configureStore = require('../client/dist/store').default
 const App = require('../client/dist/components/App').default
 
+// Load index.html template
 const indexHTML = fs.readFileSync(path.join(__dirname, '../public/index.html')).toString()
+
 
 // Render index.html
 router.use('/', (req, res, next) => {
@@ -29,10 +33,11 @@ router.use('/', (req, res, next) => {
     req.user,
     isAuthenticated ? Donor.findAll() : undefined,
     isAdmin ?         User.findAll() : undefined,
+    isAdmin ?         Peer.findAll() : undefined,
   ])
-  .then(([user, donors, users]) => {
+  .then(([user, donors, users, peers]) => {
 
-    const store = configureStore(user, donors, users)
+    const store = configureStore(user, donors, users, peers)
     const html = renderToString(
       <Provider store={store}>
         <App />

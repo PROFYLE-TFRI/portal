@@ -10,6 +10,7 @@ import { createLogger } from 'redux-logger';
 import { rootReducer } from './reducers';
 import { logIn } from './actions'
 import * as Donor from './actions/donor'
+import * as Peer from './actions/peer'
 import * as User from './actions/user'
 
 
@@ -36,7 +37,7 @@ function configureBrowserStore() {
   return store
 }
 
-function configureServerStore(user, donors, users) {
+function configureServerStore(user, donors, users, peers) {
   const initialState = {}
   const store = createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware))
 
@@ -46,6 +47,8 @@ function configureServerStore(user, donors, users) {
     store.dispatch(Donor.findAll.receive(donors))
   if (users)
     store.dispatch(User.findAll.receive(users))
+  if (peers)
+    store.dispatch(Peer.findAll.receive(peers))
 
   return store
 }
