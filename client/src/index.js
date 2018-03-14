@@ -6,7 +6,7 @@ import { render, hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
 
 import './styles.css';
-import registerServiceWorker from './registerServiceWorker';
+// import registerServiceWorker from './registerServiceWorker';
 import { doInitialFetch } from './actions';
 import configureStore from './store'
 import App from './components/App';
@@ -34,8 +34,8 @@ if (!state.auth.initialCheck)
 
 // Register service worker
 
-if (window.location.protocol === 'https:')
-  registerServiceWorker()
+// if (window.location.protocol === 'https:')
+  // registerServiceWorker()
 
 
 
