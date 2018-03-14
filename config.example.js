@@ -18,6 +18,7 @@ module.exports = {
   isNode:    true, /* if this is a node server */
 
   /* Central Server Only */
+  enable2fa: false,
   twilio: {
     account: 'TWILIO_ACCOUNT',
     token:   'TWILIO_TOKEN',

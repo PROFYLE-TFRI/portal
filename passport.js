@@ -7,8 +7,8 @@ const LocalStrategy = require('passport-local').Strategy
 
 const k = require('./client/src/shared-constants')
 const TwoFA = require('./helpers/2fa-manager')
-const isLocalhost = require('./helpers/is-localhost')
 const User = require('./models/user')
+const config = require('./config')
 
 // =========================================================================
 // passport session setup ==================================================
@@ -52,7 +52,7 @@ passport.use('local-login', new LocalStrategy(localStrategyOptions, (req, email,
         return done(null, false, k.AUTH.WRONG_USER_OR_PASSWORD)
 
       // check if we need to 2fa
-      if (!req.body.code && process.env.NODE_ENV !== 'development')
+      if (config.enable2fa && !req.body.code)
         return TwoFA.sendCode(user)
           .then(() => done(null, false, k.AUTH.REQUIRES_2FA))
           .catch(err => done(err, null))

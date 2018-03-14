@@ -17,6 +17,9 @@ const configPath = path.join(__dirname, '../config.js')
 
 const prompt = inquirer.createPromptModule()
 
+const isCentral = options => options.isCentral
+const has2FA = options => options.isCentral && options.enable2fa
+
 const questions = [
   { name: 'input', message: 'Which is the root folder of your data?', filter: input => input.replace('~', process.env.HOME) },
   { name: 'createDirectory', message: 'That directory doesn\'t exist. Would you like to create it?', type: 'confirm', default: true, when: options => !fs.existsSync(options.input) },
@@ -24,9 +27,10 @@ const questions = [
   { name: 'isNode', message: 'Is this a node server? (a server which serves data for the portal)', type: 'confirm', default: true },
 
   { name: 'isCentral',      message: 'Is this a central server? (a server that runs the actual profyle portal)',    type: 'confirm', default: false },
-  { name: 'twilio.account', message: 'What is your twilio account?', type: 'input',    default: 'xxxxx', when: options => options.isCentral },
-  { name: 'twilio.token',   message: 'What is your twilio token?',   type: 'input',    default: 'xxxxx', when: options => options.isCentral },
-  { name: 'twilio.phone',   message: 'What is your twilio phone?',   type: 'input',    default: '+15146002956', when: options => options.isCentral },
+  { name: 'enable2fa',      message: 'Is 2-factor authentication enabled?', type: 'confirm', default: false,          when: isCentral },
+  { name: 'twilio.account', message: 'What is your twilio account?',        type: 'input',   default: 'xxxxx',        when: has2FA },
+  { name: 'twilio.token',   message: 'What is your twilio token?',          type: 'input',   default: 'xxxxx',        when: has2FA },
+  { name: 'twilio.phone',   message: 'What is your twilio phone?',          type: 'input',   default: '+15146002956', when: has2FA },
 
   { name: 'overwrite', message: 'A config.js already exists. Would you like to overwrite it?', type: 'confirm', default: true, when: options => fs.existsSync(configPath) },
 ]
@@ -109,6 +113,7 @@ module.exports = {
   ${
   options.isCentral ?
   `/* Central Server options */
+  enable2fa: ${JSON.stringify(options.enable2fa)},
   twilio: {
     account: ${JSON.stringify(options.twilio.account)},
     token:   ${JSON.stringify(options.twilio.token)},
