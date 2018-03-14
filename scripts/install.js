@@ -82,7 +82,7 @@ prompt(questions)
   }
 
   if (options.isNode)
-    options.apiKey = generateAPIKey()
+    options.apiKey = config.apiKey || generateAPIKey()
 
   fs.writeFileSync(configPath, createConfig(options))
 
@@ -111,6 +111,7 @@ prompt(questions)
  * @param {Object} options config options
  */
 function createConfig(options) {
+  options.twilio = options.twilio || {}
   return `/*
  * config.js
  *
@@ -121,32 +122,32 @@ const path = require('path')
 
 module.exports = {
   paths: {
-    input:    ${JSON.stringify(options.input)},
+    input:    ${stringify(options.input)},
     data:     path.join(__dirname, 'data'),
     database: path.join(__dirname, 'data', 'app.db'),
   },
 
-  isCentral: ${JSON.stringify(options.isCentral)}, /* if this is a central server */
-  isNode:    ${JSON.stringify(options.isNode)}, /* if this is a node server */
+  isCentral: ${stringify(options.isCentral)}, /* if this is a central server */
+  isNode:    ${stringify(options.isNode)}, /* if this is a node server */
 
-  ${
-  options.isCentral ?
-  `/* Central Server options */
-  enable2fa: ${JSON.stringify(options.enable2fa)},
+  /* Central Server options */
+  enable2fa: ${stringify(options.enable2fa)},
   twilio: {
-    account: ${JSON.stringify(options.twilio.account)},
-    token:   ${JSON.stringify(options.twilio.token)},
-    from:    ${JSON.stringify(options.twilio.from)},
+    account: ${stringify(opt(options.twilio.account, config.twilio.account))},
+    token:   ${stringify(opt(options.twilio.token, config.twilio.token))},
+    from:    ${stringify(opt(options.twilio.from, config.twilio.from))},
   },
 
-` : ''
-  }${
-  options.isNode ?
-  `/* Node Server options */
-  apiKey: ${JSON.stringify(options.apiKey)},`
-  : ''
-  }
-}`
+  /* Node Server options */
+  apiKey: ${stringify(options.apiKey)},
+}
+`
+}
+
+function stringify(value) {
+  if (value === undefined)
+    return 'null'
+  return JSON.stringify(value)
 }
 
 function abort(message) {
