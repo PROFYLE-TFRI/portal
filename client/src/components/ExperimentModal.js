@@ -46,7 +46,7 @@ class ExperimentModal extends Component {
     if (props.experiment) {
       /* eslint-disable react/no-direct-mutation-state */
       this.state.experiment = props.experiment
-      this.state.selectedFiles = props.experiment.alignments.reduce((acc, cur) => (acc[cur] = true, acc), {})
+      this.state.selectedFiles = props.experiment.alignments.reduce((acc, cur) => { acc[cur] = true; return acc }, {})
       /* eslint-enable react/no-direct-mutation-state */
     }
   }
@@ -60,7 +60,7 @@ class ExperimentModal extends Component {
 
       this.setState({
         experiment: experiment,
-        selectedFiles: experiment.alignments.reduce((acc, cur) => (acc[cur] = true, acc), {}),
+        selectedFiles: experiment.alignments.reduce((acc, cur) => { acc[cur] = true; return acc }, {}),
         variants: variants,
         locus: locus,
       })

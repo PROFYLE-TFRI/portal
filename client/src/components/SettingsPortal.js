@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Container, Table, Row, Col, Alert, Input, Label, Form, FormGroup, FormText, } from 'reactstrap';
+import { Container, Col, Input, Label, Form, FormGroup, FormText, } from 'reactstrap';
 
 import Button from './Button'
 
-import asString from '../helpers/as-string'
 import { update } from '../actions/user';
 import * as UserUtils from '../helpers/user'
 import getDiffObject from '../helpers/get-diff-object'

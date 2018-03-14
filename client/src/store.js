@@ -16,8 +16,6 @@ import * as User from './actions/user'
 const IS_SERVER  = typeof global !== 'undefined'
 const IS_BROWSER = typeof window !== 'undefined'
 
-const root = this || {}
-
 export default function configureStore(...args) {
   if (IS_BROWSER)
     return configureBrowserStore(...args)

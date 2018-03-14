@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Container, Table, Row, Col, Alert, Input, Label, Form, FormGroup, } from 'reactstrap';
+import { Container, Table, Alert, Input, } from 'reactstrap';
 
 import Button from './Button'
 

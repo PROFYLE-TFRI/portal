@@ -13,7 +13,6 @@ import Cell from 'recharts/es6/component/Cell';
 import Sector from 'recharts/es6/shape/Sector';
 import { polarToCartesian } from 'recharts/es6/util/PolarUtils';
 import { Row, Col, Button } from 'reactstrap';
-import { compose } from '../helpers/rambda';
 import isEqual from 'lodash/isEqual'
 
 import { ENTITIES, COLORS } from '../constants';
@@ -199,7 +198,7 @@ function renderLabel(params) {
     cx,
     cy,
     midAngle,
-    innerRadius,
+    // innerRadius,
     outerRadius,
     startAngle,
     endAngle,
@@ -303,7 +302,7 @@ function renderActiveShape(params) {
     endAngle,
     fill,
     payload,
-    percent,
+    // percent,
     // value
   } = params;
 

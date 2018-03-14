@@ -28,7 +28,7 @@ const mapStateToProps = state => ({
   selected: [...state.ui.selection.samples],
 })
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ selectSample, deselectSample }, dispatch)
+  bindActionCreators({ selectSample, deselectSample, selectAllSamples, deselectAllSamples }, dispatch)
 
 class SampleTable extends Component {
 

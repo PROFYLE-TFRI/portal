@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col } from 'reactstrap';
-import { Nav, Navbar, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import { Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
 import classname from 'classname';
 
 import { TABS } from '../constants'
@@ -18,13 +17,8 @@ import SettingsPortal from './SettingsPortal';
 
 
 const mapStateToProps = state => ({
-    isLoading: state.data.isLoading
-  , selection: state.ui.selection
-  , search: state.ui.search
-  , message: state.ui.message
-  , currentTab: state.ui.tab
-  , donors: Object.values(state.data.donors)
-  , auth: state.auth
+  currentTab: state.ui.tab,
+  auth: state.auth,
 })
 const mapDispatchToProps = dispatch =>
   bindActionCreators({ setTab, logOut }, dispatch)
@@ -40,7 +34,10 @@ class App extends Component {
   }
 
   render() {
-    const { auth, donors, selection, search, message, currentTab } = this.props
+    const {
+      auth,
+      currentTab
+    } = this.props
 
     if (!auth.isLoggedIn)
       return this.renderLogin()

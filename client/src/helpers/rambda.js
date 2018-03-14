@@ -588,7 +588,7 @@ function lastIndexOf(x, arr) {
   }
   let willReturn = -1;
 
-  arr.map((value, key) => {
+  arr.forEach((value, key) => {
     if (equals(value, x)) {
       willReturn = key;
     }

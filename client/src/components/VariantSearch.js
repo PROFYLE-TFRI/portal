@@ -9,7 +9,6 @@ import { connect } from 'react-redux';
 import Form from 'reactstrap/lib/Form';
 import FormGroup from 'reactstrap/lib/FormGroup';
 import Label from 'reactstrap/lib/Label';
-import { compose } from '../helpers/rambda';
 
 import Button from './Button';
 import Input from './Input';
