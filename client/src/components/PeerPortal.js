@@ -77,7 +77,7 @@ class PeerPortal extends Component {
             {
               peers.data.map(peer =>
                 action === ACTIONS.EDIT && peerID === peer.id ?
-                  <EditRow peer={peer} onAccept={this.onAccept} onCancel={this.onCancel} />
+                  <EditRow action={action} peer={peer} onAccept={this.onAccept} onCancel={this.onCancel} />
                 :
                   <tr key={peer.id}>
                     <th scope='row'>{ peer.id }</th>
@@ -105,7 +105,7 @@ class PeerPortal extends Component {
 
             {
               action === ACTIONS.CREATE &&
-                <EditRow peer={{ permissions: [] }} onAccept={this.onAccept} onCancel={this.onCancel} />
+                <EditRow action={action} peer={{ permissions: [] }} onAccept={this.onAccept} onCancel={this.onCancel} />
             }
 
           </tbody>
@@ -143,14 +143,21 @@ class EditRow extends React.Component {
   }
 
   render() {
-    const { peer, onCancel } = this.props
+    const { action, peer, onCancel } = this.props
 
     return (
       <tr>
-        <th scope='row'>{ peer.id }</th>
-        <td><Input type='text'     name='url'      defaultValue={peer.url}        onChange={ev => this.setState({ url:      ev.target.value   })} /></td>
-        <td><Input type='text'     name='apiKey'   defaultValue={peer.apiKey}     onChange={ev => this.setState({ apiKey:   ev.target.value   })} /></td>
-        <td><input type='checkbox' name='isActive' defaultChecked={peer.isActive} onChange={ev => this.setState({ isActive: ev.target.checked })} /></td>
+        {
+          action === ACTIONS.EDIT &&
+            <th scope='row'>{ peer.id }</th>
+        }
+        {
+          action === ACTIONS.CREATE &&
+            <th><Input type='text' defaultValue={peer.id}         onChange={ev => this.setState({ id:       ev.target.value   })} /></th>
+        }
+        <td><Input type='text'     defaultValue={peer.url}        onChange={ev => this.setState({ url:      ev.target.value   })} /></td>
+        <td><Input type='text'     defaultValue={peer.apiKey}     onChange={ev => this.setState({ apiKey:   ev.target.value   })} /></td>
+        <td><input type='checkbox' defaultChecked={peer.isActive} onChange={ev => this.setState({ isActive: ev.target.checked })} /></td>
         <td>
           <Button
             type='button'
