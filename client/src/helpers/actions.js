@@ -29,6 +29,7 @@ export function createFetchAction(ks, fn) {
   return fn
 }
 
+/* taken from redux-actions */
 export function createAction(type, payloadCreator = identity, metaCreator) {
   console.assert(
     isFunction(payloadCreator) || isNull(payloadCreator),

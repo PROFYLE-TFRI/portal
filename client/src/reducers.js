@@ -19,6 +19,7 @@ import {
   , SET_TAB
 } from './actions';
 import * as DONOR from './actions/donor';
+import * as GLOBAL from './actions/global';
 import * as PEER from './actions/peer';
 import * as USER from './actions/user';
 import * as VARIANT_SEARCH from './actions/variantSearch';
@@ -30,7 +31,8 @@ function createDefaultUI() {
   return {
     tab: TABS.PORTAL,
     search: '',
-    message: undefined,
+    errorMessage: undefined,
+    warningMessage: undefined,
     selection: {
       donors: [],
       samples: [],
@@ -40,9 +42,19 @@ function createDefaultUI() {
 }
 function uiReducer(state = createDefaultUI(), action, data) {
   if (action.error)
-    return { ...state, message: action.message || action.payload }
+    return { ...state, errorMessage: action.message || action.payload }
+
+  if (action.warning)
+    return { ...state, warningMessage: action.message || action.payload }
 
   switch (action.type) {
+    case GLOBAL.CLEAR_ERROR_MESSAGE: {
+      return { ...state, errorMessage: undefined }
+    }
+    case GLOBAL.CLEAR_WARNING_MESSAGE: {
+      return { ...state, warningMessage: undefined }
+    }
+
     case SELECT: {
       return { ...state,
         selection: { ...state.selection,

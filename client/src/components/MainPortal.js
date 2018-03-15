@@ -13,9 +13,10 @@ import Col from 'reactstrap/lib/Col';
 import Container from 'reactstrap/lib/Container';
 import Row from 'reactstrap/lib/Row';
 
-import { ENTITIES, DONOR_COLUMNS } from '../constants';
+import { CONTACT_EMAIL, ENTITIES, DONOR_COLUMNS } from '../constants';
 import { select, deselectAll, logOut } from '../actions';
 import { toggle as toggleVariantSearch } from '../actions/variantSearch';
+import { clearErrorMessage, clearWarningMessage } from '../actions/global';
 import Button from './Button';
 import Charts from './Charts';
 import DonorTable from './DonorTable';
@@ -33,7 +34,8 @@ const mapStateToProps = state => ({
     isLoading: state.data.isLoading
   , selection: state.ui.selection
   , search: state.ui.search
-  , message: state.ui.message
+  , errorMessage: state.ui.errorMessage
+  , warningMessage: state.ui.warningMessage
   , donors: Object.values(state.data.donors)
   , samples: Object.values(state.data.samples)
   , experiments: Object.values(state.data.experiments)
@@ -42,7 +44,7 @@ const mapStateToProps = state => ({
   , variantSearchResults: state.variantSearch.results
 })
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ select, deselectAll, logOut, toggleVariantSearch }, dispatch)
+  bindActionCreators({ clearErrorMessage, clearWarningMessage, select, deselectAll, logOut, toggleVariantSearch }, dispatch)
 
 class MainPortal extends Component {
 
@@ -54,10 +56,13 @@ class MainPortal extends Component {
       experiments,
       selection,
       search,
-      message,
+      errorMessage,
+      warningMessage,
       isVariantSearchOpen,
       variantSearchResults,
       toggleVariantSearch,
+      clearErrorMessage,
+      clearWarningMessage,
     } = this.props
 
     if (!auth.isLoggedIn)
@@ -100,15 +105,29 @@ class MainPortal extends Component {
         <Charts />
 
         {
-          message &&
-          <Alert color='danger'>
+          errorMessage &&
+          <Alert color='danger' toggle={clearErrorMessage}>
             <h4 className='alert-heading'>Snap! An error occured</h4>
             <p>
-              Message: { message }
+              Message: { errorMessage }
             </p>
             <hr />
             <p className='mb-0'>
-              <a href='mailto:romain.gregoire@mcgill.ca' className='alert-link'>Contact us</a> if the issue persists.
+              <a href={`mailto:${CONTACT_EMAIL}`} className='alert-link'>Contact us</a> if the issue persists.
+            </p>
+          </Alert>
+        }
+
+        {
+          warningMessage &&
+          <Alert color='warning' toggle={clearWarningMessage}>
+            <h4 className='alert-heading'>Oh! Some warning occured</h4>
+            <p>
+              Message: { warningMessage }
+            </p>
+            <hr />
+            <p className='mb-0'>
+              <a href={`mailto:${CONTACT_EMAIL}`} className='alert-link'>Contact us</a> if the issue persists.
             </p>
           </Alert>
         }

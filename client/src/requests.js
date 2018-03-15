@@ -42,8 +42,10 @@ function fetchAPI(method, route, data) {
     .then(result => {
       const apiResult = result.data
 
-      if (apiResult.ok)
+      if (apiResult.ok && !apiResult.warning)
         return Promise.resolve(apiResult.data)
+      else if (apiResult.warning)
+        return Promise.reject(createWarning(apiResult))
       else
         return Promise.reject(createError(apiResult))
     })
@@ -57,3 +59,13 @@ function createError(apiResult) {
   error.fromAPI = true
   return error
 }
+
+function createWarning(apiResult) {
+  const error = new Error(apiResult.message)
+  error.message = apiResult.message
+  error.fromAPI = true
+  error.warning = true
+  error.data = apiResult.data
+  return error
+}
+

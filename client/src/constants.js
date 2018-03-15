@@ -3,6 +3,8 @@
  */
 
 
+export const CONTACT_EMAIL = 'romain.gregoire@mcgill.ca'
+
 export const SELECTION_COLOR = 'rgba(89, 158, 255, 0.14)'
 export const OPAQUE_SELECTION_COLOR = 'rgba(89, 158, 255, 1)'
 
