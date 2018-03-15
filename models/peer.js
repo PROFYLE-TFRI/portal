@@ -21,7 +21,7 @@ function findAll() {
 }
 
 function findByID(id) {
-  return db.findOne('SELECT * FROM peers WHERE id = @id', { id }).then(deserialize)
+  return db.findOne('SELECT * FROM peers WHERE id = @id OR rowid = @id', { id }).then(deserialize)
 }
 
 function create(peer) {
@@ -34,7 +34,7 @@ function create(peer) {
     VALUES
     (@id, @url, @apiKey, @isActive)
     `, serialize(peer))
-  .then(id => findByID(id))
+    .then(id => findByID(id))
 }
 
 function update(data) {
@@ -78,23 +78,29 @@ function request(req) {
     .then(results => {
 
       const dataResults = []
+      const errorResults = []
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i]
 
-        if (result instanceof Error)
-          return Promise.reject(result)
+        if (result instanceof Error) {
+          result.peer = activePeers[i]
+          errorResults.push(result)
+          continue
+        }
 
         const apiResult = result.data
-
-        if (apiResult.ok === false)
-          return Promise.reject(apiResult)
-
         apiResult.peer = activePeers[i]
+
+        if (apiResult.ok === false) {
+          errorResults.push(result)
+          continue
+        }
+
         dataResults.push(apiResult)
       }
 
-      return dataResults
+      return [dataResults, errorResults]
     })
   })
 }

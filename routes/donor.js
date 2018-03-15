@@ -11,7 +11,8 @@ router.listChroms = listChroms
 
 function findAll() {
   return Peer.request({ url: '/api/donor/find-all' })
-  .then(results => {
+  .then(logErrors)
+  .then(([results, errors]) => {
 
     const finalData = {}
     results.forEach(({ peer, data }) => {
@@ -27,7 +28,8 @@ function findAll() {
 
 function searchVariants(params) {
   return Peer.request({ method: 'post', url: '/api/donor/search-variants', body: params })
-  .then(results => {
+  .then(logErrors)
+  .then(([results, errors]) => {
 
     const finalData = []
     results.forEach(({ peer, data }) => {
@@ -44,12 +46,20 @@ function searchVariants(params) {
 
 function listChroms() {
   return Peer.request({ url: '/api/donor/list-chroms' })
-  .then(results => {
+  .then(logErrors)
+  .then(([results, errors]) => {
 
     const finalData = Array.from(new Set(results.reduce((acc, cur) => acc.concat(cur.data))))
 
     return finalData
   })
+}
+
+function logErrors(params) {
+  // TODO: do something more than logging
+  if (params[1].length > 0)
+    console.error(params[1])
+  return params
 }
 
 

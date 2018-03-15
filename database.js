@@ -32,7 +32,7 @@ function run(query, params = {}) {
 
 function insert(query, params = {}) {
   return new Promise((resolve, reject) => {
-    db.run(query, addAtSign(params, true), function(err) {
+    db.run(query, addAtSign(params), function(err) {
       if (err)
         reject(err)
       else
@@ -66,11 +66,9 @@ function findAll(query, params = {}) {
 
 // Helpers
 
-function addAtSign(object, forInsert = false) {
+function addAtSign(object) {
   const result = {}
   for (let key in object) {
-    if (forInsert && key === 'id')
-      continue
     result['@' + key] = object[key]
   }
   return result
