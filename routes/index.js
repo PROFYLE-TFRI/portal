@@ -35,9 +35,15 @@ router.use('/', (req, res, next) => {
     isAdmin ?         User.findAll() : undefined,
     isAdmin ?         Peer.findAll() : undefined,
   ])
-  .then(([user, donors, users, peers]) => {
+  .then(([user, donorsResult, users, peers]) => {
 
-    const store = configureStore(user, donors, users, peers)
+    const store = configureStore(
+      user,
+      donorsResult[0],
+      users,
+      peers,
+      donorsResult[1].join('\n')
+    )
     const html = renderToString(
       <Provider store={store}>
         <App />
