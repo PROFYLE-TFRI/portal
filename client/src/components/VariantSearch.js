@@ -15,7 +15,7 @@ import Button from './Button';
 import Input from './Input';
 
 import { setPosition, setChrom, setStart, setEnd, search, clear } from '../actions/variantSearch';
-import { searchByName } from '../actions/gene';
+import { setSearch as setGeneSearch, searchByName } from '../actions/gene';
 
 
 
@@ -25,7 +25,7 @@ const mapStateToProps = state => ({
   genes: state.genes,
 })
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ searchByName, setPosition, setChrom, setStart, setEnd, search, clear }, dispatch)
+  bindActionCreators({ setGeneSearch, searchByName, setPosition, setChrom, setStart, setEnd, search, clear }, dispatch)
 
 class VariantSearch extends Component {
 
@@ -43,6 +43,7 @@ class VariantSearch extends Component {
   }
 
   onAcceptGene = (gene) => {
+    this.props.setGeneSearch(gene.name)
     this.props.setPosition(gene)
     this.props.search()
   }
