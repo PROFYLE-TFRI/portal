@@ -32,7 +32,11 @@ export const search = createFetchAction(SEARCH, () => {
     if (variantSearch.isLoading)
       return;
 
-    if (!position.chrom || !position.start || !position.end)
+    if (
+         position.chrom === ''
+      || position.start === ''
+      || position.end === ''
+    )
       return;
 
     dispatch(search.request())
