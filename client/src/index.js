@@ -33,6 +33,11 @@ if (!state.auth.initialCheck)
     })
 
 
+document.addEventListener('focus', ev => {
+  if (ev.target.tagName === 'INPUT')
+    ev.target.select()
+}, true)
+
 // Register service worker
 
 // if (window.location.protocol === 'https:')
