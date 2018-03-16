@@ -1,3 +1,7 @@
+/*
+ * parse-profyle-csv.js
+ */
+/* eslint-disable no-console */
 
 const fs = require('fs')
 const path = require('path')

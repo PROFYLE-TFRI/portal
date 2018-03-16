@@ -49,4 +49,16 @@ INSERT INTO peers
     );
 */
 
+
+-- Genes table
+-- Don't forget to keep in sync with ./scripts/create-genes-database.js schema
+
+CREATE TABLE genes (
+    chrom text not null,
+    start text not null,
+    end   text not null,
+    name  text not null
+);
+
+
 -- vim:et

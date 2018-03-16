@@ -43,6 +43,7 @@ const questions = [
   { name: 'twilio.account', message: 'What is your twilio account?',        type: 'input',   default: opt(config.twilio.account, 'xxxxx'),        when: has2FA },
   { name: 'twilio.token',   message: 'What is your twilio token?',          type: 'input',   default: opt(config.twilio.token,   'xxxxx'),        when: has2FA },
   { name: 'twilio.from',    message: 'What is your twilio phone?',          type: 'input',   default: opt(config.twilio.from,    '+15146002956'), when: has2FA },
+  { name: 'genesFile',      message: 'If you want to load the genes file right now, enter its path (or leave empty)', type: 'input',              when: isCentral, filter: input => input.replace('~', process.env.HOME) },
 
   { name: 'overwrite', message: 'A config.js already exists. Would you like to overwrite it?', type: 'confirm', default: true, when: options => fs.existsSync(configPath) },
 ]
@@ -100,6 +101,22 @@ prompt(questions)
 
   console.log(chalk.green.bold('config.js written'))
 
+  if (options.genesFile) {
+
+    if (!fs.existsSync(options.genesFile))
+      abort('Genes file does not exist. Load it later with ' + chalk.white('node ./scripts/load-genes-file.js [file]'))
+
+    if (!/\.bed$/.test(options.genesFile))
+      abort('Genes file extension is not .bed. Is it a bed file? Load it later with ' + chalk.white('node ./scripts/load-genes-file.js [file]'))
+
+    console.log('Loading genes file...')
+    require('../setup-database')
+    const loadGenesFile = require('./load-genes-file')
+    return loadGenesFile(options.genesFile)
+      .then(rowsInserted => {
+        console.log(chalk.green.bold(`Finished loading genes. Inserted ${rowsInserted} rows`))
+      })
+  }
 })
 .catch(err => {
   abort(`Caught error: ${err.toString()}`)
