@@ -23,6 +23,8 @@ if (require.main === module) {
     process.exit(1)
   }
 
+  console.log(chalk.bold(`Loading ${input}...`))
+
   loadGenesFile()
   .then(rowsInserted => {
     console.log(chalk.green.bold(`Finished loading genes. Inserted ${rowsInserted} rows`))
