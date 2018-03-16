@@ -31,7 +31,7 @@ router.use('/', (req, res, next) => {
 
   Promise.all([
     req.user,
-    isAuthenticated ? Donor.findAll() : undefined,
+    isAuthenticated ? Donor.findAll() : [],
     isAdmin ?         User.findAll() : undefined,
     isAdmin ?         Peer.findAll() : undefined,
   ])
