@@ -3,15 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-
     "start": "NODE_ENV=production node ./bin/start-profyle",
-
     "watch:server": "NODE_ENV=development PORT=3001 nodemon --ignore client --ignore public ./bin/start-profyle",
     "watch:all": "NODE_ENV=development nodemon -i client/dist --exec 'cd client && npm run build-dist && cd .. && node --inspect bin/start-profyle'",
     "watch:frontend": "cd client && npm start",
-
     "build": "rm -rf ./public && mkdir public && cd client && npm run build && cp -r build/* ../public",
-
     "postinstall": "cd client && npm install"
   },
   "dependencies": {
@@ -27,6 +23,7 @@
     "connect-sqlite3": "^0.9.10",
     "cookie-parser": "~1.4.3",
     "csv-parse": "^2.0.4",
+    "csv-string": "^3.1.2",
     "express": "~4.15.2",
     "express-csp-header": "^2.1.0",
     "express-range": "^2.0.1",
@@ -44,6 +41,7 @@
     "react-redux": "^5.0.7",
     "redux": "^3.7.2",
     "request-promise-native": "^1.0.5",
+    "rimraf": "^2.6.2",
     "serve-favicon": "~2.4.2",
     "sqlite3": "^3.1.13",
     "twilio": "^3.11.3"
