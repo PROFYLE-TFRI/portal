@@ -49,7 +49,7 @@ export default class AutocompleteInput extends React.Component {
   }
 
   onBlur = () => {
-    // setTimeout(() => this.setState({ open: false }), 200)
+    setTimeout(() => this.setState({ open: false }), 200)
   }
 
   onKeyDown = ev => {
