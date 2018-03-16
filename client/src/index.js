@@ -5,7 +5,7 @@ import React from 'react';
 import { render, hydrate } from 'react-dom';
 import { Provider } from 'react-redux';
 
-import './styles.css';
+import './styles/index.css';
 import './polyfills';
 // import registerServiceWorker from './registerServiceWorker';
 import { doInitialFetch } from './actions';

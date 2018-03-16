@@ -7,8 +7,12 @@ import axios from 'axios'
 export const donor = {
   findAll:        ()       => get('/donor/find-all'),
   findByID:       (id)     => get(`/donor/find-by-id/${id}`),
-  searchVariants: (params) => post('/donor/search-variants', params),
+  searchVariants: (position) => post('/donor/search-variants', position),
   listChroms:     ()       => post('/donor/list-chroms'),
+}
+
+export const gene = {
+  searchByName:   (name)   => get(`/gene/search-by-name/${name}`),
 }
 
 export const user = {

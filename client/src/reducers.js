@@ -19,6 +19,7 @@ import {
   , SET_TAB
 } from './actions';
 import * as DONOR from './actions/donor';
+import * as GENE from './actions/gene';
 import * as GLOBAL from './actions/global';
 import * as PEER from './actions/peer';
 import * as USER from './actions/user';
@@ -125,7 +126,7 @@ function createDefaultVariantSearch() {
     open: false,
     isLoading: false,
     didSearch: false,
-    params: {
+    position: {
       chrom: 'chr1',
       start: 60000,
       end: 65000,
@@ -139,7 +140,7 @@ function variantSearchReducer(state = createDefaultVariantSearch(), action) {
       return {
         ...state,
         didSearch: false,
-        // params: { chrom: '', start: '', end: '' },
+        // position: { chrom: '', start: '', end: '' },
         results: []
       }
     }
@@ -154,19 +155,22 @@ function variantSearchReducer(state = createDefaultVariantSearch(), action) {
       return { ...state, open: !state.open }
     }
 
+    case VARIANT_SEARCH.SET_POSITION: {
+      return { ...state, position: action.payload }
+    }
     case VARIANT_SEARCH.SET_CHROM: {
-      return { ...state, params: { ...state.params, chrom: action.payload } }
+      return { ...state, position: { ...state.position, chrom: action.payload } }
     }
     case VARIANT_SEARCH.SET_START: {
       return { ...state,
-        params: { ...state.params,
+        position: { ...state.position,
           start: Number(action.payload),
           end: Number(action.payload) + 1
         }
       }
     }
     case VARIANT_SEARCH.SET_END: {
-      return { ...state, params: { ...state.params, end: Number(action.payload) } }
+      return { ...state, position: { ...state.position, end: Number(action.payload) } }
     }
 
     case VARIANT_SEARCH.SEARCH.REQUEST: {
@@ -404,13 +408,45 @@ function peersReducer(state = createDefaultPeers(), action) {
   }
 }
 
+function createDefaultGenes() {
+  return {
+    isLoading: false,
+    search: '',
+    data: [],
+  }
+}
+function genesReducer(state = createDefaultGenes(), action) {
+  switch (action.type) {
+    case GENE.SET_SEARCH: {
+      return { ...state, search: action.payload }
+    }
+    case GENE.CLEAR: {
+      return { ...state, data: [] }
+    }
+
+    case GENE.SEARCH_BY_NAME.REQUEST: {
+      return { ...state, isLoading: true }
+    }
+    case GENE.SEARCH_BY_NAME.RECEIVE: {
+      return { ...state, isLoading: false, data: action.payload }
+    }
+    case GENE.SEARCH_BY_NAME.ERROR: {
+      return { ...state, isLoading: false }
+    }
+
+    default:
+      return state;
+  }
+}
+
 export const rootReducer = (state = {}, action) => {
   const data = computeValues(dataReducer(state.data, action))
   const ui = uiReducer(state.ui, action, data)
-  const variantSearch = variantSearchReducer(state.variantSearch, action, data)
   const auth = authReducer(state.auth, action)
+  const genes = genesReducer(state.genes, action)
   const users = usersReducer(state.users, action)
   const peers = peersReducer(state.peers, action)
+  const variantSearch = variantSearchReducer(state.variantSearch, action, data)
 
   // Initialize empty selections
   Object.keys(data.values).forEach(which => {
@@ -418,5 +454,5 @@ export const rootReducer = (state = {}, action) => {
       ui.selection[which] = []
   })
 
-  return { ui, variantSearch, data, auth, users, peers }
+  return { ui, variantSearch, data, auth, genes, users, peers }
 }
