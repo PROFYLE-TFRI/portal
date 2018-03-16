@@ -48,6 +48,11 @@ function loadGenesFile(input) {
   const text = fs.readFileSync(input).toString()
   const records = CSV.parse(text, '\t')
 
+  const recordsByID = {}
+  records.forEach(record => {
+    recordsByID[record.slice(0, 4).join(':')] = record
+  })
+
   return db.run('DROP TABLE IF EXISTS genes')
   .then(() =>
     db.run(`CREATE TABLE genes (
@@ -58,7 +63,7 @@ function loadGenesFile(input) {
     )`)
   )
   .then(() =>
-    Promise.all(records.map(record =>
+    Promise.all(Object.values(recordsByID).map(record =>
       db.run('INSERT INTO genes VALUES (@chrom, @start, @end, @name)', {
         chrom: record[0],
         start: record[1],
