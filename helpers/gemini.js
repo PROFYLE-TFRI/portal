@@ -7,7 +7,7 @@ const csvParse = require('csv-parse/lib/sync')
 
 const exec = command =>
   new Promise((resolve, reject) =>
-    child_process.exec(command, { maxBuffer: 1024 * 10000 }, (err, stdout, stderr) =>
+    child_process.exec(command, { maxBuffer: Number.MAX_SAFE_INTEGER }, (err, stdout, stderr) =>
       err ? reject(err) : resolve({ stdout, stderr })))
 
 module.exports = {
