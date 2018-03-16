@@ -25,7 +25,7 @@ if (require.main === module) {
 
   console.log(chalk.bold(`Loading ${input}...`))
 
-  loadGenesFile()
+  loadGenesFile(input)
   .then(rowsInserted => {
     console.log(chalk.green.bold(`Finished loading genes. Inserted ${rowsInserted} rows`))
   })
