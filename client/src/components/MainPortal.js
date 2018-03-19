@@ -160,7 +160,7 @@ class MainPortal extends Component {
               <ButtonGroup>
                 <Button
                   active={isVariantSearchOpen}
-                  iconAfter='caret-down'
+                  iconAfter={ isVariantSearchOpen ? 'caret-up' : 'caret-down' }
                   onClick={toggleVariantSearch}
                 >
                   Search Variant
