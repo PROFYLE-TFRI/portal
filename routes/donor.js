@@ -53,9 +53,10 @@ function listChroms() {
 }
 
 function generateMessage(error) {
+  const message = error.message || ((error.data && error.data.ok === false) ? error.data.message : '') || error.toString()
   if (error.peer)
-    return `Peer "${error.peer.id}" (${error.peer.url}) returned an error: ${error.message}`
-  return error.message
+    return `Peer "${error.peer.id}" (${error.peer.url}) returned: ${message}`
+  return message
 }
 
 // GET list
