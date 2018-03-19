@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Nav, NavItem, NavLink, TabPane, TabContent } from 'reactstrap';
+import {
+  Navbar,
+  Nav,
+  NavItem,
+  NavLink,
+  TabPane,
+  TabContent
+} from 'reactstrap';
 import classname from 'classname';
 
 import { TABS } from '../constants'
@@ -46,50 +53,54 @@ class App extends Component {
     return (
       <div className='App'>
         <div className='App__content'>
-          <Nav tabs className='App__navbar'>
-            <NavItem>
-              <NavLink
-                className={classname({ active: currentTab === TABS.PORTAL })}
-                onClick={() => this.props.setTab(TABS.PORTAL)}
-              >
-                Profyle Portal
-              </NavLink>
-            </NavItem>
-            {
-              auth.user.isAdmin &&
-                <NavItem>
-                    <NavLink
-                      className={classname({ active: currentTab === TABS.USERS })}
-                      onClick={() => this.props.setTab(TABS.USERS)}
-                    >
-                    Users
-                  </NavLink>
-                </NavItem>
-            }
-            {
-              auth.user.isAdmin &&
-                <NavItem>
-                    <NavLink
-                      className={classname({ active: currentTab === TABS.PEERS })}
-                      onClick={() => this.props.setTab(TABS.PEERS)}
-                    >
-                    Peers
-                  </NavLink>
-                </NavItem>
-            }
-            <NavItem>
-              <NavLink
-                className={classname({ active: currentTab === TABS.SETTINGS })}
-                onClick={() => this.props.setTab(TABS.SETTINGS)}
-              >
-                Settings
-              </NavLink>
-            </NavItem>
+          <Navbar dark expand='md' className='bg-dark'>
+            <Nav navbar className='App__navbar'>
+              <NavItem>
+                <NavLink
+                  className={classname({ active: currentTab === TABS.PORTAL })}
+                  onClick={() => this.props.setTab(TABS.PORTAL)}
+                >
+                  Profyle Portal
+                </NavLink>
+              </NavItem>
+              {
+                auth.user.isAdmin &&
+                  <NavItem>
+                      <NavLink
+                        className={classname({ active: currentTab === TABS.USERS })}
+                        onClick={() => this.props.setTab(TABS.USERS)}
+                      >
+                      Users
+                    </NavLink>
+                  </NavItem>
+              }
+              {
+                auth.user.isAdmin &&
+                  <NavItem>
+                      <NavLink
+                        className={classname({ active: currentTab === TABS.PEERS })}
+                        onClick={() => this.props.setTab(TABS.PEERS)}
+                      >
+                      Peers
+                    </NavLink>
+                  </NavItem>
+              }
+              <NavItem>
+                <NavLink
+                  className={classname({ active: currentTab === TABS.SETTINGS })}
+                  onClick={() => this.props.setTab(TABS.SETTINGS)}
+                >
+                  Settings
+                </NavLink>
+              </NavItem>
 
-            <button className='App__logout link' onClick={this.props.logOut}>
-              <Icon name='sign-out' /> Log Out
-            </button>
-          </Nav>
+            </Nav>
+            <Nav navbar className='App__navbar ml-auto'>
+              <button className='App__logout link' onClick={this.props.logOut}>
+                <Icon name='sign-out' /> Log Out
+              </button>
+            </Nav>
+          </Navbar>
 
           <TabContent activeTab={currentTab} className='App__tabs'>
             <TabPane tabId={TABS.PORTAL}>
