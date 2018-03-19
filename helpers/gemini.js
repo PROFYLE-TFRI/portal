@@ -26,12 +26,12 @@ function getVariantsAt(path, { chrom, start, end = start + 1, ref, alt }) {
      WHERE chrom = ${chrom}
        AND start >= ${start}
        AND end   <= ${end}
-   ${ ref !== undefined ?
-    [ escape`AND ref = ${ref}` ] : ''
-   }
-   ${ alt !== undefined ?
-    [ escape`AND alt = ${alt}` ] : ''
-   }
+   ${[ ref ?
+      escape`AND ref = ${ref}` : ''
+   ]}
+   ${[ alt ?
+      escape`AND alt = ${alt}` : ''
+   ]}
   `
 
   return geminiQuery(path, query, params).then(res =>

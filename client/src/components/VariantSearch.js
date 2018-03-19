@@ -1,6 +1,7 @@
 /*
  * VariantSearch.js
  */
+/* eslint-disable react/prop-types */
 
 
 import React, { Component } from 'react';
@@ -14,7 +15,7 @@ import AutocompleteInput from './AutocompleteInput';
 import Button from './Button';
 import Input from './Input';
 
-import { setPosition, setChrom, setStart, setEnd, search, clear } from '../actions/variantSearch';
+import { setPosition, setChrom, setStart, setEnd, setRef, setAlt, search, clear } from '../actions/variantSearch';
 import { setSearch as setGeneSearch, searchByName } from '../actions/gene';
 
 
@@ -25,7 +26,7 @@ const mapStateToProps = state => ({
   genes: state.genes,
 })
 const mapDispatchToProps = dispatch =>
-  bindActionCreators({ setGeneSearch, searchByName, setPosition, setChrom, setStart, setEnd, search, clear }, dispatch)
+  bindActionCreators({ setGeneSearch, searchByName, setPosition, setChrom, setStart, setEnd, setRef, setAlt, search, clear }, dispatch)
 
 class VariantSearch extends Component {
 
@@ -55,6 +56,8 @@ class VariantSearch extends Component {
       setChrom,
       setStart,
       setEnd,
+      setRef,
+      setAlt,
       search,
       clear,
     } = this.props
@@ -121,6 +124,35 @@ class VariantSearch extends Component {
               onChange={setEnd}
             />
           </FormGroup>
+
+
+          <div className='VariantSearch__separator' />
+
+          <FormGroup className='mb-2 mr-sm-2 mb-sm-0'>
+            <Label for='ref'>Ref</Label>
+            <Input
+              type='text'
+              id='ref'
+              className='VariantSearch__ref'
+              placeholder='ATCG'
+              value={variantSearch.position.ref}
+              onChange={setRef}
+            />
+          </FormGroup>
+          <FormGroup className='mb-2 mr-sm-2 mb-sm-0'>
+            <Label for='alt'>Alt</Label>
+            <Input
+              type='text'
+              id='alt'
+              className='VariantSearch__alt'
+              placeholder='ATCG'
+              value={variantSearch.position.alt}
+              onChange={setAlt}
+            />
+          </FormGroup>
+
+          <div className='VariantSearch__separator' />
+
 
           <div className='VariantSearch__buttons'>
             <Button

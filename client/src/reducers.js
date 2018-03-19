@@ -130,6 +130,8 @@ function createDefaultVariantSearch() {
       chrom: 'chr1',
       start: 60000,
       end: 65000,
+      ref: '',
+      alt: '',
     },
     results: [],
   }
@@ -171,6 +173,12 @@ function variantSearchReducer(state = createDefaultVariantSearch(), action) {
     }
     case VARIANT_SEARCH.SET_END: {
       return { ...state, position: { ...state.position, end: Number(action.payload) } }
+    }
+    case VARIANT_SEARCH.SET_REF: {
+      return { ...state, position: { ...state.position, ref: action.payload } }
+    }
+    case VARIANT_SEARCH.SET_ALT: {
+      return { ...state, position: { ...state.position, alt: action.payload } }
     }
 
     case VARIANT_SEARCH.SEARCH.REQUEST: {
