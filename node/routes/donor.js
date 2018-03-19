@@ -12,7 +12,7 @@ router.use('/find-all', (req, res, next) =>
 
 // POST search
 router.use('/search-variants', (req, res, next) => {
-  const params = req.body // { chrom, start, end }
+  const params = req.body // { chrom, start, end, ref, alt }
 
   Donor.searchVariants(params)
   .then(dataHandler(res))

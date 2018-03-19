@@ -17,8 +17,8 @@ module.exports = {
   escape,
 }
 
-function getVariantsAt(path, { chrom, start, end = start + 1 }) {
-  const params = `--header --show-samples --format sampledetail`
+function getVariantsAt(path, { chrom, start, end = start + 1, ref, alt }) {
+  const params = '--header --show-samples --format sampledetail'
 
   const query = escape`
     SELECT chrom, start, end, ref, alt, (gts).(*)
@@ -26,6 +26,12 @@ function getVariantsAt(path, { chrom, start, end = start + 1 }) {
      WHERE chrom = ${chrom}
        AND start >= ${start}
        AND end   <= ${end}
+   ${ ref !== undefined ?
+    [ escape`AND ref = ${ref}` ] : ''
+   }
+   ${ alt !== undefined ?
+    [ escape`AND alt = ${alt}` ] : ''
+   }
   `
 
   return geminiQuery(path, query, params).then(res =>
@@ -34,7 +40,7 @@ function getVariantsAt(path, { chrom, start, end = start + 1 }) {
 }
 
 function getDistinctChroms(path) {
-  return geminiQuery(path, `SELECT DISTINCT(chrom) FROM variants`)
+  return geminiQuery(path, 'SELECT DISTINCT(chrom) FROM variants')
     .then(parseLines)
 }
 
@@ -43,7 +49,7 @@ function getStartLike(path, chrom, start, limit = 15) {
     SELECT DISTINCT(start)
       FROM variants
      WHERE chrom = ${chrom}
-       AND start LIKE ${''+(start || '') + '%'}
+       AND start LIKE ${'' + (start || '') + '%'}
      LIMIT ${limit}
   `)
   .then(parseLines)
@@ -93,13 +99,17 @@ function escape(strings, ...args) {
 }
 
 function escapeValue(value) {
+  if (Array.isArray(value))
+    return value.join('')
+  if (value === null)
+    return 'NULL'
   switch (typeof value) {
     case 'number':
       return value
     case 'string':
-      return "'" + value.replace(/'/g, "''") + "'"
+      return '\'' + value.replace(/'/g, '\'\'') + '\''
     case 'object':
-      return value === null ? 'NULL' : "'" + (''+value).replace(/'/g, "''") + "'"
+      return '\'' + ('' + value).replace(/'/g, '\'\'') + '\''
     default:
       throw new Error(`Unrecognized value: ${value}`)
   }
