@@ -66,6 +66,7 @@ class VariantSearch extends Component {
             <Label for='gene'>Gene</Label>
             <AutocompleteInput
               id='gene'
+              className='VariantSearch__gene'
               placeholder='Gene Name'
               value={genes.search}
               items={genes.data}

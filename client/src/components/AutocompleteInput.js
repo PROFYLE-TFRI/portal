@@ -113,12 +113,12 @@ export default class AutocompleteInput extends React.Component {
     } = this.props
 
     return (
-      <div className='autocomplete'>
+      <div className={ ['autocomplete', className].join(' ') }>
         <Input
           { ...rest }
           type='search'
           autoComplete='off'
-          className={ ['autocomplete__input', className].join(' ') }
+          className='autocomplete__input'
           onChange={this.onChange}
           onKeyDown={this.onKeyDown}
           onFocus={this.onFocus}

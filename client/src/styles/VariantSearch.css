@@ -17,14 +17,17 @@
   border-radius: .25rem;
 }
 
+.VariantSearch__gene input {
+  width: 15ch !important;
+}
 .VariantSearch__chrom {
   width: 10ch !important;
 }
 .VariantSearch__start {
-  width: 20ch !important;
+  width: 15ch !important;
 }
 .VariantSearch__end {
-  width: 20ch !important;
+  width: 15ch !important;
 }
 .VariantSearch__or {
   color: #ccc;
