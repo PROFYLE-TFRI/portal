@@ -1,5 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import 'font-awesome/css/font-awesome.min.css';
+/* We're already loading fontawesome in index.html for IGV.js, so we skip it here */
+// import 'font-awesome/css/font-awesome.min.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import React from 'react';
 import { render, hydrate } from 'react-dom';
