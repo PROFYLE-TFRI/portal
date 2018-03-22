@@ -8,7 +8,7 @@ import thunkMiddleware from 'redux-thunk';
 import { createLogger } from 'redux-logger';
 
 import { rootReducer } from './reducers';
-import { logIn } from './actions'
+import { isLoggedIn } from './actions'
 import * as Donor from './actions/donor'
 import * as Global from './actions/global'
 import * as Peer from './actions/peer'
@@ -42,8 +42,8 @@ function configureServerStore(user, donors, users, peers, warning) {
   const initialState = {}
   const store = createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware))
 
-  if (user)
-    store.dispatch(logIn.receive(user))
+  store.dispatch(isLoggedIn.receive(user || false))
+
   if (donors)
     store.dispatch(Donor.findAll.receive(donors))
   if (users)
