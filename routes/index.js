@@ -51,7 +51,7 @@ router.use('/', (req, res, next) => {
     )
 
     const pageHTML = indexHTML
-      .replace('"{{SSR_JSON}}"', `window.__PRELOADED_STATE__ = ${JSON.stringify(store.getState())}`)
+      .replace('"{{SSR_JSON}}"', JSON.stringify(store.getState()))
       .replace('<div id="root"></div>', `<div id="root">${html}</div>`)
 
     res.send(pageHTML)
