@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
-/* We're already loading fontawesome in index.html for IGV.js, so we skip it here */
-// import 'font-awesome/css/font-awesome.min.css';
+/* font-awesome is also used by IGV.js */
+import 'font-awesome/css/font-awesome.min.css';
 import 'react-bootstrap-table/dist/react-bootstrap-table-all.min.css';
 import React from 'react';
 import { render, hydrate } from 'react-dom';
@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 
 import './styles/index.css';
 import './polyfills';
-// import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker from './registerServiceWorker';
 import { doInitialFetch } from './actions';
 import configureStore from './store'
 import App from './components/App';
@@ -41,8 +41,8 @@ document.addEventListener('focus', ev => {
 
 // Register service worker
 
-// if (window.location.protocol === 'https:')
-  // registerServiceWorker()
+if (window.location.protocol === 'https:' || window.location.hostname === 'localhost')
+  registerServiceWorker()
 
 
 
