@@ -5,10 +5,8 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-    BootstrapTable as Table
-  , TableHeaderColumn as Header
-} from 'react-bootstrap-table';
+import Table from 'react-bootstrap-table/lib/BootstrapTable';
+import Header from 'react-bootstrap-table/lib/TableHeaderColumn';
 import { Popover, PopoverHeader, PopoverBody } from 'reactstrap';
 import cx from 'classname';
 

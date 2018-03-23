@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { TableHeaderColumn as Header } from 'react-bootstrap-table';
+import Header from 'react-bootstrap-table/lib/TableHeaderColumn';
 
 
 

@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { BootstrapTable as Table } from 'react-bootstrap-table';
+import Table from 'react-bootstrap-table/lib/BootstrapTable';
 
 import { ENTITIES, SELECTION_COLOR, SAMPLE_COLUMNS } from '../constants';
 import { renderColumn } from '../helpers/table';
