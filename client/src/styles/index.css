@@ -5,6 +5,7 @@
  * Distributed under terms of the MIT license.
  */
 
+@import './font.ubuntu.css';
 @import './global.css';
 @import './autocomplete.css';
 @import './VariantSearch.css';
