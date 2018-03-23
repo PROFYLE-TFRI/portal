@@ -9,6 +9,7 @@ const csp = require('express-csp-header')
 const session = require('express-session')
 const flash = require('connect-flash')
 const SQLiteStore = require('connect-sqlite3')(session)
+const compression = require('compression')
 
 require('ignore-styles')
 require('babel-register')({
@@ -34,6 +35,8 @@ const app = express()
 
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'jade')
+
+app.use(compression())
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(logger('dev'))
 app.use(helmet())
