@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
+  Container,
   Navbar,
   Nav,
   NavItem,
@@ -54,52 +55,54 @@ class App extends Component {
       <div className='App'>
         <div className='App__content'>
           <Navbar dark expand='md' className='bg-dark'>
-            <Nav navbar className='App__navbar'>
-              <NavItem>
-                <NavLink
-                  className={classname({ active: currentTab === TABS.PORTAL })}
-                  onClick={() => this.props.setTab(TABS.PORTAL)}
-                >
-                  Profyle Portal
-                </NavLink>
-              </NavItem>
-              {
-                auth.user.isAdmin &&
-                  <NavItem>
-                      <NavLink
-                        className={classname({ active: currentTab === TABS.USERS })}
-                        onClick={() => this.props.setTab(TABS.USERS)}
-                      >
-                      Users
-                    </NavLink>
-                  </NavItem>
-              }
-              {
-                auth.user.isAdmin &&
-                  <NavItem>
-                      <NavLink
-                        className={classname({ active: currentTab === TABS.PEERS })}
-                        onClick={() => this.props.setTab(TABS.PEERS)}
-                      >
-                      Peers
-                    </NavLink>
-                  </NavItem>
-              }
-              <NavItem>
-                <NavLink
-                  className={classname({ active: currentTab === TABS.SETTINGS })}
-                  onClick={() => this.props.setTab(TABS.SETTINGS)}
-                >
-                  Settings
-                </NavLink>
-              </NavItem>
+            <Container>
+              <Nav navbar className='App__navbar'>
+                <NavItem>
+                  <NavLink
+                    className={classname({ active: currentTab === TABS.PORTAL })}
+                    onClick={() => this.props.setTab(TABS.PORTAL)}
+                  >
+                    Profyle Portal
+                  </NavLink>
+                </NavItem>
+                {
+                  auth.user.isAdmin &&
+                    <NavItem>
+                        <NavLink
+                          className={classname({ active: currentTab === TABS.USERS })}
+                          onClick={() => this.props.setTab(TABS.USERS)}
+                        >
+                          <Icon name='user' /> Users
+                      </NavLink>
+                    </NavItem>
+                }
+                {
+                  auth.user.isAdmin &&
+                    <NavItem>
+                        <NavLink
+                          className={classname({ active: currentTab === TABS.PEERS })}
+                          onClick={() => this.props.setTab(TABS.PEERS)}
+                        >
+                          <Icon name='database' /> Peers
+                      </NavLink>
+                    </NavItem>
+                }
+                <NavItem>
+                  <NavLink
+                    className={classname({ active: currentTab === TABS.SETTINGS })}
+                    onClick={() => this.props.setTab(TABS.SETTINGS)}
+                  >
+                    <Icon name='cogs' /> Settings
+                  </NavLink>
+                </NavItem>
 
-            </Nav>
-            <Nav navbar className='App__navbar ml-auto'>
-              <button className='App__logout link' onClick={this.props.logOut}>
-                <Icon name='sign-out' /> Log Out
-              </button>
-            </Nav>
+              </Nav>
+              <Nav navbar className='App__navbar ml-auto'>
+                <a href='#' className='App__logout nav-link' onClick={this.props.logOut}>
+                  <Icon name='sign-out' /> Log Out
+                </a>
+              </Nav>
+            </Container>
           </Navbar>
 
           <TabContent activeTab={currentTab} className='App__tabs'>

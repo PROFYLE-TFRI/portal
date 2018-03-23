@@ -127,7 +127,7 @@ class Login extends Component {
         </Row>
         <Row>
           <Col sm={{ size: 6, offset: 3 }} className='text-center'>
-            <Button loading={auth.isLoading}>
+            <Button loading={auth.isLoading} color='dark'>
               Submit
             </Button>
           </Col>

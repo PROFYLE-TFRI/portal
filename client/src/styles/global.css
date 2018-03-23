@@ -223,11 +223,11 @@ html, body, #root {
   position: relative;
   width: 100%;
   height: 100%;
-  background-color: #eee;
+  background-color: #232527;
 }
 .Login > * {
-  position: absolute;
-  top: 20%;
+  height: 100%;
+  padding-top: 10%;
 }
 .Login__loading,
 .Login__title {
@@ -235,7 +235,7 @@ html, body, #root {
   font-weight: bold;
   width: 100%;
   text-align: center;
-  color: rgba(0, 0, 0, 0.12156862745098039);
+  color: rgba(255, 255, 255, 0.15);
   letter-spacing: 2px;
 }
 .Login__form {
@@ -269,6 +269,15 @@ html, body, #root {
 }
 .Login__form--requires2fa .Login__code {
   left: 0;
+}
+.Login label {
+  background-color: #343a41;
+  color: #ecf6fb;
+}
+.Login input,
+.Login label,
+.Login button {
+  border-color: black;
 }
 
 /* MainPortal */
