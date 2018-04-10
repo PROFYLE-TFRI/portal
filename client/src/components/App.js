@@ -98,7 +98,7 @@ class App extends Component {
 
               </Nav>
               <Nav navbar className='App__navbar ml-auto'>
-                <a href='#' className='App__logout nav-link' onClick={this.props.logOut}>
+                <a href='#/' className='App__logout nav-link' onClick={this.props.logOut}>
                   <Icon name='sign-out' /> Log Out
                 </a>
               </Nav>
