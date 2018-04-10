@@ -95,10 +95,12 @@ class ExperimentModal extends Component {
     const selectedEntries = Object.entries(selectedFiles)
     const tracks = selectedEntries
       .filter(([file, selected]) => selected)
-      .map(([file, _]) => ({
-        name: (file.match(/[^/]+$/) || [file])[0],
-        url: `/files/${source}/${file}`
-      }))
+      .map(([file, _]) => {
+        const name = (file.match(/[^/]+$/) || [file])[0]
+        const url = `/files/${source}/${file}`
+        const indexURL = url.replace(/\.bam$/, '.bai')
+        return { name, url, indexURL }
+      })
 
     const variantsByPosition = groupBy(getPosition, variants)
 
