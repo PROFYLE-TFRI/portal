@@ -38,8 +38,15 @@ router.use('/:peerID', (req, res, next) => {
     res.end()
   })
   .catch(err => {
+    let message = err.message
+
+    // Carry message from node if available
+    if (err.response && err.response.data)
+      message = err.response.data.toString()
+
     res.status(500)
-    res.send(err.message)
+    res.statusMessage = err.message
+    res.send(message)
     res.end()
   })
 })
