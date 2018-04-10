@@ -29,7 +29,7 @@
     "express-csp-header": "^2.1.0",
     "express-range": "^2.0.1",
     "express-session": "^1.15.6",
-    "helmet": "^3.9.0",
+    "helmet": "^3.12.0",
     "ignore-styles": "^5.0.1",
     "inquirer": "^5.1.0",
     "jade": "~1.11.0",
