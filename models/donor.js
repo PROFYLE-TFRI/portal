@@ -108,14 +108,11 @@ function attachExperiments(donor) {
 }
 
 function getAlignmentFiles(id, sampleID, experiment) {
-  const alignments = getExperimentAlignmentsPath(id, sampleID, experiment.type)
+  const experimentPath = getExperimentPath(id, sampleID, experiment.type)
 
-  return readDirIfExists(alignments)
-    .then(files => {
-      return files
-        .filter(file => /\.bam$/.test(file))
-        .map(file => path.join(alignments, file))
-    })
+  return (experiment.alignments || [])
+    .map(alignment => path.join(experimentPath, alignment.filename))
+    .filter(file => /\.bam$/.test(file))
 }
 
 function getVariantFiles(id, sampleID, experiment) {
@@ -172,12 +169,12 @@ function getSamplePath(id, sampleID) {
   return `${id}/${sampleID}`
 }
 
-function getExperimentJSONPath(id, sampleID, experimentType) {
-  return `${id}/${sampleID}/${experimentType}/${sampleID}.${experimentType}.json`
+function getExperimentPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}`
 }
 
-function getExperimentAlignmentsPath(id, sampleID, experimentType) {
-  return `${id}/${sampleID}/${experimentType}/alignments`
+function getExperimentJSONPath(id, sampleID, experimentType) {
+  return `${id}/${sampleID}/${experimentType}/${sampleID}.${experimentType}.json`
 }
 
 function getExperimentVariantsPath(id, sampleID, experimentType) {
