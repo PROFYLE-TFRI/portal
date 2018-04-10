@@ -103,6 +103,7 @@ class ExperimentModal extends Component {
       })
 
     const variantsByPosition = groupBy(getPosition, variants)
+    const variantsByPositionEntries = Object.entries(variantsByPosition)
 
     return (
       <ModalBody>
@@ -177,64 +178,75 @@ class ExperimentModal extends Component {
 
         <br/>
 
-        <div className='title'>
-          Files
-        </div>
-
-        <ListGroup>
-          {
-            selectedEntries.map(([file, selected]) =>
-              <ListGroupItem
-                key={file}
-                tag='button'
-                action
-                onClick={() => this.toggleSelection(file)}
-              >
-                <Icon name={selected ? 'check-square-o' : 'square-o' } className='list-icon' /> <Icon name='file' /> { file }
-              </ListGroupItem>
-            )
-          }
-        </ListGroup>
-
-        <br/>
-
-        <IGVBrowser
-          reference={{ id: 'hg19' }}
-          locus={locus}
-          trackDefaults={{ alignment: { height: 150 } }}
-          tracks={tracks}
-          showGenes={true}
-        />
-
-        <div className='title'>
-          Variants
-        </div>
-
-        <ListGroup>
         {
-          Object.entries(variantsByPosition).map(([position, variants], i) =>
-            <ListGroupItem key={i} className='ExperimentModal__variant d-flex'>
-              <span className='ExperimentModal__position'>
-                <Button
-                  size='sm'
-                  icon='eye'
-                  onClick={() => this.setState({ locus: position })}
-                />{' '}
-                { position }
-              </span>
-              <ListGroup className='flex-fill'>
+          selectedEntries.length > 0 &&
+            <div>
+              <div className='title'>
+                Files
+              </div>
+
+              <ListGroup>
                 {
-                  variants.map((variant, i) =>
-                    <ListGroupItem key={i}>
-                      { filename(variant.file) } { variant.alt } { variant.ref }
+                  selectedEntries.map(([file, selected]) =>
+                    <ListGroupItem
+                      key={file}
+                      tag='button'
+                      action
+                      onClick={() => this.toggleSelection(file)}
+                    >
+                      <Icon name={selected ? 'check-square-o' : 'square-o' } className='list-icon' /> <Icon name='file' /> { file }
                     </ListGroupItem>
                   )
                 }
               </ListGroup>
-            </ListGroupItem>
-          )
+
+              <br/>
+
+              <IGVBrowser
+                reference={{ id: 'hg19' }}
+                locus={locus}
+                trackDefaults={{ alignment: { height: 150 } }}
+                tracks={tracks}
+                showGenes={true}
+              />
+
+            </div>
         }
-        </ListGroup>
+
+        {
+          variantsByPositionEntries.length > 0 &&
+            <div>
+              <div className='title'>
+                Variants
+              </div>
+
+              <ListGroup>
+              {
+                variantsByPositionEntries.map(([position, variants], i) =>
+                  <ListGroupItem key={i} className='ExperimentModal__variant d-flex'>
+                    <span className='ExperimentModal__position'>
+                      <Button
+                        size='sm'
+                        icon='eye'
+                        onClick={() => this.setState({ locus: position })}
+                      />{' '}
+                      { position }
+                    </span>
+                    <ListGroup className='flex-fill'>
+                      {
+                        variants.map((variant, i) =>
+                          <ListGroupItem key={i}>
+                            { filename(variant.file) } { variant.alt } { variant.ref }
+                          </ListGroupItem>
+                        )
+                      }
+                    </ListGroup>
+                  </ListGroupItem>
+                )
+              }
+              </ListGroup>
+            </div>
+        }
 
       </ModalBody>
     )
