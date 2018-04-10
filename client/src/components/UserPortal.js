@@ -87,7 +87,7 @@ class UserPortal extends Component {
                     <td>{ user.name }</td>
                     <td>{ user.email }</td>
                     <td><b>{ '*'.repeat(Math.random() * 6 + 4)}</b></td>
-                    <td>{ user.phone }</td>
+                    <td>{ renderPhone(user.phone) }</td>
                     <td>{ user.isAdmin.toString() }</td>
                     <td>{ JSON.stringify(user.permissions) }</td>
                     <td>
@@ -183,6 +183,10 @@ class EditRow extends React.Component {
       </tr>
     )
   }
+}
+
+function renderPhone(phone) {
+  return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`
 }
 
 export default connect(
