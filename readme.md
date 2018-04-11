@@ -10,7 +10,7 @@ profyle portal front-end.
 ```sh
 wget https://raw.githubusercontent.com/PROFYLE-TFRI/portal/master/install.sh
 chmod +x ./install.sh
-./install.sh # Optionnally provide the installation directory here
+./install.sh # [optional installation directory] (default: ~/profyle-portal)
 ```
 
 You will be prompted for configuration details. A `config.js` file will be created
