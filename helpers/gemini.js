@@ -2,7 +2,11 @@
  * gemini.js
  */
 
+const fs = require('fs')
+const util = require('util')
 const child_process = require('child_process')
+const rename = util.promisify(fs.rename)
+
 const csvParse = require('csv-parse/lib/sync')
 
 const exec = command =>
@@ -11,6 +15,7 @@ const exec = command =>
       err ? reject(err) : resolve({ stdout, stderr })))
 
 module.exports = {
+  load,
   getVariantsAt,
   getDistinctChroms,
   getStartLike,
@@ -56,6 +61,12 @@ function getStartLike(path, chrom, start, limit = 15) {
 }
 
 
+function load(vcfFile, outputFile) {
+  const command = `gemini load -v '${vcfFile}' '${outputFile}.part'`
+
+  return exec(command)
+    .then(() => rename(outputFile + '.part', outputFile))
+}
 
 function geminiQuery(path, query, params = '') {
   const command =
