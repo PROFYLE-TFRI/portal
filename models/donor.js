@@ -69,7 +69,20 @@ function searchVariants(params) {
 function getDonor(id) {
   return readJSON(getDonorJSONPath(id))
     .then(data => normalizeDonor(id, data))
-    .then(attachExperiments)
+    .then(donor => {
+      return attachExperiments(donor)
+        .catch(err => {
+          donor.invalid = true
+          donor.message = err
+          return Promise.resolve(donor)
+        })
+    })
+    .catch(err => {
+      return Promise.resolve({
+        invalid: true,
+        message: err
+      })
+    })
 }
 
 
@@ -105,10 +118,6 @@ function attachExperiments(donor) {
     )
 
   }))
-  .catch(err => {
-    donor.invalid = true
-    donor.message = err
-  })
   .then(() => donor)
 }
 
