@@ -80,30 +80,34 @@ app.use((err, req, res, next) => {
  * VCF watcher
  */
 
+if (!config.disableWatcher)
+  initializeWatcher()
 
-/* eslint-disable no-console */
-const watcher = chokidar.watch(config.paths.input)
-watcher.on('add', filepath => {
-  if (!/\.vcf$/.test(filepath))
-    return
-
-
-  exists(filepath + '.db')
-  .then(fileExists => {
-    if (fileExists)
+function initializeWatcher() {
+  /* eslint-disable no-console */
+  const watcher = chokidar.watch(config.paths.input)
+  watcher.on('add', filepath => {
+    if (!/\.vcf$/.test(filepath))
       return
 
-    console.log('Loading VCF file: ' + filepath)
 
-    return gemini.load(filepath, filepath + '.db')
-    .then(() => console.log('Loaded VCF file: ' + filepath))
-  })
-  .catch(err => {
-    console.error('Error while loading VCF file: ', filepath)
-    console.error(err)
-  })
+    exists(filepath + '.db')
+    .then(fileExists => {
+      if (fileExists)
+        return
 
-})
-/* eslint-enable no-console */
+      console.log('Loading VCF file: ' + filepath)
+
+      return gemini.load(filepath, filepath + '.db')
+      .then(() => console.log('Loaded VCF file: ' + filepath))
+    })
+    .catch(err => {
+      console.error('Error while loading VCF file: ', filepath)
+      console.error(err)
+    })
+
+  })
+  /* eslint-enable no-console */
+}
 
 module.exports = app
