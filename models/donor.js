@@ -23,6 +23,7 @@ function findByID(id) {
 function findAll() {
   return readDir('.')
     .then(ids => Promise.all(ids.map(getDonor)))
+    .then(donors => donors.filter(d => !d.invalid))
     .then(indexBy(prop('id')))
 }
 
@@ -104,6 +105,10 @@ function attachExperiments(donor) {
     )
 
   }))
+  .catch(err => {
+    donor.invalid = true
+    donor.message = err
+  })
   .then(() => donor)
 }
 
