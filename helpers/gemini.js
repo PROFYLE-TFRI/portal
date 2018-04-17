@@ -5,6 +5,7 @@
 const fs = require('fs')
 const util = require('util')
 const child_process = require('child_process')
+const exists = util.promisify(fs.exists)
 const rename = util.promisify(fs.rename)
 
 const csvParse = require('csv-parse/lib/sync')
@@ -62,10 +63,16 @@ function getStartLike(path, chrom, start, limit = 15) {
 
 
 function load(vcfFile, outputFile) {
-  const command = `gemini load -v '${vcfFile}' '${outputFile}.part'`
+  const tmpFile = `${outputFile}.part`
+  const command = `gemini load -v '${vcfFile}' '${tmpFile}'`
 
-  return exec(command)
-    .then(() => rename(outputFile + '.part', outputFile))
+  return exists(tmpFile)
+    .then(fileExists =>
+      fileExists ?
+        Promise.reject(new Error('gemini.load: tmpFile already exists')) :
+        exec(command)
+          .then(() => rename(tmpFile, outputFile))
+    )
 }
 
 function geminiQuery(path, query, params = '') {
