@@ -270,7 +270,7 @@ function createDefaultData() {
     , experiments: {}
   }
 }
-function dataReducer(state = createDefaultData(), action, ui) {
+function dataReducer(state = createDefaultData(), /* mut */ action, ui) {
   switch (action.type) {
     case DONOR.FIND_ALL.REQUEST: {
       return { ...state, isLoading: true }
@@ -280,13 +280,22 @@ function dataReducer(state = createDefaultData(), action, ui) {
       const samples =
         indexBy(prop('id'),
           flatten(
-            Object.values(action.payload)
+            Object.values(donors)
               .map(compose(Object.values, prop('samples')))))
       const experiments =
         indexBy(prop('id'),
           flatten(
             Object.values(samples)
               .map(compose(Object.values, prop('experiments')))))
+
+
+      Object.values(donors).forEach(d => {
+        d.samples = Object.keys(d.samples)
+      })
+      Object.values(samples).forEach(d => {
+        d.experiments = Object.keys(d.experiments)
+      })
+
       return {
         ...state,
         isLoading: false,

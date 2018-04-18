@@ -36,6 +36,9 @@ const mapStateToProps = state => ({
   , search: state.ui.search
   , errorMessage: state.ui.errorMessage
   , warningMessage: state.ui.warningMessage
+  , donorsByID: state.data.donors
+  , samplesByID: state.data.samples
+  , experimentsByID: state.data.experiments
   , donors: Object.values(state.data.donors)
   , samples: Object.values(state.data.samples)
   , experiments: Object.values(state.data.experiments)
@@ -51,6 +54,9 @@ class MainPortal extends Component {
   render() {
     const {
       auth,
+      donorsByID,
+      samplesByID,
+      experimentsByID,
       donors,
       samples,
       experiments,
@@ -81,10 +87,10 @@ class MainPortal extends Component {
       filtered = filterVariantSearch(variantSearchResults, filtered)
 
     const visibleAndSelectedDonors = filterSelected(filtered.donors, selection.donors)
-    const visibleSamples = visibleAndSelectedDonors.map(d => Object.values(d.samples)).reduce((acc, cur) => acc.concat(cur), [])
+    const visibleSamples = visibleAndSelectedDonors.map(d => d.samples.map(id => samplesByID[id])).reduce((acc, cur) => acc.concat(cur), [])
     const selectedSamples = filterSelected(samples, selection.samples)
     const visibleAndSelectedSamples = filterSelected(visibleSamples, selection.samples)
-    const selectedExperiments = visibleAndSelectedSamples.map(s => Object.values(s.experiments)).reduce((acc, cur) => acc.concat(cur), [])
+    const selectedExperiments = visibleAndSelectedSamples.map(s => s.experiments.map(id => experimentsByID[id])).reduce((acc, cur) => acc.concat(cur), [])
 
     filtered.samples = intersection(filtered.samples, visibleSamples)
     filtered.experiments = intersection(filtered.experiments, selectedExperiments)
