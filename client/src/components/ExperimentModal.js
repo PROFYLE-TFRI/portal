@@ -23,8 +23,17 @@ const mapStateToProps = state => {
   const donor = sample ? state.data.donors[sample.donorID] : undefined
   const source = donor ? donor.source : undefined
 
+  const files = []
+  if (donor)
+    donor.samples.forEach(sampleID => {
+      state.data.samples[sampleID].experiments.forEach(experimentID => {
+        files.push(...state.data.experiments[experimentID].alignments)
+      })
+    })
+
   return {
     source: source,
+    files: files,
     experiment: experiment,
     variantSearchResults: state.variantSearch.results,
   }
@@ -52,7 +61,7 @@ class ExperimentModal extends Component {
   }
 
   componentWillReceiveProps(props) {
-    const { experiment, variantSearchResults } = props
+    const { experiment, variantSearchResults, files } = props
     if (experiment) {
 
       const variants = mergeResults(variantSearchResults.filter(result => result.experimentID === experiment.id))
@@ -60,7 +69,7 @@ class ExperimentModal extends Component {
 
       this.setState({
         experiment: experiment,
-        selectedFiles: experiment.alignments.reduce((acc, cur) => { acc[cur] = true; return acc }, {}),
+        selectedFiles: files.reduce((acc, cur) => { acc[cur] = true; return acc }, {}),
         variants: variants,
         locus: locus,
       })
@@ -96,7 +105,7 @@ class ExperimentModal extends Component {
     const tracks = selectedEntries
       .filter(([file, selected]) => selected)
       .map(([file, _]) => {
-        const name = (file.match(/[^/]+$/) || [file])[0]
+        const name = file
         const url = `/files/${source}/${file}`
         const indexURL = url.replace(/\.bam$/, '.bai')
         return { name, url, indexURL }

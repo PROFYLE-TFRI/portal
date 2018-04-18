@@ -100,7 +100,7 @@ html, body, #root {
 
 
 /*
- * Corrections
+ * Bootstrap corrections
  */
 
 .popover {
@@ -192,6 +192,20 @@ html, body, #root {
   }
 }
 
+
+/*
+ * IGV.js corrections
+ */
+
+.igv-track-label {
+  max-width: 400px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+.igv-track-label:hover {
+  font-weight: normal;
+  background-color: rgba(0, 0, 0, 0.05);
+}
 
 /*
  * Elements
