@@ -54,7 +54,6 @@ class MainPortal extends Component {
   render() {
     const {
       auth,
-      donorsByID,
       samplesByID,
       experimentsByID,
       donors,
