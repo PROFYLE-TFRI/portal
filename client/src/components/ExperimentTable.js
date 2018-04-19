@@ -14,6 +14,7 @@ import cx from 'classname';
 import { selectExperiment } from '../actions'
 import { renderColumn } from '../helpers/table';
 import { EXPERIMENT_COLUMNS } from '../constants';
+import Icon from './Icon'
 
 const { values } = Object
 
@@ -94,6 +95,26 @@ class ExperimentTable extends Component {
           {
             EXPERIMENT_COLUMNS.map(renderColumn)
           }
+          <Header
+            dataField='alignments'
+            dataSort={true}
+            dataAlign='center'
+            dataFormat={(cell, experiment) => {
+              const hasFiles = experiment.alignments && experiment.alignments.length > 0
+              return <Icon name={hasFiles ? 'check' : 'times'} color={hasFiles ? 'success' : 'muted'}/>
+            }}>
+            Alignment Files
+          </Header>
+          <Header
+            dataField='variants'
+            dataSort={true}
+            dataAlign='center'
+            dataFormat={(cell, experiment) => {
+              const hasFiles = experiment.variants && experiment.variants.length > 0
+              return <Icon name={hasFiles ? 'check' : 'times'} color={hasFiles ? 'success' : 'muted'}/>
+            }}>
+            Variant Files
+          </Header>
           <Header dataFormat={this.renderSteps}
                   className='ExperimentTable__stepsHeader'
             columnClassName='ExperimentTable__stepsColumn' >

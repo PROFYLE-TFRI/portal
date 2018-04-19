@@ -349,6 +349,8 @@ html, body, #root {
 .ExperimentTable tr > *:nth-child(3) { width: 120px; }
 .ExperimentTable tr > *:nth-child(4) { width: 90px; }
 .ExperimentTable tr > *:nth-child(5) { width: 90px; }
+.ExperimentTable tr > *:nth-child(6) { width: 40px; }
+.ExperimentTable tr > *:nth-child(7) { width: 40px; }
 
 .steps {
   padding: 10px;

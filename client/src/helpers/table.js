@@ -1,6 +1,7 @@
 /*
  * table.js
  */
+/* eslint-disable react/prop-types */
 
 import React from 'react';
 import Header from 'react-bootstrap-table/lib/TableHeaderColumn';
