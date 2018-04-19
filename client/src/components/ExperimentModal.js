@@ -122,62 +122,56 @@ class ExperimentModal extends Component {
 
         <Container className='ExperimentModal__informations'>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Sample
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.sample_id)}</Col>
-          </Row>
-          <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.sample_id)}</Col>
+            <Col className='ExperimentModal__label' xs='2'>
               Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.type)}</Col>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.type)}</Col>
           </Row>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Experiment Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.experiment_type)}</Col>
-          </Row>
-          <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.experiment_type)}</Col>
+            <Col className='ExperimentModal__label' xs='2'>
               Assay Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.assay_type)}</Col>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.assay_type)}</Col>
           </Row>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Protocol Type
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.protocol_type)}</Col>
-          </Row>
-          <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.protocol_type)}</Col>
+            <Col className='ExperimentModal__label' xs='2'>
               Seq. Center
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(experiment.sequencing_center)}</Col>
+            <Col className='ExperimentModal__value' xs='4'>{JSON.stringify(experiment.sequencing_center)}</Col>
           </Row>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Data Source
             </Col>{' '}
-            <Col className='ExperimentModal__value'>{JSON.stringify(source)}</Col>
+            <Col className='ExperimentModal__value' xs='9'>{JSON.stringify(source)}</Col>
           </Row>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Raw Data
             </Col>{' '}
-            <Col className='ExperimentModal__value'>
+            <Col className='ExperimentModal__value' xs='10'>
               <pre>
                 {JSON.stringify(experiment.raw_data)}
               </pre>
             </Col>
           </Row>
           <Row>
-            <Col className='ExperimentModal__label' xs='4'>
+            <Col className='ExperimentModal__label' xs='2'>
               Analysis
             </Col>{' '}
-            <Col className='ExperimentModal__value'>
+            <Col className='ExperimentModal__value' xs='10'>
               <pre>
                 {JSON.stringify(experiment.analysis)}
               </pre>
