@@ -38,7 +38,7 @@ export const DONOR_COLUMNS = [
   , { field: 'age',                        title: 'Age' }
   , { field: 'sex',                        title: 'Sex' }
   , { field: 'disease',                    title: 'Disease', uri: 'disease_ontology_uri', showTitle: false }
-  , { field: 'recruitement_team.hospital', title: 'Hospital' }
+  , { field: 'recruitement_team.hospital', title: 'Location' }
   , { field: 'recruitement_team.province', title: 'Province' }
 ]
 
