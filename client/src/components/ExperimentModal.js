@@ -69,7 +69,10 @@ class ExperimentModal extends Component {
 
       this.setState({
         experiment: experiment,
-        selectedFiles: files.reduce((acc, cur) => { acc[cur] = true; return acc }, {}),
+        selectedFiles: files.reduce((acc, cur) => {
+          acc[cur] = cur.includes(experiment.sample_id) && cur.includes(experiment.type);
+          return acc
+        }, {}),
         variants: variants,
         locus: locus,
       })
