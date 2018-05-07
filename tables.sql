@@ -6,12 +6,13 @@
  */
 
 CREATE TABLE users (
-    id       integer primary key autoincrement,
-    name     text    not null,
-    email    text    not null unique,
-    phone    text    not null,
-    password text    not null,
-    isAdmin  integer not null,
+    id        integer primary key autoincrement,
+    name      text    not null,
+    email     text    not null unique,
+    phone     text    not null,
+    password  text    not null,
+    isAdmin   integer not null,
+    lastLogin text    null,
     permissions text not null
 );
 

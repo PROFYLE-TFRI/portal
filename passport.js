@@ -61,7 +61,8 @@ passport.use('local-login', new LocalStrategy(localStrategyOptions, (req, email,
       if (req.body.code && !TwoFA.isValid(req.body.code, user))
         return done(null, false, k.AUTH.INVALID_2FA)
 
-      // all is well, return successful user
+      // All is well, return successful user
+      User.update({ id: user.id, lastLogin: new Date().toISOString() })
       return done(null, user, null)
     })
     .catch(err => {

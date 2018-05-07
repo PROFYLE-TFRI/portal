@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Container, Table, Alert, Input, } from 'reactstrap';
 
 import Button from './Button'
+import Time from './Time'
 
 import asString from '../helpers/as-string'
 import * as User from '../actions/user';
@@ -73,6 +74,7 @@ class UserPortal extends Component {
               <th>Phone</th>
               <th>Admin?</th>
               <th>Permissions</th>
+              <th>Last Login</th>
               <th></th>
             </tr>
           </thead>
@@ -90,6 +92,7 @@ class UserPortal extends Component {
                     <td>{ renderPhone(user.phone) }</td>
                     <td>{ user.isAdmin.toString() }</td>
                     <td>{ JSON.stringify(user.permissions) }</td>
+                    <td><Time value={user.lastLogin} /></td>
                     <td>
                       <Button
                         icon='edit'

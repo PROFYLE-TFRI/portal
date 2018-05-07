@@ -528,3 +528,11 @@ html, body, #root {
   padding-bottom: 1rem;
   margin: 0;
 }
+
+
+/* Time */
+
+.Time {
+  border-bottom: 1px dotted #bbb;
+  cursor: default;
+}
