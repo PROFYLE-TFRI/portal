@@ -532,7 +532,10 @@ html, body, #root {
 
 /* Time */
 
-.Time {
+.Time--empty {
+  color: #999;
+}
+.Time__abbr {
   border-bottom: 1px dotted #bbb;
   cursor: default;
 }

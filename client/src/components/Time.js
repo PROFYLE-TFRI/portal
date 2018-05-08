@@ -10,19 +10,42 @@ import cuid from 'cuid'
 import humanReadableTime from '../helpers/human-readable-time.js'
 
 
-export default function Time({ value }) {
-  const id = cuid()
-  const date = new Date(value)
-  return (
-    <span>
-      <abbr className='Time' id={id}>{ humanReadableTime(date) }</abbr>
-      <UncontrolledTooltip placement="top" target={id}>
-        { date.toString() }
-      </UncontrolledTooltip>
-    </span>
-  )
+export default class Time extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = { id: undefined }
+  }
+
+  componentDidMount() {
+    this.setState({ id: cuid() })
+  }
+
+  render() {
+    const { id } = this.state
+    const { value } = this.props
+
+    if (!value)
+      return (
+        <span className='Time Time--empty'>
+          none
+        </span>
+      )
+
+    const date = new Date(value)
+    return (
+      <span className='Time'>
+        <abbr className='Time__abbr' id={id}>{ humanReadableTime(date) }</abbr>
+        {
+          id &&
+            <UncontrolledTooltip placement="top" target={id}>
+              { date.toString() }
+            </UncontrolledTooltip>
+        }
+      </span>
+    )
+  }
 }
 
 Time.propTypes = {
-  value: prop.oneOfType([prop.object, prop.string]).isRequired,
+  value: prop.oneOfType([prop.object, prop.string]),
 }
