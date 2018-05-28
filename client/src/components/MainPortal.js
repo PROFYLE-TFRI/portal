@@ -35,7 +35,7 @@ const mapStateToProps = state => ({
   , selection: state.ui.selection
   , search: state.ui.search
   , errorMessage: state.ui.errorMessage
-  , warningMessage: state.ui.warningMessage
+  , warningMessages: state.ui.warningMessages
   , donorsByID: state.data.donors
   , samplesByID: state.data.samples
   , experimentsByID: state.data.experiments
@@ -62,7 +62,7 @@ class MainPortal extends Component {
       selection,
       search,
       errorMessage,
-      warningMessage,
+      warningMessages,
       isVariantSearchOpen,
       variantSearchResults,
       toggleVariantSearch,
@@ -124,12 +124,12 @@ class MainPortal extends Component {
         }
 
         {
-          warningMessage &&
+          warningMessages.length > 0 &&
           <Alert color='warning' toggle={clearWarningMessage}>
-            <h4 className='alert-heading'>Oh! Some warning occured</h4>
-            <p>
-              Message: { warningMessage }
-            </p>
+            <h4 className='alert-heading'>Oh! Some warning(s) occured</h4>
+            { warningMessages.map(message =>
+              <p>{message}</p>
+            ) }
             <hr />
             <p className='mb-0'>
               <a href={`mailto:${CONTACT_EMAIL}`} className='alert-link'>Contact us</a> if the issue persists.

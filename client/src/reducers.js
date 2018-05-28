@@ -33,7 +33,7 @@ function createDefaultUI() {
     tab: TABS.PORTAL,
     search: '',
     errorMessage: undefined,
-    warningMessage: undefined,
+    warningMessages: [],
     selection: {
       donors: [],
       samples: [],
@@ -46,14 +46,14 @@ function uiReducer(state = createDefaultUI(), action, data) {
     return { ...state, errorMessage: action.message || action.payload }
 
   if (action.warning)
-    return { ...state, warningMessage: action.warnings.join('\n') }
+    return { ...state, warningMessages: action.payload }
 
   switch (action.type) {
     case GLOBAL.CLEAR_ERROR_MESSAGE: {
       return { ...state, errorMessage: undefined }
     }
     case GLOBAL.CLEAR_WARNING_MESSAGE: {
-      return { ...state, warningMessage: undefined }
+      return { ...state, warningMessages: undefined }
     }
 
     case SELECT: {

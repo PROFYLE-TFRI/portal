@@ -22,7 +22,7 @@ export const findAll = createFetchAction(FIND_ALL, () => {
     return requests.donor.findAll()
     .catch(err => {
       if (err.warning) {
-        dispatch(Global.createWarning(err.message))
+        dispatch(Global.createWarning(err.warnings))
         return Promise.resolve(err.data)
       }
       return Promise.reject(err)

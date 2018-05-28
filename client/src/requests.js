@@ -65,10 +65,12 @@ function createError(apiResult) {
 }
 
 function createWarning(apiResult) {
-  const error = new Error(apiResult.message)
-  error.message = apiResult.message
+  const message = apiResult.warnings.join('\n')
+  const error = new Error(message)
+  error.message = message
   error.fromAPI = true
   error.warning = true
+  error.warnings = apiResult.warnings
   error.data = apiResult.data
   return error
 }
