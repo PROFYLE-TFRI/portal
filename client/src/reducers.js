@@ -53,7 +53,7 @@ function uiReducer(state = createDefaultUI(), action, data) {
       return { ...state, errorMessage: undefined }
     }
     case GLOBAL.CLEAR_WARNING_MESSAGE: {
-      return { ...state, warningMessages: undefined }
+      return { ...state, warningMessages: [] }
     }
 
     case SELECT: {
