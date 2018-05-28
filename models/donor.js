@@ -134,7 +134,7 @@ function getVariantFiles(id, sampleID, experiment) {
 
   return (experiment.snv_panel || [])
     .map(details => path.join(experimentPath, details.filename))
-    .filter(file => /\.vcf\.db$/.test(file))
+    .filter(file => /\.db$/.test(file))
 }
 
 function normalizeDonor(id, data) {
