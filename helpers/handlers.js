@@ -22,7 +22,7 @@ exports.warningHandler = res => ([data, warnings]) => {
   const result = { ok: true, data }
   if (warnings && warnings.length > 0) {
     result.warning = true
-    result.warnings = warnings
+    result.warnings = warnings.map(asString)
   }
   res.json(result)
   res.end()
