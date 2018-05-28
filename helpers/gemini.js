@@ -110,12 +110,12 @@ function escape(strings, ...args) {
   let result = ''
   for (let i = 0; i < strings.length; i++) {
     result += strings[i]
-    if (i < args.length)
+    if (i < args.length) {
       const value = escapeValue(args[i])
       if (value === undefined)
         throw new Error(`Unrecognized value: ${value}, at index ${i} of ${JSON.stringify(args)}`)
       result += value
-
+    }
   }
   return result
 }
