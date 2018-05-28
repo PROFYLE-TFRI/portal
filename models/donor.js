@@ -130,14 +130,11 @@ function getAlignmentFiles(id, sampleID, experiment) {
 }
 
 function getVariantFiles(id, sampleID, experiment) {
-  const variantsPath = getExperimentVariantsPath(id, sampleID, experiment.type)
+  const experimentPath = getExperimentPath(id, sampleID, experiment.type)
 
-  return readDirIfExists(variantsPath)
-    .then(files => {
-      return files
-        .filter(file => /\.vcf\.db$/.test(file))
-        .map(file => path.join(variantsPath, file))
-    })
+  return (experiment.snv_panel || [])
+    .map(details => path.join(experimentPath, details.filename))
+    .filter(file => /\.vcf\.db$/.test(file))
 }
 
 function normalizeDonor(id, data) {
