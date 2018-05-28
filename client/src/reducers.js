@@ -46,7 +46,7 @@ function uiReducer(state = createDefaultUI(), action, data) {
     return { ...state, errorMessage: action.message || action.payload }
 
   if (action.warning)
-    return { ...state, warningMessage: action.message || action.payload }
+    return { ...state, warningMessage: action.warnings.join('\n') }
 
   switch (action.type) {
     case GLOBAL.CLEAR_ERROR_MESSAGE: {

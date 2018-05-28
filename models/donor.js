@@ -7,6 +7,7 @@ const { indexBy, prop } = require('ramda')
 const { exists, readDir, readJSON } = require('../helpers/filesystem')
 const { forEachExperiment } = require('../helpers/donor')
 const { getVariantsAt, getDistinctChroms } = require('../helpers/gemini')
+const { separateWarnings } = require('../helpers/handlers')
 const config = require('../config')
 
 module.exports = {
@@ -33,12 +34,18 @@ function listChroms() {
     const results = []
     forEachExperiment(donors, (experiment, sample, donor) => {
       experiment.variants.forEach(file => {
-        results.push(getDistinctChroms(path.join(config.paths.input, file)))
+        results.push(
+          getDistinctChroms(path.join(config.paths.input, file))
+          .catch(err => {
+            return Promise.resolve(err)
+          })
+        )
       })
     })
     return Promise.all(results)
   })
-  .then(results => Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])))
+  .then(separateWarnings)
+  .then(([results, warnings]) => [Array.from(results.reduce((acc, cur) => new Set([...acc, ...cur]), [])), warnings])
 }
 
 function searchVariants(params) {
@@ -48,6 +55,7 @@ function searchVariants(params) {
     forEachExperiment(donors, (experiment, sample, donor) => {
       experiment.variants.forEach(file => {
         results.push(
+
           getVariantsAt(path.join(config.paths.input, file), params)
           .then(variants => ({
             experimentID: experiment.id,
@@ -56,12 +64,17 @@ function searchVariants(params) {
             file,
             variants
           }))
+          .catch(err => {
+            return Promise.resolve(err)
+          })
+
         )
       })
     })
     return Promise.all(results)
   })
-  .then(results => results.filter(r => r.variants.length > 0))
+  .then(separateWarnings)
+  .then(([results, warnings]) => [results.filter(r => r.variants.length > 0), warnings])
 }
 
 // Helpers

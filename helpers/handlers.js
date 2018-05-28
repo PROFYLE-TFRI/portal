@@ -18,11 +18,11 @@ exports.dataHandler = res => data => {
   res.end()
 }
 
-exports.warningHandler = res => ([data, message]) => {
+exports.warningHandler = res => ([data, warnings]) => {
   const result = { ok: true, data }
-  if (message && message.length > 0) {
+  if (warnings && warnings.length > 0) {
     result.warning = true
-    result.message = asString(message)
+    result.warnings = warnings
   }
   res.json(result)
   res.end()
@@ -31,5 +31,19 @@ exports.warningHandler = res => ([data, message]) => {
 function asString(value) {
   if (Array.isArray(value))
     return value.join('\n')
+  if (value instanceof Error)
+    return value.stack
   return '' + value
+}
+
+exports.separateWarnings = values => {
+  const data = []
+  const errors = []
+  values.forEach(value => {
+    if (value instanceof Error)
+      errors.push(value)
+    else
+      data.push(value)
+  })
+  return [data, errors]
 }
