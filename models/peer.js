@@ -97,6 +97,10 @@ function request(req) {
           continue
         }
 
+        if (apiResult.warning === true) {
+          errorResults.push(...apiResult.warnings)
+        }
+
         dataResults.push(apiResult)
       }
 
