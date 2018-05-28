@@ -111,7 +111,11 @@ function escape(strings, ...args) {
   for (let i = 0; i < strings.length; i++) {
     result += strings[i]
     if (i < args.length)
-      result += escapeValue(args[i])
+      const value = escapeValue(args[i])
+      if (value === undefined)
+        throw new Error(`Unrecognized value: ${value}, at index ${i} of ${JSON.stringify(args)}`)
+      result += value
+
   }
   return result
 }
@@ -129,7 +133,7 @@ function escapeValue(value) {
     case 'object':
       return '\'' + ('' + value).replace(/'/g, '\'\'') + '\''
     default:
-      throw new Error(`Unrecognized value: ${value}`)
+      return undefined
   }
 }
 
