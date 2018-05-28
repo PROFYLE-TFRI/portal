@@ -38,7 +38,7 @@ function configureBrowserStore() {
   return store
 }
 
-function configureServerStore(user, donors, users, peers, warning) {
+function configureServerStore(user, donors, users, peers, warnings) {
   const initialState = {}
   const store = createStore(rootReducer, initialState, applyMiddleware(thunkMiddleware))
 
@@ -50,8 +50,8 @@ function configureServerStore(user, donors, users, peers, warning) {
     store.dispatch(User.findAll.receive(users))
   if (peers)
     store.dispatch(Peer.findAll.receive(peers))
-  if (warning)
-    store.dispatch(Global.createWarning(warning))
+  if (warnings)
+    store.dispatch(Global.createWarning(warnings))
 
   return store
 }

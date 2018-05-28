@@ -18,11 +18,11 @@ export function createError(error) {
   }
 }
 
-export function createWarning(warning) {
+export function createWarning(warnings) {
   return {
     type: CREATE_WARNING,
     warning: true,
-    payload: warning
+    payload: warnings
   }
 }
 

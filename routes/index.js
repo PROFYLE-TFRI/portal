@@ -42,7 +42,7 @@ router.use('/', (req, res, next) => {
       donorsResult[0],
       users,
       peers,
-      donorsResult[1].join('\n')
+      donorsResult[1]
     )
     const html = renderToString(
       <Provider store={store}>
