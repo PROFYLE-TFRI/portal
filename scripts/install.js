@@ -33,6 +33,8 @@ const isCentral = options => options.isCentral
 const has2FA = options => options.isCentral && options.enable2fa
 
 const questions = [
+  { name: 'overwrite', message: 'A config.js already exists. Would you like to overwrite it?', type: 'confirm', default: true, when: options => fs.existsSync(configPath) },
+
   { name: 'input', message: 'Which is the root folder of your data?', default: opt(config.paths.input, '~/portal_data'), filter: input => input.replace('~', process.env.HOME) },
   { name: 'createDirectory', message: 'That directory doesn\'t exist. Would you like to create it?', type: 'confirm', default: true, when: options => !fs.existsSync(options.input) },
 
@@ -45,14 +47,17 @@ const questions = [
   { name: 'twilio.from',    message: 'What is your twilio phone?',          type: 'input',   default: opt(config.twilio.from,    '+15146002956'), when: has2FA },
   { name: 'genesFile',      message: 'If you want to load the genes file right now, enter its path (or leave empty)', type: 'input',              when: isCentral, filter: input => input.replace('~', process.env.HOME) },
 
-  { name: 'overwrite', message: 'A config.js already exists. Would you like to overwrite it?', type: 'confirm', default: true, when: options => fs.existsSync(configPath) },
+  { name: 'admin.name',     message: 'Please enter the admin account name',  type: 'input', default: 'Admin', when: isCentral, },
+  { name: 'admin.email',    message: 'Please enter the admin account email', type: 'input',                   when: isCentral, },
+  { name: 'admin.phone',    message: 'Please enter the admin account phone', type: 'input',                   when: isCentral, },
+
 ]
 
 
 // Main
 
 prompt(questions)
-.then(options => {
+.then(async options => {
 
   if (!options.input)
     abort('Input directory required')
@@ -69,6 +74,22 @@ prompt(questions)
   if (options.isCentral) {
     console.log(chalk.bold('Building profyle portal frontend... (wait a moment)'))
     execSync('npm run build', { cwd: path.join(__dirname, '..') })
+
+    console.log(chalk.bold('Setting up database...'))
+    await require('../setup-database.js')
+
+    console.log(chalk.bold('Creating admin...'))
+    const db = require('../database.js')
+    const User = require('../models/user.js')
+
+    await db.run('DELETE FROM users WHERE email = @email', { email: options.admin.email })
+    await User.insert({
+      name: options.admin.name,
+      email: options.admin.email,
+      phone: options.admin.phone,
+      isAdmin: true,
+      permissions: '[]',
+    })
   }
 
   if (options.createDirectory) {
@@ -110,7 +131,6 @@ prompt(questions)
       abort('Genes file extension is not .bed. Is it a bed file? Load it later with ' + chalk.white('node ./scripts/load-genes-file.js [file]'))
 
     console.log('Loading genes file...')
-    require('../setup-database')
     const loadGenesFile = require('./load-genes-file')
     return loadGenesFile(options.genesFile)
       .then(rowsInserted => {

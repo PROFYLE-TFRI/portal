@@ -10,8 +10,7 @@ const db = require('./database')
 const Peer = require('./models/peer')
 const config = require('./config')
 
-
-db.findAll('SELECT * FROM sqlite_master')
+module.exports = db.findAll('SELECT * FROM sqlite_master')
 .then(rows => {
 
   // Tables already exist
