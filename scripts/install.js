@@ -33,14 +33,14 @@ const isCentral = options => options.isCentral
 const has2FA = options => options.isCentral && options.enable2fa
 
 const questions = [
-  { name: 'input', message: 'Which is the root folder of your data?', default: opt(config.paths.input, ''), filter: input => input.replace('~', process.env.HOME) },
+  { name: 'input', message: 'Which is the root folder of your data?', default: opt(config.paths.input, '~/portal_data'), filter: input => input.replace('~', process.env.HOME) },
   { name: 'createDirectory', message: 'That directory doesn\'t exist. Would you like to create it?', type: 'confirm', default: true, when: options => !fs.existsSync(options.input) },
 
   { name: 'isNode', message: 'Is this a node server? (a server which serves data for the portal)', type: 'confirm', default: opt(config.isNode, true) },
 
   { name: 'isCentral',      message: 'Is this a central server? (a server that runs the actual profyle portal)',    type: 'confirm', default: opt(config.isCentral, false) },
-  { name: 'enable2fa',      message: 'Is 2-factor authentication enabled?', type: 'confirm', default: opt(config.enable2fa,      false),          when: isCentral },
-  { name: 'twilio.account', message: 'What is your twilio account?',        type: 'input',   default: opt(config.twilio.account, 'xxxxx'),        when: has2FA },
+  { name: 'enable2fa',      message: 'Is 2-factor authentication enabled? (requires a twilio account)', type: 'confirm', default: opt(config.enable2fa, false), when: isCentral },
+  { name: 'twilio.account', message: 'What is your twilio account number?', type: 'input',   default: opt(config.twilio.account, 'xxxxx'),        when: has2FA },
   { name: 'twilio.token',   message: 'What is your twilio token?',          type: 'input',   default: opt(config.twilio.token,   'xxxxx'),        when: has2FA },
   { name: 'twilio.from',    message: 'What is your twilio phone?',          type: 'input',   default: opt(config.twilio.from,    '+15146002956'), when: has2FA },
   { name: 'genesFile',      message: 'If you want to load the genes file right now, enter its path (or leave empty)', type: 'input',              when: isCentral, filter: input => input.replace('~', process.env.HOME) },
