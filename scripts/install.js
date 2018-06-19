@@ -113,7 +113,7 @@ prompt(questions)
       phone: options.admin.phone,
       password: options.admin.password,
       isAdmin: true,
-      permissions: '[]',
+      permissions: [],
     })
   }
 
