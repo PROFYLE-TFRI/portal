@@ -47,9 +47,11 @@ const questions = [
   { name: 'twilio.from',    message: 'What is your twilio phone?',          type: 'input',   default: opt(config.twilio.from,    '+15146002956'), when: has2FA },
   { name: 'genesFile',      message: 'If you want to load the genes file right now, enter its path (or leave empty)', type: 'input',              when: isCentral, filter: input => input.replace('~', process.env.HOME) },
 
-  { name: 'admin.name',     message: 'Please enter the admin account name',  type: 'input', default: 'Admin', when: isCentral, },
-  { name: 'admin.email',    message: 'Please enter the admin account email', type: 'input',                   when: isCentral, },
-  { name: 'admin.phone',    message: 'Please enter the admin account phone', type: 'input',                   when: isCentral, },
+  { name: 'admin.name',     message: 'Please enter the admin account name',     type: 'input',    default: 'Admin', when: isCentral, },
+  { name: 'admin.email',    message: 'Please enter the admin account email',    type: 'input',                      when: isCentral, },
+  { name: 'admin.phone',    message: 'Please enter the admin account phone',    type: 'input',                      when: isCentral, },
+  { name: 'admin.password', message: 'Please enter the admin account password', type: 'password',                   when: isCentral, },
+  { name: 'admin.password2', message: 'Please confirm the admin account password', type: 'password',                when: isCentral, },
 
 ]
 
@@ -68,8 +70,30 @@ prompt(questions)
   if (fs.existsSync(configPath) && !options.overwrite)
     abort('Not overwriting config.js')
 
+  if (options.admin.password !== options.admin.password2)
+    abort('Admin password mismatch')
+
   // Print line to separate questions from report
   console.log('')
+
+  if (options.createDirectory) {
+    try {
+      fs.mkdirSync(options.input)
+      console.log(chalk.bold(`Created directory ${options.input} `) + chalk.yellow.bold('Don\'t forget to populate it!'))
+    } catch(err) {
+      abort(`Couldn't create directory ${options.input}: ${err.toString()}`)
+    }
+  } else if (!fs.existsSync(options.input)) {
+    console.log(chalk.bold(`Directory ${options.input} doesn't exist. `) + chalk.yellow.bold('Don\'t forget to create it!'))
+  }
+
+
+  if (options.isNode)
+    options.apiKey = config.apiKey || generateAPIKey()
+
+
+  fs.writeFileSync(configPath, createConfig(options))
+  console.log(chalk.green.bold('config.js written'))
 
   if (options.isCentral) {
     console.log(chalk.bold('Building profyle portal frontend... (wait a moment)'))
@@ -83,30 +107,15 @@ prompt(questions)
     const User = require('../models/user.js')
 
     await db.run('DELETE FROM users WHERE email = @email', { email: options.admin.email })
-    await User.insert({
+    await User.create({
       name: options.admin.name,
       email: options.admin.email,
       phone: options.admin.phone,
+      password: options.admin.password,
       isAdmin: true,
       permissions: '[]',
     })
   }
-
-  if (options.createDirectory) {
-    try {
-      fs.mkdirSync(options.input)
-      console.log(chalk.bold(`Created directory ${options.input} `) + chalk.yellow.bold('Don\'t forget to populate it!'))
-    } catch(err) {
-      abort(`Couldn't create directory ${options.input}: ${err.toString()}`)
-    }
-  } else if (!fs.existsSync(options.input)) {
-    console.log(chalk.bold(`Directory ${options.input} doesn't exist. `) + chalk.yellow.bold('Don\'t forget to create it!'))
-  }
-
-  if (options.isNode)
-    options.apiKey = config.apiKey || generateAPIKey()
-
-  fs.writeFileSync(configPath, createConfig(options))
 
   if (options.isNode) {
     let copied = false
@@ -116,11 +125,11 @@ prompt(questions)
       copied = true
     } catch(err) { /* ignore */ }
 
-    console.log(chalk.bold('Your randomly generated API key is ' + chalk.blue(options.apiKey) + (copied ? ' (Copied to clipboard) ' : '')))
-    console.log(chalk.yellow.bold(`  Send it to us! (mailto:romain.gregoire@mcgill.ca?subject=Profyle+Node&body=Key:+${options.apiKey})`))
+    if (!options.isCentral) {
+      console.log(chalk.bold('Your randomly generated API key is ' + chalk.blue(options.apiKey) + (copied ? ' (Copied to clipboard) ' : '')))
+      console.log(chalk.yellow.bold(`  Send it to us! (mailto:romain.gregoire@mcgill.ca?subject=Profyle+Node&body=Key:+${options.apiKey})`))
+    }
   }
-
-  console.log(chalk.green.bold('config.js written'))
 
   if (options.genesFile) {
 
@@ -137,6 +146,12 @@ prompt(questions)
         console.log(chalk.green.bold(`Finished loading genes. Inserted ${rowsInserted} rows`))
       })
   }
+
+  if (options.isCentral) {
+    console.log('')
+    console.log(chalk.bold(`Start the server with ${chalk.green('./bin/start-profyle')}`))
+  }
+
 })
 .catch(err => {
   abort(`Caught error: ${err.toString()}`)
