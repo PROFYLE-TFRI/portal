@@ -92,6 +92,7 @@ function getDonor(id) {
     })
     .catch(err => {
       return Promise.resolve({
+        id: id,
         invalid: true,
         message: err
       })
@@ -125,7 +126,12 @@ function attachExperiments(donor) {
             return experiment
           })
         )
+        .catch(err => {
+          // ignore bad experiments for now TODO(warnings)
+          return Promise.resolve(undefined)
+        })
       ))
+      .then(experiments => experiments.filter(Boolean))
       .then(indexBy(prop('id')))
       .then(experimentsByID => donor.samples[sampleID].experiments = experimentsByID)
     )
