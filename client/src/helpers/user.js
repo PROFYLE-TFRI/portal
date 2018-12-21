@@ -32,7 +32,7 @@ export function serialize(user) {
     name:        user.name || '',
     email:       user.email || '',
     password:    user.password || '',
-    phone:       user.phone || '',
+    phone:       (user.phone || '').replace(/\D/g, ''),
     isAdmin:     user.isAdmin || false,
     permissions: JSON.parse(user.permissions || '[]'),
   }
