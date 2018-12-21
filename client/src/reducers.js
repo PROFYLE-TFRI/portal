@@ -361,6 +361,13 @@ function usersReducer(state = createDefaultUsers(), action) {
       return { ...state, isLoading: false, message: action.payload  }
     }
 
+    case USER.SET_MESSAGE: {
+      return { ...state, message: action.payload }
+    }
+    case USER.CLEAR_MESSAGE: {
+      return { ...state, message: undefined }
+    }
+
     case IS_LOGGED_IN.RECEIVE:
     case LOG_IN.RECEIVE: {
       return { ...state, isLoading: false, data: [action.payload] }

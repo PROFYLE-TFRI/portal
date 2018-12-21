@@ -20,6 +20,7 @@ module.exports = {
 
 
 function run(query, params = {}) {
+  console.log(query, params)
   return new Promise((resolve, reject) => {
     db.run(query, addAtSign(params), function(err) {
       if (err)

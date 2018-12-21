@@ -3,13 +3,19 @@
  */
 
 import * as requests from '../requests'
-import { createFetchAction, createFetchConstants } from '../helpers/actions'
+import { createAction, createFetchAction, createFetchConstants } from '../helpers/actions'
+
+export const SET_MESSAGE   = 'USER.SET_MESSAGE'
+export const CLEAR_MESSAGE = 'USER.CLEAR_MESSAGE'
 
 export const FIND_ALL = createFetchConstants('USER_FIND_ALL')
 export const CREATE   = createFetchConstants('USER_CREATE')
 export const UPDATE   = createFetchConstants('USER_UPDATE')
 export const REMOVE   = createFetchConstants('USER_REMOVE')
 
+
+export const setMessage   = createAction(SET_MESSAGE)
+export const clearMessage = createAction(CLEAR_MESSAGE)
 
 export const findAll = createFetchAction(FIND_ALL, () => {
   return (dispatch, getState) => {

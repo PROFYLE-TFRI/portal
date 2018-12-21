@@ -34,14 +34,30 @@ class UserPortal extends Component {
   }
 
   onAccept = (newUser) => {
+    const { ok, message } = validateUser(newUser)
+
+    if (!ok) {
+      this.props.setMessage(message)
+      return
+    }
+
     let action
 
     if (this.state.action === ACTIONS.CREATE) {
       action = this.props.create(newUser)
     } else {
-      const user = this.props.users.data.find(u => u.id === this.state.userID)
-      const diff = getDiffObject(user, newUser)
-      action = this.props.update(diff)
+      const userData = this.props.users.data.find(u => u.id === this.state.userID)
+      const user = UserUtils.deserialize(userData)
+
+      const didChange = Object.keys(newUser).some(key => newUser[key] !== user[key])
+
+      if (!didChange) {
+        action = Promise.resolve()
+      } else {
+        const diff = getDiffObject(userData, UserUtils.serialize(newUser))
+      debugger
+        action = this.props.update(diff)
+      }
     }
 
     action.then(() => this.setState({ action: undefined, userID: undefined }))
@@ -55,9 +71,9 @@ class UserPortal extends Component {
       <Container className='UserPortal'>
         {
           users.message &&
-          <Alert color='danger'>
+          <Alert color='danger' isOpen={true} toggle={this.props.clearMessage}>
             <h4 className='alert-heading'>
-              An error occured:
+              Error:
             </h4>
             <p>
               { asString(users.message) }
@@ -88,7 +104,7 @@ class UserPortal extends Component {
                     <th scope='row'>{ user.id }</th>
                     <td>{ user.name }</td>
                     <td>{ user.email }</td>
-                    <td><b>{ '*'.repeat(Math.random() * 6 + 4)}</b></td>
+                    <td><b>{ '*'.repeat(8)}</b></td>
                     <td>{ renderPhone(user.phone) }</td>
                     <td>{ user.isAdmin.toString() }</td>
                     <td>{ JSON.stringify(user.permissions) }</td>
@@ -147,7 +163,7 @@ class EditRow extends React.Component {
   }
 
   onClickAccept = () => {
-    const user = UserUtils.serialize(this.state)
+    const user = this.state
     this.props.onAccept(user)
   }
 
@@ -162,10 +178,11 @@ class EditRow extends React.Component {
         </th>
         <td><Input type='text'     name='name'         defaultValue={user.name}                         onChange={ev => this.setState({ name: ev.target.value })} /></td>
         <td><Input type='email'    name='email'        defaultValue={user.email}                        onChange={ev => this.setState({ email: ev.target.value })} /></td>
-        <td><Input type='password' name='new-password' defaultValue={user.password}                     onChange={ev => this.setState({ password: ev.target.value })} autoComplete='new-password' /></td>
+        <td><Input type='password' name='new-password' defaultValue={''}                                onChange={ev => this.setState({ password: ev.target.value })} autoComplete='new-password' /></td>
         <td><Input type='text'     name='phone'        defaultValue={user.phone}                        onChange={ev => this.setState({ phone: ev.target.value })} /></td>
         <td><input type='checkbox' name='isAdmin'      defaultChecked={user.isAdmin}                    onChange={ev => this.setState({ isAdmin: ev.target.checked })} /></td>
         <td><Input type='text'     name='permissions'  defaultValue={JSON.stringify(user.permissions)}  onChange={ev => this.setState({ permissions: ev.target.value })} /></td>
+        <td/>
         <td>
           <Button
             type='button'
@@ -189,7 +206,26 @@ class EditRow extends React.Component {
 }
 
 function renderPhone(phone) {
+  if (!phone)
+    return <span className='text-muted'>none</span>
+
   return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6)}`
+}
+
+function validateUser(user) {
+  if (!user.email)
+    return { ok: false, message: 'User email is required' }
+
+  if (!user.name)
+    return { ok: false, message: 'User name is required' }
+
+  try {
+    JSON.parse(user.permissions)
+  } catch (err) {
+    return { ok: false, message: 'User permissions is not a valid JSON value' }
+  }
+
+  return { ok: true }
 }
 
 export default connect(
