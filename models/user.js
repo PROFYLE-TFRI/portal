@@ -81,6 +81,7 @@ function deserialize(user) {
     return undefined
   return {
     ...user,
+    password: '',
     isAdmin: Boolean(user.isAdmin),
     permissions: JSON.parse(user.permissions),
   }
