@@ -18,15 +18,15 @@ module.exports = {
 }
 
 function findAll() {
-  return db.findAll('SELECT * FROM users').then(user => user.map(deserialize))
+  return db.findAll('SELECT * FROM users').then(user => user.map(u => deserialize(u, false)))
 }
 
-function findByID(id) {
-  return db.findOne('SELECT * FROM users WHERE id = @id', { id }).then(deserialize)
+function findByID(id, keepPassword = false) {
+  return db.findOne('SELECT * FROM users WHERE id = @id', { id }).then(u => deserialize(u, keepPassword))
 }
 
-function findByEmail(email) {
-  return db.findOne('SELECT * FROM users WHERE email = @email', { email }).then(deserialize)
+function findByEmail(email, keepPassword = false) {
+  return db.findOne('SELECT * FROM users WHERE email = @email', { email }).then(u => deserialize(u, keepPassword))
 }
 
 function create(user) {
@@ -76,11 +76,12 @@ function serialize(user) {
   return serializedUser
 }
 
-function deserialize(user) {
+function deserialize(user, keepPassword = false) {
   if (user === undefined)
     return undefined
   return {
     ...user,
+    password: keepPassword ? user.password : '',
     isAdmin: Boolean(user.isAdmin),
     permissions: JSON.parse(user.permissions),
   }

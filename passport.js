@@ -23,7 +23,7 @@ passport.serializeUser((user, done) => {
 
 // used to deserialize the user
 passport.deserializeUser((id, done) => {
-  User.findByID(id)
+  User.findByID(id, true)
     .then(user => done(null, user))
     .catch(err => done(err, null))
 })
@@ -41,7 +41,7 @@ const localStrategyOptions = {
 
 passport.use('local-login', new LocalStrategy(localStrategyOptions, (req, email, password, done) => {
 
-  User.findByEmail(email)
+  User.findByEmail(email, true)
     .then(user => {
       // if no user is found, return the message
       if (!user)
