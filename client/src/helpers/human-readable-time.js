@@ -2,11 +2,12 @@
  * date.js
  */
 
+import leftPad from 'left-pad'
 
 const weekDays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
 function asTime(date) {
-  return date.getHours() + ':' + date.getMinutes().toString().padStart(2, '0')
+  return leftPad(date.getHours() + ':' + date.getMinutes().toString(), 2, '0')
 }
 
 function asWeekDay(date) {
