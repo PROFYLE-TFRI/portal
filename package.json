@@ -12,11 +12,11 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "babel-preset-env": "^1.6.1",
+    "babel-preset-env": "^1.7.0",
     "babel-preset-react-app": "^3.1.1",
     "babel-register": "^6.26.0",
     "bcrypt-nodejs": "0.0.3",
-    "body-parser": "~1.17.1",
+    "body-parser": "^1.18.3",
     "chalk": "^2.3.2",
     "clipboardy": "^1.2.3",
     "compression": "^1.7.2",
@@ -25,7 +25,7 @@
     "cookie-parser": "~1.4.3",
     "csv-parse": "^2.0.4",
     "csv-string": "^3.1.2",
-    "express": "~4.15.2",
+    "express": "^4.16.4",
     "express-csp-header": "^2.1.0",
     "express-range": "^2.0.1",
     "express-session": "^1.15.6",
@@ -33,7 +33,7 @@
     "ignore-styles": "^5.0.1",
     "inquirer": "^5.1.0",
     "jade": "~1.11.0",
-    "morgan": "~1.8.1",
+    "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "ramda": "^0.24.1",
@@ -45,9 +45,9 @@
     "rimraf": "^2.6.2",
     "serve-favicon": "~2.4.2",
     "sqlite3": "^4.0.4",
-    "twilio": "^3.11.3"
+    "twilio": "^3.29.2"
   },
   "devDependencies": {
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.18.10"
   }
 }
